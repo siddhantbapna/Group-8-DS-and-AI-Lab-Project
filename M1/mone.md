@@ -38,26 +38,31 @@ The field of automated brain tumor segmentation is well-established, with severa
   * BraTS Dataset: The Brain Tumor Segmentation Challenge (BraTS) dataset is the gold standard for this task. It provides thousands of multi-modal MRI scans with manually-annotated ground truth segmentations, making it the primary resource for training and validating models.  
   * Performance Metrics: The standard metrics for evaluating segmentation quality are the Dice Similarity Coefficient (DSC) and Intersection over Union (IoU), which measure the overlap between the predicted mask and the ground truth. The Hausdorff Distance is also used to measure the distance between the boundaries of the two masks.
 
-**3\. Identify Gaps and Opportunities**
+### **3\. Identify Gaps and Opportunities**
 
 Despite significant progress in automated brain tumor segmentation, several limitations remain in current approaches, creating opportunities for improvement:
 
 * **Generalization to Diverse Clinical Data**  
-* Even nnU-Net, despite being highly adaptive, often shows performance drops when applied outside the benchmark BraTS dataset (e.g., to scans from different institutions or imaging protocols).  
-* Opportunity: Implement robust preprocessing, normalization, and augmentation pipelines to ensure cross-dataset generalization and clinical reliability.  
+* Even nnU-Net, despite being highly adaptive, often shows performance drops when applied outside the benchmark BraTS dataset (e.g., to scans from different institutions or imaging protocols). 
+* Opportunity: Implement robust preprocessing, normalization, and augmentation pipelines to ensure cross-dataset generalization and clinical reliability.
+(https://arxiv.org/html/2510.03568v1) 
 * **Multi-Modal Fusion Limitations**  
 * U-Net-based models typically handle multi-modal MRI data by simple channel concatenation, which may not fully capture cross-modal dependencies.  
-* Opportunity: Investigate enhanced fusion strategies within the CNN framework (e.g., modality-specific encoders, attention gates, or feature recalibration modules) to leverage complementary MRI information more effectively.  
+* Opportunity: Investigate enhanced fusion strategies within the CNN framework (e.g., modality-specific encoders, attention gates, or feature recalibration modules) to leverage complementary MRI information more effectively.
+(https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2022.1000587/full)
 * **Sub-Region Delineation Challenges**  
 * Tumor sub-regions like the enhancing core or infiltrative edema remain difficult to segment accurately, especially when their boundaries are irregular or small in size.  
 * Opportunity: Introduce multi-scale feature extraction, boundary-aware loss functions, or cascaded U-Net architectures to improve fine-grained sub-region delineation.
+(https://www.sciencedirect.com/science/article/pii/S2405844023064745), (https://www.frontiersin.org/journals/computational-neuroscience/articles/10.3389/fncom.2020.00003/full)
 
 * **Lack of Explainability in CNN-Based Models**  
 * While U-Net and nnU-Net achieve strong accuracy, their outputs remain black-box predictions with limited interpretability.  
-* Opportunity: Incorporate explainability techniques such as class activation maps, uncertainty estimation, or attention-based modules to provide clinicians with interpretable insights into segmentation decisions.  
+* Opportunity: Incorporate explainability techniques such as class activation maps, uncertainty estimation, or attention-based modules to provide clinicians with interpretable insights into segmentation decisions.
+(https://www.sciencedirect.com/science/article/pii/S1361841522001177), (https://pmc.ncbi.nlm.nih.gov/articles/PMC8321083/)
 * **Clinical Integration Gap**  
 * Current CNN-based models primarily output segmentation masks. Radiologists still need to manually extract quantitative data (e.g., tumor volumes).  
-* Opportunity: Extend segmentation outputs with automatically computed tumor sub-region volumes, composition percentages, and integrate a Generative AI module to produce preliminary, human-readable clinical reports.  
+* Opportunity: Extend segmentation outputs with automatically computed tumor sub-region volumes, composition percentages, and integrate a Generative AI module to produce preliminary, human-readable clinical reports.
+(https://pmc.ncbi.nlm.nih.gov/articles/PMC11752426/), (https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1615550/full)
 * **Evaluation Beyond Dice Scores**  
 * Many studies report Dice Similarity Coefficient (DSC) and IoU but overlook clinically meaningful measures like volumetric error or boundary precision.  
-* Opportunity: Adopt a comprehensive evaluation strategy that incorporates both algorithmic and clinical metrics, ensuring relevance in real-world settings.
+* Opportunity: Adopt a comprehensive evaluation strategy that incorporates both algorithmic and clinical metrics, ensuring relevance in real-world settings.(https://pubs.rsna.org/doi/full/10.1148/ryai.220231), (https://pmc.ncbi.nlm.nih.gov/articles/PMC10831514/)
