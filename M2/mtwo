@@ -1,0 +1,53 @@
+### **Milestone 2: Dataset Preparation [October 10]**
+
+**Official Documentation: Preprocessing Pipeline for Brain Tumor Segmentation**
+
+This document outlines the automated preprocessing pipeline developed to fulfill the requirements of Milestone 2. The primary objectives of this milestone were to collect a suitable dataset and to prepare and preprocess this data for model training and validation. This script represents the successful completion of the latter objective.
+
+---
+
+### **1. Overview of the Preprocessing Script**
+
+The core of our dataset preparation is a powerful Python script designed to convert raw medical imaging data into a clean, standardized, and model-ready format. The script is specifically tailored for the BraTS (Brain Tumor Segmentation) dataset, which consists of multi-modal 3D MRI scans.
+
+The pipeline performs a series of transformations to ensure that every patient scan is uniform in size, spacing, and intensity. It leverages the high-performance MONAI and PyTorch libraries, which are industry standards for medical imaging analysis. To handle the large dataset efficiently, the script is optimized to run operations in parallel, using all available CPU cores.
+
+A key feature of this pipeline is its "process and delete" methodology. To conserve valuable disk space, once a patient's data is successfully processed and saved, the original, raw files for that patient are automatically deleted.
+
+### **2. Key Features and Technologies**
+
+*   **Medical Imaging Specialization:** Utilizes the **MONAI** library, a framework specifically built for deep learning in medical imaging. This ensures that our preprocessing steps are robust and medically sound.
+*   **High Efficiency:** Employs **parallel processing** to significantly speed up the workflow. It divides the task of processing hundreds of patient files across multiple CPU cores, drastically reducing the total time required.
+*   **Standardization:** All images are brought to a uniform voxel spacing, orientation, and intensity scale. This is a critical step that helps the machine learning model learn effectively.
+*   **Automated Cleanup:** To manage disk space, the script automatically removes the original patient folders after they have been successfully processed, preventing data duplication.
+*   **Robust and Self-Contained:** The script is designed to be resilient. It can locate the necessary data even if it's nested within sub-folders and ensures that the deletion of files only occurs upon successful processing.
+
+### **3. The Preprocessing Workflow: How It Works**
+
+The script follows a clear, step-by-step process for each patient in the dataset:
+
+1.  **Data Discovery:** The script first scans the specified base directory to locate all patient folders and organizes the associated MRI scan files (t1n, t1c, t2w, t2f) and the segmentation mask for each patient.
+2.  **The MONAI Transformation Pipeline:** For each patient, the following sequence of operations is applied:
+    *   **Load Images:** The 3D medical images (in NIfTI format) are loaded into memory.
+    *   **Ensure Channel First:** The data format is adjusted to match the convention expected by deep learning frameworks like PyTorch.
+    *   **Voxel Resampling (Spacing):** The spacing between the pixels in all three dimensions is adjusted to a uniform `(1.0, 1.0, 1.0) mm`. This ensures that the physical size represented by each pixel is consistent across all scans.
+    *   **Intensity Scaling:** The brightness values of the images are normalized to a standard range of `[0.0, 1.0]`. This prevents the model from being biased by scans that are inherently brighter or darker.
+    *   **Crop Foreground:** The script intelligently identifies and crops the region of interest (the brain), removing large areas of empty background space. This reduces computational overhead and focuses the model on relevant anatomy.
+    *   **Resize:** After cropping, each 3D image is resized to a fixed shape of `(128, 128, 128)`. This guarantees that the input to the neural network is always of a consistent size.
+    *   **Convert Segmentation Mask:** The single-channel segmentation mask is converted into a multi-channel format, where each channel corresponds to a specific tumor class (e.g., enhancing tumor, edema). This is the format required for training the segmentation model.
+3.  **Parallel Execution:** The script uses a `ProcessPoolExecutor` to distribute the workload of running the above pipeline across all available CPU cores. A progress bar provides a real-time view of the preprocessing status.
+4.  **Save and Cleanup:** Once the transformations are complete, the processed 3D image and its corresponding mask are combined and saved as a single, compressed NumPy file (`.npz`). Upon successful saving, the original folder containing the patient's raw NIfTI files is deleted.
+
+### **4. Usage and Requirements**
+
+To execute the preprocessing pipeline, the following is required:
+
+*   **Prerequisites:** A Python environment with the following libraries installed:
+    *   `os`, `shutil`
+    *   `numpy`
+    *   `tqdm`
+    *   `torch`
+    *   `monai`
+*   **Execution:** The user must set the `BASE_DIR` variable within the script to point to the location of the unzipped BraTS dataset. The script will then automatically handle the rest of the process.
+
+This automated pipeline successfully prepares our collected dataset for the subsequent stages of model training and validation, marking the completion of Milestone 2.
