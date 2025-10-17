@@ -65,6 +65,42 @@ The choice of a 3D Attention U-Net is well-justified for the task of brain tumor
 * **Increased Model Complexity:** The addition of attention gates increases the number of trainable parameters in the model, making it slightly more complex and potentially more prone to overfitting if not properly regularized or trained on a sufficiently large and diverse dataset.  
 * **Data-Hungry:** While U-Nets are relatively data-efficient, 3D models in general have a large number of parameters and benefit greatly from large datasets. Performance may be suboptimal if the training data is limited or lacks sufficient variation.
 
+### Code and Model Summery:-
+```
+# --- Model Definition ---
+model = AttentionUnet(
+    spatial_dims=3,
+    in_channels=4,
+    out_channels=3,
+    channels=(16, 32, 64, 128, 256),
+    strides=(2, 2, 2, 2),
+).to(device)
+```
+![Alt text](./sb/0foldsb/SB_modelSum.png)
+
+
+
+### Current Results (For M3 and M4)
+
+#### ... Input Data ...
+![Alt text](./sb/0foldsb/SB_input_0.png)
+#### ... Input Data to the model...
+![Alt text](./sb/0foldsb/SB_input_1.png)
+
+
+#### ... Initial Epoch ...
+![Alt text](./sb/0foldsb/SBAttentionUnet_InitialTraining.png)
+#### ... Epochs in between ...
+#### ... Best Epoch ...
+![Alt text](./sb/0foldsb/SBAttentionUnet_BestTraining.png)
+
+#### Example 1
+![Alt text](./sb/0foldsb/SBAttentionUnet_ResultOfBest_1_Volume.png)
+![Alt text](./sb/0foldsb/SBAttentionUnet_ResultOfBest_1.png)
+#### Example 2
+![Alt text](./sb/0foldsb/SBAttentionUnet_ResultOfBest_2.png)
+
+
 ### **Methodology Analysis: K-Fold Cross-Validation for Model Training**
 
 
@@ -112,3 +148,19 @@ Employing a K-Fold strategy is a standard best practice in medical imaging and i
 * **Significantly Increased Computational Cost:** This is the most substantial drawback. The total training time and computational resource usage are multiplied by a factor of K. Training 5 separate models from scratch requires five times the GPU hours compared to training on a single split.  
 * **Workflow Complexity:** The process requires managing the training, logging, and evaluation of K separate models. This adds a layer of complexity to the experiment tracking and model management pipeline.  
 * **No Single Final Model:** At the end of the process, there isn't one definitive "best" model, but rather K different models. To make a final prediction system, one must either choose the best-performing model from the folds (which slightly defeats the purpose of averaging) or implement an ensembling strategy, which increases complexity and inference time.
+
+
+### Current Results (For M3 and M4)
+
+#### ... Initial Epoch ...
+![Alt text](./sb/kfoldsb/SBKfold_Epoch_1.png)
+#### ... Epochs in between ...
+![Alt text](./sb/kfoldsb/SBKfold_Epoch_best.png)
+#### ... Earlt Stop Epoch ...
+![Alt text](./sb/kfoldsb/SBKfold_Epoch_earlyend.png)
+
+#### Example
+![Alt text](./sb/kfoldsb/SBKfold_Volume_1.png)
+![Alt text](./sb/kfoldsb/SBKfold_graph_1.png)
+
+
