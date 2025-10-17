@@ -27,7 +27,44 @@ A robust machine learning model is built upon a high-quality, relevant dataset. 
     *   **Publicly Available:** Its availability allows for reproducible and transparent research.
 
 *   **Data Source and Acquisition (Wherefrom and How)**
-    The data was sourced from the official BraTS Challenge repositories, which are made available through platforms like Synapse.org, The Cancer Imaging Archive (TCIA) and Kaggle. It represents a collaborative effort from numerous institutions to provide a standardized resource for the medical imaging community. For this project, the dataset was downloaded and stored in a designated working directory for preprocessing.
+    The data was sourced from the official BraTS Challenge repositories, made available through Synapse.org, The Cancer Imaging Archive (TCIA), and Kaggle. It represents a collaborative effort from numerous institutions to provide a standardized resource for the medical imaging community. For this project, the dataset was downloaded directly from Synapse after signing up and agreeing to the specified terms and conditions, and subsequently stored in a designated working directory for preprocessing.
+
+*   **Dataset License & Compliance Information**
+
+    **Dataset Source**
+    This project utilized the *Brain Tumor Segmentation (BraTS) 2023* dataset, available via [Synapse ID: syn51156910](https://www.synapse.org/#!Synapse:syn51156910), provided as part of the BraTS Challenge.
+
+    **License**
+    The dataset is released under the **Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)** license.
+
+    * Use is restricted to **non-commercial purposes**.
+    * Redistribution and derivative works are permitted **with proper attribution**.
+    * Full license text: [https://creativecommons.org/licenses/by-nc/4.0/](https://creativecommons.org/licenses/by-nc/4.0/)
+
+    **Required Attribution Statement**
+
+    > “Data used in this publication were obtained as part of the Brain Tumor Segmentation (BraTS) Challenge project through Synapse ID: syn51156910.”
+
+    **Required Citations**
+    Publications using this dataset must cite the following manuscripts:
+
+    1. **MedPerf benchmarking paper:**
+    A. Karargyris et al., *Federated benchmarking of medical artificial intelligence with MedPerf*, *Nature Machine Intelligence*, 5:799–810 (2023).
+    DOI: [10.1038/s42256-023-00652-2](https://doi.org/10.1038/s42256-023-00652-2)
+
+    2. **BraTS benchmark and related works:**
+
+    * U. Baid et al., *The RSNA-ASNR-MICCAI BraTS 2021 Benchmark on Brain Tumor Segmentation and Radiogenomic Classification*, *arXiv:2107.02314*, 2021.
+    * B. H. Menze et al., *The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)*, *IEEE TMI*, 34(10), 1993-2024 (2015).
+    * S. Bakas et al., *Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features*, *Nature Scientific Data*, 4:170117 (2017).
+    * *(Optionally, if allowed by the publication venue)*
+
+        * S. Bakas et al., *Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-GBM collection*, *TCIA*, 2017.
+        * S. Bakas et al., *Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-LGG collection*, *TCIA*, 2017.
+
+    **Ethical & Legal Compliance**
+    The dataset contains **no personally identifiable information (PII)** and has been **de-identified** for research use.
+    This project uses the data **solely for academic and non-commercial purposes**, in compliance with the CC BY-NC 4.0 license and the Synapse Data Use Agreement.
 
 
 ### **2. Exploratory Data Analysis (EDA)**
@@ -43,13 +80,13 @@ Before preprocessing, we conducted an Exploratory Data Analysis to understand th
         *   Overlaying the masks on the scans verified that the annotations were correctly aligned with the anatomical structures.
 
     2.  **Analysis of Data Consistency and Distribution:**
-        *   **Image Dimensions:** We found that the 3D dimensions (height, width, depth) of the scans were **highly inconsistent** across different patients. Some scans were `240x240x155`, while others had different dimensions.
-        *   **Voxel Spacing:** The physical size represented by each voxel was also **not uniform**. This is a critical issue, as it means a tumor might appear larger in one scan than another simply due to different image resolutions.
+        *   **Image Dimensions:** The 3D dimensions (height, width, depth) of the scans were **consistent** across all patients. All scans had dimensions `240x240x155`.
+        *   **Voxel Spacing:** The physical size represented by each voxel was also **uniform** across all patients and modalities, with spacing `(1.0, 1.0, 1.0)`. This ensures that spatial measurements are comparable across scans.
         *   **Intensity Values:** The range of voxel intensity values varied significantly from one scan to another, even within the same modality. This could negatively bias a machine learning model.
         *   **Tumor Presence:** We confirmed that not all tumor sub-classes (e.g., enhancing tumor, necrotic core) were present in every single patient, a factor the model must be robust enough to handle.
 
     3.  **Conclusion from EDA:**
-        The EDA made it clear that the raw data was not suitable for direct use. The inconsistencies in size, spacing, and intensity **mandated** a strong, standardized preprocessing pipeline to bring all data into a uniform and comparable format.
+        The EDA shows that while the raw scans are consistent in **size and voxel spacing**, the variability in **intensity values** and **tumor presence** necessitates a careful preprocessing pipeline. Standardization of intensities and proper handling of missing tumor sub-classes are essential steps before using the data for modeling.
 
 ### **3. The Preprocessing Pipeline**
 
@@ -65,12 +102,11 @@ Raw medical data cannot be fed directly into a neural network. It must be rigoro
 *   **Step-by-Step Workflow:**
     For every patient, a series of automated transformations are applied using a MONAI pipeline:
     1.  **Load Images:** The four MRI scans and the segmentation mask are loaded from their `.nii.gz` files.
-    2.  **Standardize Voxel Spacing:** All scans are resampled to a uniform voxel spacing of `(1.0, 1.0, 1.0) mm` to ensure spatial consistency.
-    3.  **Normalize Intensity:** Image brightness values are scaled to a standard `[0.0, 1.0]` range.
-    4.  **Crop Foreground:** The script automatically removes large empty background areas, focusing computational resources on the brain itself.
-    5.  **Resize:** All 3D scans are resized to a fixed shape of `(128, 128, 128)`, ensuring uniform input size for the model.
-    6.  **Format Mask:** The segmentation mask is converted to a multi-channel format required for the model's loss function.
-    7.  **Save and Cleanup:** The four processed scans are stacked into a single 4-channel 3D image, which is then saved along with its processed mask into a single, compressed NumPy file (`.npz`). To conserve disk space, the original raw data folder for the patient is then automatically deleted.
+    2.  **Normalize Intensity:** Image brightness values are scaled to a standard `[0.0, 1.0]` range.
+    3.  **Crop Foreground:** The script automatically removes large empty background areas, focusing computational resources on the brain itself.
+    4.  **Resize:** All 3D scans are resized to a fixed shape of `(128, 128, 128)`, ensuring uniform input size for the model.
+    5.  **Format Mask:** The segmentation mask is converted to a multi-channel format required for the model's loss function.
+    6.  **Save and Cleanup:** The four processed scans are stacked into a single 4-channel 3D image, which is then saved along with its processed mask into a single, compressed NumPy file (`.npz`). To conserve disk space, the original raw data folder for the patient is then automatically deleted.
 
 ### **4. Data Integrity Verification**
 
