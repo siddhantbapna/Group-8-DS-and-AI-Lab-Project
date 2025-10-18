@@ -1,0 +1,147 @@
+# ==============================================================================
+# FINAL PREPROCESSING SCRIPT (OPTIMIZED WITH MONAI AND AUTO-DELETION)
+# ==============================================================================
+
+import os
+import shutil
+import numpy as np
+from tqdm.notebook import tqdm
+import concurrent.futures
+from functools import partial
+import torch
+
+# Import MONAI transforms
+from monai.transforms import (
+    Compose,
+    LoadImaged,
+    EnsureChannelFirstd,
+    Spacingd,
+    CropForegroundd,
+    Resized,
+    ScaleIntensityRanged,
+    ConvertToMultiChannelBasedOnBratsClassesd,
+    EnsureTyped
+)
+
+# --- Configuration ---
+# --- IMPORTANT: Set this path to your existing unzipped data folder ---
+BASE_DIR = '/kaggle/working/BRATS'
+UNZIPPED_DIR = os.path.join(BASE_DIR, 'BRATS') 
+PROCESSED_DIR = os.path.join(BASE_DIR, 'processed')
+
+# Define preprocessing parameters
+TARGET_VOXEL_SPACING = (1.0, 1.0, 1.0)
+OUTPUT_SHAPE = (128, 128, 128)
+MODALITY_KEYS = ['t1n', 't1c', 't2w', 't2f']
+ALL_KEYS = MODALITY_KEYS + ['seg']
+
+# --- Create Output Directory ---
+os.makedirs(PROCESSED_DIR, exist_ok=True)
+
+# --- Helper Functions ---
+
+def find_patient_files(data_dir):
+    """Scans the data directory and groups files by patient ID."""
+    patient_files = []
+    # Guard against non-existent directory
+    if not os.path.isdir(data_dir):
+        print(f"Error: The directory '{data_dir}' does not exist. Cannot find patient files.")
+        return []
+        
+    for patient_id in sorted(os.listdir(data_dir)):
+        patient_folder = os.path.join(data_dir, patient_id)
+        if os.path.isdir(patient_folder):
+            files = {
+                "t1c": os.path.join(patient_folder, f"{patient_id}-t1c.nii.gz"),
+                "t1n": os.path.join(patient_folder, f"{patient_id}-t1n.nii.gz"),
+                "t2f": os.path.join(patient_folder, f"{patient_id}-t2f.nii.gz"),
+                "t2w": os.path.join(patient_folder, f"{patient_id}-t2w.nii.gz"),
+                "seg": os.path.join(patient_folder, f"{patient_id}-seg.nii.gz"),
+                "id": patient_id
+            }
+            if all(os.path.exists(f) for k, f in files.items() if k != "id"):
+                patient_files.append(files)
+    return patient_files
+
+# --- MONAI-based Preprocessing Function with Deletion Logic ---
+
+monai_cpu_pipeline = Compose([
+    LoadImaged(keys=ALL_KEYS, image_only=True),
+    EnsureChannelFirstd(keys=ALL_KEYS),
+    Spacingd(keys=MODALITY_KEYS, pixdim=TARGET_VOXEL_SPACING, mode="bilinear"),
+    Spacingd(keys=['seg'], pixdim=TARGET_VOXEL_SPACING, mode="nearest"),
+    ScaleIntensityRanged(keys=MODALITY_KEYS, a_min=0.0, a_max=1400.0, b_min=0.0, b_max=1.0, clip=True),
+    CropForegroundd(keys=ALL_KEYS, source_key='t1n', margin=10),
+    Resized(keys=MODALITY_KEYS, spatial_size=OUTPUT_SHAPE, mode="area"),
+    Resized(keys=['seg'], spatial_size=OUTPUT_SHAPE, mode="nearest"),
+    ConvertToMultiChannelBasedOnBratsClassesd(keys='seg'),
+    EnsureTyped(keys=ALL_KEYS, dtype=torch.float32)
+])
+
+# --- MODIFIED WORKER FUNCTION ---
+def preprocess_and_delete(patient_data, output_dir, source_data_dir):
+    """
+    Processes a single patient using MONAI and deletes the source folder upon success.
+    """
+    try:
+        # Step 1: Process the data using the MONAI pipeline
+        processed_data = monai_cpu_pipeline(patient_data)
+        
+        final_image = torch.cat([processed_data[key] for key in MODALITY_KEYS], dim=0)
+        final_mask = processed_data['seg']
+
+        final_image_np = final_image.numpy()
+        final_mask_np = final_mask.numpy().astype(np.uint8)
+
+        # Step 2: Save the processed file
+        output_filepath = os.path.join(output_dir, f"{patient_data['id']}.npz")
+        np.savez_compressed(output_filepath, image=final_image_np, mask=final_mask_np)
+
+        # --- NEW: Step 3: Delete the original patient folder after successful save ---
+        patient_folder_to_delete = os.path.join(source_data_dir, patient_data['id'])
+        if os.path.isdir(patient_folder_to_delete):
+            shutil.rmtree(patient_folder_to_delete)
+
+    except Exception as e:
+        print(f"!!! Failed to process {patient_data['id']}. Original files NOT deleted. Error: {e}")
+        return patient_data['id'] 
+    return None 
+
+# --- Main Execution Block ---
+
+# Find the actual data folder, which might be nested one level deep
+# This handles cases where unzipping creates a parent folder.
+try:
+    potential_subfolder = os.listdir(UNZIPPED_DIR)[0]
+    data_folder = os.path.join(UNZIPPED_DIR, potential_subfolder)
+    if not os.path.isdir(data_folder):
+        data_folder = UNZIPPED_DIR # If the first item isn't a folder, use the base dir
+except IndexError:
+    data_folder = UNZIPPED_DIR # Handle empty unzipped directory
+    
+print(f"Searching for patient data in: {data_folder}")
+patient_list = find_patient_files(UNZIPPED_DIR)
+
+if not patient_list:
+    print(f"No patient data found. Please verify the path and contents of '{data_folder}'.")
+else:
+    print(f"\nFound {len(patient_list)} patients to process.")
+    print(">>> IMPORTANT: Original patient folders will be DELETED after successful processing to save space. <<<")
+    print(f"Starting parallel preprocessing with MONAI on up to {os.cpu_count()} CPU cores...")
+
+    # --- MODIFIED PARTIAL FUNCTION ---
+    # We now pass the 'source_data_dir' to our worker function so it knows where to delete from.
+    process_func = partial(preprocess_and_delete,
+                           output_dir=PROCESSED_DIR,
+                           source_data_dir=data_folder)
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        results = list(tqdm(executor.map(process_func, patient_list), total=len(patient_list), desc="Preprocessing & Deleting"))
+
+    failed_cases = [r for r in results if r is not None]
+    if failed_cases:
+        print(f"\nWarning: Failed to process {len(failed_cases)} cases: {failed_cases}")
+    
+    print("\nPreprocessing complete!")
+    print(f"Processed data saved to: {PROCESSED_DIR}")
+    print(f"Original data in '{data_folder}' should now be mostly or completely deleted.")
