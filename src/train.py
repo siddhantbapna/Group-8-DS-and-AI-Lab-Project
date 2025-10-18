@@ -234,13 +234,8 @@ class Trainer:
             inputs = torch.cat(modalities, dim=1).to(self.device)  # Stack along channel dimension
             targets = batch_data[self.config.data.seg_key].to(self.device)
             
-            # Map BraTS labels to 3-class output: 0->0, 1->1, 2->1, 3->2
-            targets_mapped = torch.zeros_like(targets)
-            targets_mapped[targets == 0] = 0  # Background
-            targets_mapped[targets == 1] = 1  # NCR/NET -> class 1
-            targets_mapped[targets == 2] = 1  # ED -> class 1 (combine with NCR/NET)
-            targets_mapped[targets == 3] = 2  # ET -> class 2
-            targets = targets_mapped
+            # Targets are already one-hot encoded by ConvertToMultiChannelBasedOnBratsClassesd
+            # No need for manual mapping - the preprocessing already handles BraTS label conversion
             
             # Forward pass
             self.optimizer.zero_grad()
@@ -285,21 +280,11 @@ class Trainer:
             with torch.no_grad():
                 predictions = torch.argmax(outputs, dim=1)
                 
-                # Handle one-hot encoded targets
-                if targets.dim() == 5 and targets.shape[1] > 1:
-                    # Convert one-hot to class indices
-                    targets_class = torch.argmax(targets, dim=1)
-                else:
-                    targets_class = targets
+                # Targets are already one-hot encoded, convert to class indices
+                targets_class = torch.argmax(targets, dim=1)
                 
-                # Map BraTS labels to 3-class output: 0->0, 1->1, 2->1, 3->2
-                targets_mapped = torch.zeros_like(targets_class)
-                targets_mapped[targets_class == 0] = 0  # Background
-                targets_mapped[targets_class == 1] = 1  # NCR/NET -> class 1
-                targets_mapped[targets_class == 2] = 1  # ED -> class 1 (combine with NCR/NET)
-                targets_mapped[targets_class == 3] = 2  # ET -> class 2
-                
-                correct = (predictions == targets_mapped).float()
+                # Calculate accuracy directly (no mapping needed - preprocessing already handled it)
+                correct = (predictions == targets_class).float()
                 current_accuracy = correct.mean().item()
             
             # Update progress bar
@@ -344,13 +329,8 @@ class Trainer:
                 inputs = torch.cat(modalities, dim=1).to(self.device)  # Stack along channel dimension
                 targets = batch_data[self.config.data.seg_key].to(self.device)
                 
-                # Map BraTS labels to 3-class output: 0->0, 1->1, 2->1, 3->2
-                targets_mapped = torch.zeros_like(targets)
-                targets_mapped[targets == 0] = 0  # Background
-                targets_mapped[targets == 1] = 1  # NCR/NET -> class 1
-                targets_mapped[targets == 2] = 1  # ED -> class 1 (combine with NCR/NET)
-                targets_mapped[targets == 3] = 2  # ET -> class 2
-                targets = targets_mapped
+                # Targets are already one-hot encoded by ConvertToMultiChannelBasedOnBratsClassesd
+                # No need for manual mapping - the preprocessing already handles BraTS label conversion
                 
                 # Forward pass
                 if self.config.training.use_amp:
@@ -369,21 +349,11 @@ class Trainer:
                 with torch.no_grad():
                     predictions = torch.argmax(outputs, dim=1)
                     
-                    # Handle one-hot encoded targets
-                    if targets.dim() == 5 and targets.shape[1] > 1:
-                        # Convert one-hot to class indices
-                        targets_class = torch.argmax(targets, dim=1)
-                    else:
-                        targets_class = targets
+                    # Targets are already one-hot encoded, convert to class indices
+                    targets_class = torch.argmax(targets, dim=1)
                     
-                    # Map BraTS labels to 3-class output: 0->0, 1->1, 2->1, 3->2
-                    targets_mapped = torch.zeros_like(targets_class)
-                    targets_mapped[targets_class == 0] = 0  # Background
-                    targets_mapped[targets_class == 1] = 1  # NCR/NET -> class 1
-                    targets_mapped[targets_class == 2] = 1  # ED -> class 1 (combine with NCR/NET)
-                    targets_mapped[targets_class == 3] = 2  # ET -> class 2
-                    
-                    correct = (predictions == targets_mapped).float()
+                    # Calculate accuracy directly (no mapping needed - preprocessing already handled it)
+                    correct = (predictions == targets_class).float()
                     current_accuracy = correct.mean().item()
                 
                 # Update progress bar

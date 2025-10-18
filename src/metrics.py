@@ -28,20 +28,11 @@ class MetricsComputer:
         self.as_discrete = AsDiscrete(argmax=True, to_onehot=num_classes)
     
     def map_brats_labels(self, y_true: torch.Tensor) -> torch.Tensor:
-        """Map BraTS labels to 3-class output: 0->0, 1->1, 2->1, 3->2"""
+        """Convert one-hot encoded targets to class indices (preprocessing already handled BraTS mapping)"""
         # If y_true is one-hot encoded (has channel dimension), convert to class indices
         if y_true.dim() == 5 and y_true.shape[1] > 1:
             # Convert one-hot to class indices
-            y_true = torch.argmax(y_true, dim=1)
-        
-        # If we have original BraTS labels (0,1,2,3), map them
-        if y_true.max() >= 3:
-            y_true_mapped = torch.zeros_like(y_true)
-            y_true_mapped[y_true == 0] = 0  # Background
-            y_true_mapped[y_true == 1] = 1  # NCR/NET -> class 1
-            y_true_mapped[y_true == 2] = 1  # ED -> class 1 (combine with NCR/NET)
-            y_true_mapped[y_true == 3] = 2  # ET -> class 2
-            return y_true_mapped
+            return torch.argmax(y_true, dim=1)
         return y_true
     
     def compute_accuracy(self, y_pred: torch.Tensor, y_true: torch.Tensor) -> float:
