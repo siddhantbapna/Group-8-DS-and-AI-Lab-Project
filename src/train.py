@@ -146,6 +146,10 @@ class Trainer:
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
                 self.optimizer, mode='max', factor=0.5, patience=10
             )
+        elif self.config.training.scheduler.lower() == 'poly':
+            # Polynomial learning rate scheduler: (1 - epoch/num_epochs)^0.9
+            poly_lambda = lambda epoch: (1 - epoch / self.config.training.num_epochs) ** 0.9
+            self.scheduler = optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda=poly_lambda)
         else:
             self.scheduler = None
         
@@ -276,22 +280,54 @@ class Trainer:
             epoch_loss += loss.item()
             metric_tracker.update(outputs, targets)
             
-            # Calculate current accuracy for progress bar
+            # Calculate metrics for progress bar
             with torch.no_grad():
                 predictions = torch.argmax(outputs, dim=1)
                 
                 # Targets are already one-hot encoded, convert to class indices
                 targets_class = torch.argmax(targets, dim=1)
                 
-                # Calculate accuracy directly (no mapping needed - preprocessing already handled it)
+                # Calculate pixel-wise accuracy (dominated by background)
                 correct = (predictions == targets_class).float()
-                current_accuracy = correct.mean().item()
+                pixel_accuracy = correct.mean().item()
+                
+                # Calculate class-balanced accuracy (better for imbalanced data)
+                class_accuracies = []
+                for class_id in range(self.config.model.out_channels):
+                    class_mask = (targets_class == class_id)
+                    if class_mask.sum() > 0:  # Only if class exists in batch
+                        class_correct = (predictions == targets_class) & class_mask
+                        class_acc = class_correct.sum().float() / class_mask.sum().float()
+                        class_accuracies.append(class_acc.item())
+                
+                # Average class accuracy (excluding background if it dominates)
+                if len(class_accuracies) > 1:
+                    balanced_accuracy = np.mean(class_accuracies[1:])  # Exclude background
+                else:
+                    balanced_accuracy = pixel_accuracy
+                
+                # Calculate simple Dice score for tumor classes
+                dice_scores = []
+                for class_id in range(1, self.config.model.out_channels):  # Skip background
+                    pred_mask = (predictions == class_id)
+                    true_mask = (targets_class == class_id)
+                    
+                    intersection = (pred_mask & true_mask).sum().float()
+                    union = pred_mask.sum().float() + true_mask.sum().float()
+                    
+                    if union > 0:
+                        dice = (2.0 * intersection) / union
+                        dice_scores.append(dice.item())
+                
+                mean_dice = np.mean(dice_scores) if dice_scores else 0.0
             
-            # Update progress bar
+            # Update progress bar with better metrics
             progress_bar.set_postfix({
                 'Loss': f'{loss.item():.4f}',
-                'Acc': f'{current_accuracy:.4f}',
-                'Avg Loss': f'{epoch_loss / (batch_idx + 1):.4f}'
+                'PixAcc': f'{pixel_accuracy:.3f}',
+                'BalAcc': f'{balanced_accuracy:.3f}',
+                'Dice': f'{mean_dice:.3f}',
+                'AvgLoss': f'{epoch_loss / (batch_idx + 1):.3f}'
             })
             
             # Log to tensorboard
@@ -345,22 +381,54 @@ class Trainer:
                 epoch_loss += loss.item()
                 metric_tracker.update(outputs, targets)
                 
-                # Calculate current accuracy for progress bar
+                # Calculate metrics for progress bar
                 with torch.no_grad():
                     predictions = torch.argmax(outputs, dim=1)
                     
                     # Targets are already one-hot encoded, convert to class indices
                     targets_class = torch.argmax(targets, dim=1)
                     
-                    # Calculate accuracy directly (no mapping needed - preprocessing already handled it)
+                    # Calculate pixel-wise accuracy (dominated by background)
                     correct = (predictions == targets_class).float()
-                    current_accuracy = correct.mean().item()
+                    pixel_accuracy = correct.mean().item()
+                    
+                    # Calculate class-balanced accuracy (better for imbalanced data)
+                    class_accuracies = []
+                    for class_id in range(self.config.model.out_channels):
+                        class_mask = (targets_class == class_id)
+                        if class_mask.sum() > 0:  # Only if class exists in batch
+                            class_correct = (predictions == targets_class) & class_mask
+                            class_acc = class_correct.sum().float() / class_mask.sum().float()
+                            class_accuracies.append(class_acc.item())
+                    
+                    # Average class accuracy (excluding background if it dominates)
+                    if len(class_accuracies) > 1:
+                        balanced_accuracy = np.mean(class_accuracies[1:])  # Exclude background
+                    else:
+                        balanced_accuracy = pixel_accuracy
+                    
+                    # Calculate simple Dice score for tumor classes
+                    dice_scores = []
+                    for class_id in range(1, self.config.model.out_channels):  # Skip background
+                        pred_mask = (predictions == class_id)
+                        true_mask = (targets_class == class_id)
+                        
+                        intersection = (pred_mask & true_mask).sum().float()
+                        union = pred_mask.sum().float() + true_mask.sum().float()
+                        
+                        if union > 0:
+                            dice = (2.0 * intersection) / union
+                            dice_scores.append(dice.item())
+                    
+                    mean_dice = np.mean(dice_scores) if dice_scores else 0.0
                 
-                # Update progress bar
+                # Update progress bar with better metrics
                 progress_bar.set_postfix({
                     'Loss': f'{loss.item():.4f}',
-                    'Acc': f'{current_accuracy:.4f}',
-                    'Avg Loss': f'{epoch_loss / (batch_idx + 1):.4f}'
+                    'PixAcc': f'{pixel_accuracy:.3f}',
+                    'BalAcc': f'{balanced_accuracy:.3f}',
+                    'Dice': f'{mean_dice:.3f}',
+                    'AvgLoss': f'{epoch_loss / (batch_idx + 1):.3f}'
                 })
         
         # Compute epoch metrics
@@ -424,11 +492,12 @@ class Trainer:
             epoch_time = time.time() - epoch_start_time
             train_acc = train_metrics.get('accuracy', 0.0)
             val_acc = val_metrics.get('accuracy', 0.0)
+            val_dice = val_metrics.get('mean_dice', 0.0)
             self.logger.info(
                 f"Epoch {epoch}/{self.config.training.num_epochs} - "
                 f"Train Loss: {train_metrics['loss']:.4f}, Train Acc: {train_acc:.4f}, "
                 f"Val Loss: {val_metrics['loss']:.4f}, Val Acc: {val_acc:.4f}, "
-                f"Val Dice: {current_metric:.4f}, Time: {epoch_time:.2f}s"
+                f"Val Dice: {val_dice:.4f}, Time: {epoch_time:.2f}s"
             )
             
             # Log to tensorboard
@@ -436,7 +505,11 @@ class Trainer:
             self.writer.add_scalar('Epoch/Val_Loss', val_metrics['loss'], epoch)
             self.writer.add_scalar('Epoch/Train_Accuracy', train_acc, epoch)
             self.writer.add_scalar('Epoch/Val_Accuracy', val_acc, epoch)
-            self.writer.add_scalar('Epoch/Val_Dice', current_metric, epoch)
+            self.writer.add_scalar('Epoch/Val_Dice', val_dice, epoch)
+            
+            # Log additional metrics if available
+            if 'mean_dice' in train_metrics:
+                self.writer.add_scalar('Epoch/Train_Dice', train_metrics['mean_dice'], epoch)
             
             # Store training history
             self.training_history.append({

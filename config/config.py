@@ -29,6 +29,12 @@ class DataConfig:
     n_folds: int = 5
     random_seed: int = 42
     
+    # Brain-only training options
+    brain_only_training: bool = False  # Focus training only on brain tissue
+    brain_mask_method: str = "intensity"  # intensity, otsu, adaptive
+    background_weight: float = 0.1  # Weight for background pixels in loss (0.0 = ignore completely)
+    foreground_sampling: bool = False  # Sample more foreground pixels during training
+    
     def __post_init__(self):
         if self.modality_keys is None:
             self.modality_keys = ["t1n", "t1c", "t2w", "t2f"]
@@ -74,11 +80,11 @@ class TrainingConfig:
     weight_decay: float = 1e-5
     
     # Optimizer
-    optimizer: str = "adamw"  # adam, adamw, sgd
-    scheduler: str = "cosine"  # cosine, step, plateau
+    optimizer: str = "adam"  # adam, adamw, sgd
+    scheduler: str = "poly"  # cosine, step, plateau, poly
     
     # Loss function
-    loss_function: str = "dice"  # dice, ce, dice_ce, focal
+    loss_function: str = "dice"  # dice, ce, dice_ce, dice_bce, focal,weighted_dice_bce
     
     # Mixed precision
     use_amp: bool = True

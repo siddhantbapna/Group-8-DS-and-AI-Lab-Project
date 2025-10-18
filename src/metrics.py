@@ -130,12 +130,77 @@ class LossFunction:
         return focal_loss_fn(y_pred, y_true)
     
     @staticmethod
+    def dice_bce_loss(y_pred: torch.Tensor, y_true: torch.Tensor,
+                      dice_weight: float = 1.0, bce_weight: float = 1.0) -> torch.Tensor:
+        """Combined Dice and Binary Cross-Entropy loss (DiceBCELoss)"""
+        # Dice loss component
+        dice_loss_fn = DiceLoss(
+            include_background=False,
+            reduction="mean"
+        )
+        dice_loss = dice_loss_fn(y_pred, y_true)
+        
+        # Binary Cross-Entropy loss component
+        # Convert targets to binary format for BCE
+        if y_true.dim() == 5 and y_true.shape[1] > 1:  # One-hot encoded
+            # For multi-class, we'll use cross-entropy instead of BCE
+            bce_loss = F.cross_entropy(y_pred, torch.argmax(y_true, dim=1))
+        else:
+            # For binary segmentation
+            bce_loss = F.binary_cross_entropy_with_logits(y_pred, y_true.float())
+        
+        # Combine losses
+        total_loss = dice_weight * dice_loss + bce_weight * bce_loss
+        return total_loss
+    
+    @staticmethod
+    def weighted_dice_bce_loss(y_pred: torch.Tensor, y_true: torch.Tensor,
+                              dice_weight: float = 1.0, bce_weight: float = 1.0,
+                              background_weight: float = 0.1) -> torch.Tensor:
+        """Weighted DiceBCE loss that reduces background influence"""
+        # Dice loss component
+        dice_loss_fn = DiceLoss(
+            include_background=False,
+            reduction="mean"
+        )
+        dice_loss = dice_loss_fn(y_pred, y_true)
+        
+        # Weighted Cross-Entropy loss component
+        if y_true.dim() == 5 and y_true.shape[1] > 1:  # One-hot encoded
+            # Create class weights to reduce background influence
+            class_weights = torch.ones(y_pred.shape[1]).to(y_pred.device)
+            class_weights[0] = background_weight  # Reduce background weight
+            
+            # Calculate class frequencies for additional weighting
+            target_classes = torch.argmax(y_true, dim=1)
+            class_counts = torch.bincount(target_classes.flatten(), minlength=y_pred.shape[1])
+            class_frequencies = class_counts.float() / class_counts.sum()
+            
+            # Inverse frequency weighting
+            inverse_freq_weights = 1.0 / (class_frequencies + 1e-8)
+            inverse_freq_weights = inverse_freq_weights / inverse_freq_weights.sum() * y_pred.shape[1]
+            
+            # Combine class weights and frequency weights
+            final_weights = class_weights * inverse_freq_weights
+            
+            bce_loss = F.cross_entropy(y_pred, target_classes, weight=final_weights)
+        else:
+            # For binary segmentation
+            bce_loss = F.binary_cross_entropy_with_logits(y_pred, y_true.float())
+        
+        # Combine losses
+        total_loss = dice_weight * dice_loss + bce_weight * bce_loss
+        return total_loss
+    
+    @staticmethod
     def loss_fn(loss_name: str, y_pred: torch.Tensor, y_true: torch.Tensor, **kwargs) -> torch.Tensor:
         """Get loss function by name"""
         loss_functions = {
             'dice': LossFunction.dice_loss,
             'ce': LossFunction.cross_entropy_loss,
             'dice_ce': LossFunction.dice_ce_loss,
+            'dice_bce': LossFunction.dice_bce_loss,
+            'weighted_dice_bce': LossFunction.weighted_dice_bce_loss,
             'focal': LossFunction.focal_loss
         }
         

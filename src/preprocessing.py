@@ -36,6 +36,177 @@ def set_deterministic(seed=42):
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
 
+def create_brain_mask(data_dict: Dict[str, Any]) -> torch.Tensor:
+    """
+    Create a brain mask to exclude background from training.
+    Uses T1 modality to identify brain tissue.
+    """
+    # Get T1 modality (usually the most reliable for brain tissue)
+    t1_data = data_dict.get('t1n', None)
+    if t1_data is None:
+        # Fallback to first available modality
+        for key in ['t1c', 't2w', 't2f']:
+            if key in data_dict:
+                t1_data = data_dict[key]
+                break
+    
+    if t1_data is None:
+        raise ValueError("No modality data found for brain mask creation")
+    
+    # Convert to numpy if it's a tensor
+    if isinstance(t1_data, torch.Tensor):
+        t1_np = t1_data.numpy()
+    else:
+        t1_np = t1_data
+    
+    # Create brain mask using intensity thresholding
+    # Brain tissue typically has intensity > 0
+    brain_mask = t1_np > 0
+    
+    # Apply morphological operations to clean up the mask
+    from scipy import ndimage
+    brain_mask = ndimage.binary_fill_holes(brain_mask)
+    brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+    
+    return torch.from_numpy(brain_mask.astype(np.float32))
+
+def apply_brain_mask(data_dict: Dict[str, Any], brain_mask: torch.Tensor) -> Dict[str, Any]:
+    """
+    Apply brain mask to all modalities and segmentation.
+    Sets background pixels to 0.
+    """
+    masked_data = {}
+    
+    for key, value in data_dict.items():
+        if isinstance(value, torch.Tensor):
+            # Apply mask to each channel
+            if value.dim() == 4:  # [C, H, W, D]
+                masked_value = value * brain_mask.unsqueeze(0)
+            elif value.dim() == 3:  # [H, W, D]
+                masked_value = value * brain_mask
+            else:
+                masked_value = value
+            masked_data[key] = masked_value
+        else:
+            masked_data[key] = value
+    
+    return masked_data
+
+class BrainOnlyTransform:
+    """
+    Custom transform to focus training only on brain tissue.
+    Applies brain mask and optionally samples foreground pixels.
+    """
+    
+    def __init__(self, brain_mask_method: str = "intensity", 
+                 background_weight: float = 0.1,
+                 foreground_sampling: bool = False):
+        self.brain_mask_method = brain_mask_method
+        self.background_weight = background_weight
+        self.foreground_sampling = foreground_sampling
+    
+    def __call__(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply brain-only processing to the data"""
+        # Create brain mask
+        brain_mask = self._create_brain_mask(data_dict)
+        
+        # Apply mask to all modalities and segmentation
+        masked_data = apply_brain_mask(data_dict, brain_mask)
+        
+        # Add brain mask to the data for potential use in loss calculation
+        masked_data['brain_mask'] = brain_mask
+        
+        return masked_data
+    
+    def _create_brain_mask(self, data_dict: Dict[str, Any]) -> torch.Tensor:
+        """Create brain mask using specified method"""
+        if self.brain_mask_method == "intensity":
+            return self._intensity_based_mask(data_dict)
+        elif self.brain_mask_method == "otsu":
+            return self._otsu_based_mask(data_dict)
+        elif self.brain_mask_method == "adaptive":
+            return self._adaptive_based_mask(data_dict)
+        else:
+            raise ValueError(f"Unknown brain mask method: {self.brain_mask_method}")
+    
+    def _intensity_based_mask(self, data_dict: Dict[str, Any]) -> torch.Tensor:
+        """Create mask based on intensity thresholding"""
+        t1_data = data_dict.get('t1n', None)
+        if t1_data is None:
+            for key in ['t1c', 't2w', 't2f']:
+                if key in data_dict:
+                    t1_data = data_dict[key]
+                    break
+        
+        if isinstance(t1_data, torch.Tensor):
+            t1_np = t1_data.numpy()
+        else:
+            t1_np = t1_data
+        
+        # Simple intensity thresholding
+        brain_mask = t1_np > 0
+        
+        # Clean up the mask
+        from scipy import ndimage
+        brain_mask = ndimage.binary_fill_holes(brain_mask)
+        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        
+        return torch.from_numpy(brain_mask.astype(np.float32))
+    
+    def _otsu_based_mask(self, data_dict: Dict[str, Any]) -> torch.Tensor:
+        """Create mask using Otsu thresholding"""
+        from skimage.filters import threshold_otsu
+        
+        t1_data = data_dict.get('t1n', None)
+        if t1_data is None:
+            for key in ['t1c', 't2w', 't2f']:
+                if key in data_dict:
+                    t1_data = data_dict[key]
+                    break
+        
+        if isinstance(t1_data, torch.Tensor):
+            t1_np = t1_data.numpy()
+        else:
+            t1_np = t1_data
+        
+        # Apply Otsu thresholding
+        threshold = threshold_otsu(t1_np)
+        brain_mask = t1_np > threshold
+        
+        # Clean up the mask
+        from scipy import ndimage
+        brain_mask = ndimage.binary_fill_holes(brain_mask)
+        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        
+        return torch.from_numpy(brain_mask.astype(np.float32))
+    
+    def _adaptive_based_mask(self, data_dict: Dict[str, Any]) -> torch.Tensor:
+        """Create mask using adaptive thresholding"""
+        from skimage.filters import threshold_local
+        
+        t1_data = data_dict.get('t1n', None)
+        if t1_data is None:
+            for key in ['t1c', 't2w', 't2f']:
+                if key in data_dict:
+                    t1_data = data_dict[key]
+                    break
+        
+        if isinstance(t1_data, torch.Tensor):
+            t1_np = t1_data.numpy()
+        else:
+            t1_np = t1_data
+        
+        # Apply adaptive thresholding
+        threshold = threshold_local(t1_np, block_size=35, offset=0.1)
+        brain_mask = t1_np > threshold
+        
+        # Clean up the mask
+        from scipy import ndimage
+        brain_mask = ndimage.binary_fill_holes(brain_mask)
+        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        
+        return torch.from_numpy(brain_mask.astype(np.float32))
+
 class BraTS2023Preprocessor:
     """Preprocessor for BraTS2023 dataset"""
     
@@ -79,6 +250,16 @@ class BraTS2023Preprocessor:
             # Ensure correct data type
             EnsureTyped(keys=self.all_keys, dtype=torch.float32)
         ]
+        
+        # Add brain-only training transform if enabled
+        if is_training and self.config.brain_only_training:
+            transforms.append(
+                BrainOnlyTransform(
+                    brain_mask_method=self.config.brain_mask_method,
+                    background_weight=self.config.background_weight,
+                    foreground_sampling=self.config.foreground_sampling
+                )
+            )
         
         if is_training:
             # Add augmentation transforms

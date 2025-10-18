@@ -32,7 +32,7 @@ def parse_arguments():
     parser.add_argument('--learning_rate', type=float, default=1e-4,
                        help='Learning rate')
     parser.add_argument('--loss_function', type=str, default='dice',
-                       choices=['dice', 'dice_ce', 'dice_focal', 'focal', 'tversky', 'boundary'],
+                       choices=['dice', 'dice_ce', 'dice_focal', 'focal', 'tversky', 'boundary', 'dice_bce', 'weighted_dice_bce'],
                        help='Loss function to use')
     
     # Data parameters

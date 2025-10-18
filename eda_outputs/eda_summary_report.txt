@@ -1,0 +1,25 @@
+# BraTS2023 Dataset EDA Summary Report
+==================================================
+
+## Dataset Information
+- Total patients: 1251
+- File types: {'seg': 5, 't1c': 5, 't1n': 5, 't2f': 5, 't2w': 5}
+- Missing files: 0
+
+## Image Properties
+- Mean shape: [240 240 155]
+- Shape range: [240 240 155] - [240 240 155]
+
+## Intensity Statistics
+- T1N: Mean=810.96, Std=209.74
+- T1C: Mean=2034.19, Std=839.41
+- T2W: Mean=606.86, Std=336.47
+- T2F: Mean=1108.79, Std=474.80
+
+## Tumor Statistics
+- Tumor presence rate: 100.00%
+- Class distribution:
+  - Background: 44,030,168 pixels
+  - NCR/NET: 89,893 pixels
+  - ED: 389,003 pixels
+  - ET: 130,936 pixels
