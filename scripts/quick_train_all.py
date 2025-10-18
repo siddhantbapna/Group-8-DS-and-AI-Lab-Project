@@ -10,9 +10,13 @@ import time
 from datetime import datetime
 
 # Add src to path
-sys.path.append('src')
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+src_path = os.path.join(project_root, 'src')
+sys.path.insert(0, src_path)
 
-from src.models import get_available_models
+from models import get_available_models
 
 def run_training_command(model_name: str, epochs: int = 10, use_cv: bool = False):
     """Run training command for a specific model"""
@@ -37,7 +41,7 @@ def main():
     """Train all models quickly"""
     models = get_available_models()
     
-    print(f"🚀 Quick Training All Models")
+    print(f"Quick Training All Models")
     print(f"Models: {models}")
     print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*60)
@@ -46,24 +50,24 @@ def main():
     start_time = time.time()
     
     for i, model in enumerate(models, 1):
-        print(f"\n📊 Training {i}/{len(models)}: {model}")
+        print(f"\nTraining {i}/{len(models)}: {model}")
         print("-" * 40)
         
         # Run training
         result = run_training_command(model, epochs=5, use_cv=False)  # Quick test
         
         if result.returncode == 0:
-            print(f"✅ {model} completed successfully")
+            print(f"SUCCESS: {model} completed successfully")
             results[model] = "SUCCESS"
         else:
-            print(f"❌ {model} failed")
+            print(f"FAILED: {model} failed")
             print(f"Error: {result.stderr}")
             results[model] = "FAILED"
     
     # Summary
     total_time = time.time() - start_time
     print(f"\n{'='*60}")
-    print(f"🎉 ALL MODELS TRAINING COMPLETED!")
+    print(f"ALL MODELS TRAINING COMPLETED!")
     print(f"Total time: {total_time/60:.2f} minutes")
     print(f"Results: {results}")
     
