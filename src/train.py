@@ -483,10 +483,16 @@ class Trainer:
             
             # Save checkpoint
             if epoch % self.config.system.save_interval == 0 or is_best:
-                checkpoint_path = self.checkpoint_manager.save_checkpoint(
-                    epoch, self.model, self.optimizer, self.scheduler,
-                    val_metrics, val_metrics['loss'], is_best
-                )
+                try:
+                    checkpoint_path = self.checkpoint_manager.save_checkpoint(
+                        epoch, self.model, self.optimizer, self.scheduler,
+                        val_metrics, val_metrics['loss'], is_best
+                    )
+                    self.logger.info(f"Checkpoint saved: {checkpoint_path}")
+                except Exception as e:
+                    self.logger.error(f"Failed to save checkpoint: {e}")
+                    import traceback
+                    self.logger.error(traceback.format_exc())
             
             # Log metrics
             epoch_time = time.time() - epoch_start_time
