@@ -315,15 +315,15 @@ Output: 3 channels (segmentation classes)
 
 ## Memory Usage Analysis
 
-### GPU Memory Requirements (RTX 4070 - 12GB):
+### GPU Memory Requirements (RTX 4070 - 8GB):
 | Model | Batch Size | Memory Usage | Utilization |
 |-------|------------|--------------|-------------|
-| **UNet** | 4 | ~2GB | 17% |
-| **3D UNet** | 2 | ~6GB | 50% |
-| **ResUNet** | 2 | ~8GB | 67% |
-| **Attention UNet** | 1 | ~12GB | 100% |
-| **nnUNet** | 1 | ~16GB | 133% (OOM) |
-| **VNet** | 1 | ~10GB | 83% |
+| **UNet** | 4 | ~2GB | 25% |
+| **3D UNet** | 1 | ~6GB | 75% |
+| **ResUNet** | 1 | ~8GB | 100% |
+| **Attention UNet** | 1 | ~12GB | 150% (OOM) |
+| **nnUNet** | 1 | ~16GB | 200% (OOM) |
+| **VNet** | 1 | ~10GB | 125% (OOM) |
 
 ### Optimization Strategies:
 1. **Gradient Accumulation:** For models that don't fit in memory
@@ -345,31 +345,31 @@ Output: 3 channels (segmentation classes)
 
 ## Recommendations for BraTS2023
 
-### Based on Your Hardware (RTX 4070, 32GB RAM, Ryzen 9):
+### Based on Your Hardware (RTX 4070 8GB, 32GB RAM, Ryzen 9):
 
 #### **🥇 Recommended Models (in order):**
 
-1. **3D UNet** - Best balance of accuracy and efficiency
-2. **ResUNet** - Good accuracy with stable training
-3. **VNet** - Excellent for volumetric data
-4. **UNet** - Quick baseline and comparison
+1. **UNet** - Best fit for 8GB VRAM, quick training
+2. **3D UNet** - Good balance, requires batch size 1
+3. **ResUNet** - Maximum utilization of 8GB VRAM
 
-#### **🥈 Advanced Models (if resources allow):**
+#### **🥈 Advanced Models (require optimization):**
 
-5. **Attention UNet** - High accuracy, requires optimization
-6. **nnUNet** - State-of-the-art, needs gradient accumulation
+4. **Attention UNet** - Needs gradient accumulation or model optimization
+5. **VNet** - Needs gradient accumulation
+6. **nnUNet** - Needs significant optimization (gradient accumulation + mixed precision)
 
 ### **Configuration Recommendations:**
 
 ```python
-# For RTX 4070 (12GB VRAM)
+# For RTX 4070 (8GB VRAM)
 model_configs = {
     'unet': {'batch_size': 4, 'epochs': 100},
-    'unet3d': {'batch_size': 2, 'epochs': 100},
-    'resunet': {'batch_size': 2, 'epochs': 100},
-    'attentionunet': {'batch_size': 1, 'epochs': 90},
-    'nnunet': {'batch_size': 1, 'epochs': 80, 'gradient_accumulation': 2},
-    'vnet': {'batch_size': 1, 'epochs': 90}
+    'unet3d': {'batch_size': 1, 'epochs': 100},
+    'resunet': {'batch_size': 1, 'epochs': 100},
+    'attentionunet': {'batch_size': 1, 'epochs': 90, 'gradient_accumulation': 2},
+    'nnunet': {'batch_size': 1, 'epochs': 80, 'gradient_accumulation': 4},
+    'vnet': {'batch_size': 1, 'epochs': 90, 'gradient_accumulation': 2}
 }
 ```
 

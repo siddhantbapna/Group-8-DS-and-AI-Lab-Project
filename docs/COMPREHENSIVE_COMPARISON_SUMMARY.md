@@ -5,14 +5,14 @@ This document provides a comprehensive summary of all comparisons made in our Br
 
 ## Quick Decision Guide
 
-### **For Your RTX 4070 Setup (12GB VRAM, 32GB RAM, Ryzen 9):**
+### **For Your RTX 4070 Setup (8GB VRAM, 32GB RAM, Ryzen 9):**
 
 | Priority | Model | Loss Function | Pipeline | Expected Performance |
 |----------|-------|---------------|----------|---------------------|
-| **🥇 Best Balance** | 3D UNet | Weighted Dice+BCE | Brain-Only (Otsu) | High accuracy, efficient |
-| **🥈 Maximum Accuracy** | Attention UNet | Weighted Dice+BCE | Brain-Only (Otsu) | Highest accuracy, slower |
-| **🥉 Fastest Training** | UNet | Dice Loss | Standard | Quick results, 2D only |
-| **🏆 State-of-the-Art** | nnUNet | Weighted Dice+BCE | Brain-Only (Otsu) | Best results, needs optimization |
+| **🥇 Best Balance** | UNet | Weighted Dice+BCE | Brain-Only (Otsu) | Good accuracy, very efficient |
+| **🥈 3D Processing** | 3D UNet | Weighted Dice+BCE | Brain-Only (Otsu) | Better accuracy, batch size 1 |
+| **🥉 Maximum VRAM** | ResUNet | Weighted Dice+BCE | Brain-Only (Otsu) | Stable training, full 8GB usage |
+| **🏆 Advanced (Optimized)** | Attention UNet | Weighted Dice+BCE | Brain-Only (Otsu) | Highest accuracy, needs optimization |
 
 ---
 
@@ -54,6 +54,38 @@ This document provides a comprehensive summary of all comparisons made in our Br
 ```python
 config = Config(
     model=ModelConfig(
+        model_name="unet",
+        features=[32, 64, 128, 256]
+    ),
+    data=DataConfig(
+        brain_only_training=True,
+        brain_mask_method="otsu",
+        background_weight=0.05,
+        foreground_sampling=True,
+        n_folds=5
+    ),
+    training=TrainingConfig(
+        batch_size=4,
+        num_epochs=100,
+        learning_rate=1e-4,
+        loss_function="weighted_dice_bce",
+        optimizer="adamw",
+        scheduler="poly",
+        use_amp=True
+    )
+)
+```
+
+**Expected Results:**
+- **Training Time:** ~3-4 hours
+- **Memory Usage:** ~2GB VRAM
+- **Expected Dice Score:** 0.75-0.80
+- **Best For:** Production deployment, very efficient
+
+### **🥈 High-Accuracy Configuration**
+```python
+config = Config(
+    model=ModelConfig(
         model_name="unet3d",
         features=[32, 64, 128, 256]
     ),
@@ -65,7 +97,7 @@ config = Config(
         n_folds=5
     ),
     training=TrainingConfig(
-        batch_size=2,
+        batch_size=1,
         num_epochs=100,
         learning_rate=1e-4,
         loss_function="weighted_dice_bce",
@@ -80,39 +112,7 @@ config = Config(
 - **Training Time:** ~8-10 hours
 - **Memory Usage:** ~6GB VRAM
 - **Expected Dice Score:** 0.85-0.90
-- **Best For:** Production deployment, balanced performance
-
-### **🥈 High-Accuracy Configuration**
-```python
-config = Config(
-    model=ModelConfig(
-        model_name="attentionunet",
-        features=[32, 64, 128, 256]
-    ),
-    data=DataConfig(
-        brain_only_training=True,
-        brain_mask_method="otsu",
-        background_weight=0.05,
-        foreground_sampling=True,
-        n_folds=5
-    ),
-    training=TrainingConfig(
-        batch_size=1,
-        num_epochs=90,
-        learning_rate=5e-5,
-        loss_function="weighted_dice_bce",
-        optimizer="adamw",
-        scheduler="poly",
-        use_amp=True
-    )
-)
-```
-
-**Expected Results:**
-- **Training Time:** ~15-20 hours
-- **Memory Usage:** ~12GB VRAM
-- **Expected Dice Score:** 0.88-0.92
-- **Best For:** Research, maximum accuracy
+- **Best For:** 3D processing, good accuracy
 
 ### **🥉 Quick Testing Configuration**
 ```python
@@ -157,15 +157,15 @@ config = Config(
 | **nnUNet** | 20 min | 33.3 hours | 166.5 hours |
 | **VNet** | 15 min | 25 hours | 125 hours |
 
-### **Memory Usage (RTX 4070 - 12GB)**
+### **Memory Usage (RTX 4070 - 8GB)**
 | Model | Batch Size | Memory Usage | Utilization |
 |-------|------------|--------------|-------------|
-| **UNet** | 4 | ~2GB | 17% |
-| **3D UNet** | 2 | ~6GB | 50% |
-| **ResUNet** | 2 | ~8GB | 67% |
-| **Attention UNet** | 1 | ~12GB | 100% |
-| **nnUNet** | 1 | ~16GB | 133% (OOM) |
-| **VNet** | 1 | ~10GB | 83% |
+| **UNet** | 4 | ~2GB | 25% |
+| **3D UNet** | 1 | ~6GB | 75% |
+| **ResUNet** | 1 | ~8GB | 100% |
+| **Attention UNet** | 1 | ~12GB | 150% (OOM) |
+| **nnUNet** | 1 | ~16GB | 200% (OOM) |
+| **VNet** | 1 | ~10GB | 125% (OOM) |
 
 ### **Expected Dice Scores**
 | Model | Expected Dice | Confidence | Notes |

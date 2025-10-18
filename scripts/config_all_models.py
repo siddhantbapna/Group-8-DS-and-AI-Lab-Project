@@ -27,38 +27,38 @@ def get_optimized_config_for_model(model_name: str) -> Config:
     base_config.training.max_grad_norm = 1.0
     base_config.training.patience = 15
     
-    # Model-specific optimizations
+    # Model-specific optimizations for RTX 4070 8GB VRAM
     if model_name == "unet":
         base_config.training.batch_size = 4  # 2D model, can use larger batch
         base_config.training.num_epochs = 100
         base_config.model.features = [32, 64, 128, 256]
         
     elif model_name == "unet3d":
-        base_config.training.batch_size = 2  # Standard 3D model
+        base_config.training.batch_size = 1  # 3D model, limited by 8GB VRAM
         base_config.training.num_epochs = 100
         base_config.model.features = [32, 64, 128, 256]
         
     elif model_name == "resunet":
-        base_config.training.batch_size = 2  # ResUNet with residual connections
+        base_config.training.batch_size = 1  # ResUNet, limited by 8GB VRAM
         base_config.training.num_epochs = 100
         base_config.model.features = [32, 64, 128, 256]
         base_config.model.num_res_units = 2
         
     elif model_name == "attentionunet":
-        base_config.training.batch_size = 1  # Large model with attention
+        base_config.training.batch_size = 1  # Large model, may need gradient accumulation
         base_config.training.num_epochs = 90  # Fewer epochs for large model
         base_config.model.features = [32, 64, 128, 256]
         base_config.training.learning_rate = 5e-5  # Lower LR for stability
         
     elif model_name == "nnunet":
-        base_config.training.batch_size = 1  # Very large model
+        base_config.training.batch_size = 1  # Very large model, needs gradient accumulation
         base_config.training.num_epochs = 80  # Fewer epochs
         base_config.model.features = [32, 64, 128, 256, 512]
         base_config.training.learning_rate = 5e-5  # Lower LR
         base_config.training.patience = 20  # More patience for complex model
         
     elif model_name == "vnet":
-        base_config.training.batch_size = 1  # Large volumetric model
+        base_config.training.batch_size = 1  # Large volumetric model, may need gradient accumulation
         base_config.training.num_epochs = 90
         base_config.model.features = [32, 64, 128, 256]
         base_config.training.learning_rate = 5e-5  # Lower LR for stability
