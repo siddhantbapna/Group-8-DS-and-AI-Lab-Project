@@ -1,0 +1,100 @@
+K-FOLD CROSS-VALIDATION VISUAL DIAGRAM
+=====================================
+
+Your Dataset: 1,251 BraTS2023 Patients
+┌─────────────────────────────────────────────────────────────┐
+│                    Total Dataset                            │
+│  Patient_001  Patient_002  Patient_003  ...  Patient_1251  │
+└─────────────────────────────────────────────────────────────┘
+
+Split into 5 Folds (K=5):
+┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+│   Fold 0    │   Fold 1    │   Fold 2    │   Fold 3    │   Fold 4    │
+│ 250 patients│ 250 patients│ 250 patients│ 250 patients│ 251 patients│
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
+
+Training Process (5 Iterations):
+
+Iteration 1:
+┌─────────────────────────────────────────────────────────────┐
+│                    TRAINING SET                            │
+│  Fold 1 + Fold 2 + Fold 3 + Fold 4 = 1,001 patients       │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────┐
+│ VALIDATION  │
+│   Fold 0    │
+│ 250 patients│
+└─────────────┘
+
+Iteration 2:
+┌─────────────────────────────────────────────────────────────┐
+│                    TRAINING SET                            │
+│  Fold 0 + Fold 2 + Fold 3 + Fold 4 = 1,001 patients       │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────┐
+│ VALIDATION  │
+│   Fold 1    │
+│ 250 patients│
+└─────────────┘
+
+Iteration 3:
+┌─────────────────────────────────────────────────────────────┐
+│                    TRAINING SET                            │
+│  Fold 0 + Fold 1 + Fold 3 + Fold 4 = 1,001 patients       │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────┐
+│ VALIDATION  │
+│   Fold 2    │
+│ 250 patients│
+└─────────────┘
+
+Iteration 4:
+┌─────────────────────────────────────────────────────────────┐
+│                    TRAINING SET                            │
+│  Fold 0 + Fold 1 + Fold 2 + Fold 4 = 1,001 patients       │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────┐
+│ VALIDATION  │
+│   Fold 3    │
+│ 250 patients│
+└─────────────┘
+
+Iteration 5:
+┌─────────────────────────────────────────────────────────────┐
+│                    TRAINING SET                            │
+│  Fold 0 + Fold 1 + Fold 2 + Fold 3 = 1,000 patients       │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────┐
+│ VALIDATION  │
+│   Fold 4    │
+│ 251 patients│
+└─────────────┘
+
+Results:
+┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+│ Fold 0 Dice │ Fold 1 Dice │ Fold 2 Dice │ Fold 3 Dice │ Fold 4 Dice │
+│    0.85     │    0.82     │    0.88     │    0.84     │    0.86     │
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
+
+Final Performance:
+Mean Dice Score: 0.85 ± 0.02
+Best Fold: 2 (Dice: 0.88)
+Worst Fold: 1 (Dice: 0.82)
+
+Checkpoint Structure:
+checkpoints/
+├── unet3d_fold_0/
+│   ├── best_model_epoch_15.pth
+│   └── checkpoint_epoch_5.pth
+├── unet3d_fold_1/
+│   ├── best_model_epoch_23.pth
+│   └── checkpoint_epoch_5.pth
+├── unet3d_fold_2/
+│   ├── best_model_epoch_18.pth
+│   └── checkpoint_epoch_5.pth
+├── unet3d_fold_3/
+│   ├── best_model_epoch_21.pth
+│   └── checkpoint_epoch_5.pth
+└── unet3d_fold_4/
+    ├── best_model_epoch_19.pth
+    └── checkpoint_epoch_5.pth
