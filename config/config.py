@@ -30,10 +30,10 @@ class DataConfig:
     random_seed: int = 42
     
     # Brain-only training options
-    brain_only_training: bool = False  # Focus training only on brain tissue
-    brain_mask_method: str = "intensity"  # intensity, otsu, adaptive
+    brain_only_training: bool = True  # Focus training only on brain tissue
+    brain_mask_method: str = "otsu"  # intensity, otsu, adaptive
     background_weight: float = 0.1  # Weight for background pixels in loss (0.0 = ignore completely)
-    foreground_sampling: bool = False  # Sample more foreground pixels during training
+    foreground_sampling: bool = True  # Sample more foreground pixels during training
     
     def __post_init__(self):
         if self.modality_keys is None:
