@@ -268,9 +268,9 @@ If you use this project in your research, please cite:
 ```bibtex
 @software{brain_mri_segmentation,
   title={Brain MRI Segmentation with Deep Learning},
-  author={Your Name},
-  year={2024},
-  url={https://github.com/yourusername/brain-mri-segmentation}
+  author=Ravineel Singhi,
+  year=2025,
+
 }
 ```
 
