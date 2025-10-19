@@ -6,17 +6,13 @@ This document outlines the architecture chosen for the task of 3D semantic segme
 1. **3D Attention U-Net**
 2. **3D Attention U-Net with K-Fold**
 
-
-
-<br>
 <br>
 
-
-## 1\. 3D Attention U-Net
+## **1. 3D Attention U-Net**
 
 The Attention U-Net is an extension of the highly successful U-Net architecture. It integrates an "attention mechanism" to improve performance by focusing on the most relevant features for the segmentation task. Given the volumetric nature of MRI data, a 3D version of this network is employed.
 
-The architecture can be broken down into three main components:
+### **1.1 Conceptual Architecture**
 
 #### a) Encoder (Contracting Path)
 
@@ -38,8 +34,45 @@ The **bottleneck** is the lowest-resolution layer that connects the encoder and 
 
 The **final layer** of the decoder is a 1x1x1 convolution that maps the feature channels from the last decoder block to the desired number of output channels. For this task, it produces 3 output channels, each corresponding to a segmentation mask for a specific tumor sub-region (e.g., Whole Tumor, Tumor Core, and Enhancing Tumor).
 
+### **1.2 Layer-wise Model Architecture**
 
-### Justification for Architectural Choice
+The model is a **3D Attention U-Net**, a CNN-based encoder–decoder architecture designed for volumetric segmentation.
+
+* **Input:** 3D volume of size **4 × 128 × 128 × 128**
+* **Encoder:** Four stages of **Conv3D (3×3×3)** layers with **ReLU** activations and **MaxPool (2×2×2)** downsampling. Feature maps increase from **16 → 32 → 64 → 128** channels while spatial dimensions reduce from **128³ → 64³ → 32³ → 16³ → 8³**.
+* **Bottleneck:** Two **Conv3D (3×3×3)** layers with **ReLU**, producing a **256 × 8 × 8 × 8** feature map.
+* **Attention Modules:** Applied to skip connections to highlight salient encoder features before merging with decoder inputs.
+* **Decoder:** Four stages of **UpConv (2×2×2)** followed by concatenation (with attention-refined skips) and **Conv3D (3×3×3)** + **ReLU** layers. Channels decrease symmetrically from **256 → 128 → 64 → 32 → 16**.
+* **Output Layer:** **Conv3D (1×1×1)** with **Softmax** activation, generating a **3-class segmentation map (3 × 128 × 128 × 128)**.
+
+### **1.3 Visualization of Architecture**
+
+![3D Attention U-Net Architecture](./model_architecture_img.jpeg)
+*Figure: 3D Attention U-Net showing encoder, decoder, skip connections, and attention gates.*
+
+### **1.4 Multi-Modal Input Handling**
+
+The dataset is **multi-modal**, consisting of **four MRI modalities** (T1, T1c, T2, FLAIR). Each modality provides complementary anatomical and pathological information.
+
+* Modalities are **stacked along the channel dimension** → single 4-channel input tensor: **(4 × 128 × 128 × 128)**
+* Unlike multi-branch architectures, the **shared encoder** learns cross-modal representations directly, allowing the network to exploit correlations between modalities for improved segmentation.
+
+### **1.5 Loss Function and Evaluation Metrics**
+
+**Loss Function:**
+
+* **Dice Loss** is used to handle class imbalance in medical imaging:
+
+\( \text{Dice Loss} = 1 - \dfrac{2 |P \cap G|}{|P| + |G|} \)
+
+where \( P \) is the predicted mask and \( G \) is the ground truth.  
+Minimizing this loss encourages maximal spatial overlap between prediction and truth.
+
+**Evaluation Metric:**
+
+* **Dice Coefficient (0–1)** measures the overlap between the predicted and ground truth masks, providing an intuitive measure of segmentation accuracy.
+
+### **1.6 Justification for Architectural Choice**
 
 The choice of a 3D Attention U-Net is well-justified for the task of brain tumor segmentation from multi-modal MRI for several reasons:
 
@@ -50,7 +83,7 @@ The choice of a 3D Attention U-Net is well-justified for the task of brain tumor
 3. **Targeted Feature Selection with Attention:** Brain tumors can be small, irregularly shaped, and vary greatly in location and appearance. Standard U-Nets can sometimes produce false positives by over-emphasizing irrelevant features in healthy tissue. The integrated Attention Gates mitigate this by forcing the model to learn to focus only on the most relevant features passed through the skip connections, leading to cleaner segmentations and better performance on small or ambiguous targets like the enhancing tumor region.
 
 
-### Advantages and Disadvantages
+### **1.7 Advantages and Disadvantages**
 
 #### Advantages:
 
@@ -103,9 +136,7 @@ model = AttentionUnet(
 
 ### **Methodology Analysis: K-Fold Cross-Validation for Model Training**
 
-
-
-## 2\. 3D Attention U-Net with K-Fold
+## **2. 3D Attention U-Net with K-Fold**
 
 While the underlying model architecture, the **3D Attention U-Net**, remains the same as previously analyzed, this section details the methodology used to train and evaluate it robustly.
 
@@ -162,5 +193,3 @@ Employing a K-Fold strategy is a standard best practice in medical imaging and i
 #### Example
 ![Alt text](./sb/kfoldsb/SBKfold_Volume_1.png)
 ![Alt text](./sb/kfoldsb/SBKfold_graph_1.png)
-
-
