@@ -149,7 +149,15 @@ class BrainOnlyTransform:
         # Clean up the mask
         from scipy import ndimage
         brain_mask = ndimage.binary_fill_holes(brain_mask)
-        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        # Create structure with same dimensionality as the data
+        if brain_mask.ndim == 3:
+            structure = np.ones((3,3,3))
+        elif brain_mask.ndim == 2:
+            structure = np.ones((3,3))
+        else:
+            structure = np.ones((3,))
+        
+        brain_mask = ndimage.binary_opening(brain_mask, structure=structure)
         
         return torch.from_numpy(brain_mask.astype(np.float32))
     
@@ -176,7 +184,15 @@ class BrainOnlyTransform:
         # Clean up the mask
         from scipy import ndimage
         brain_mask = ndimage.binary_fill_holes(brain_mask)
-        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        # Create structure with same dimensionality as the data
+        if brain_mask.ndim == 3:
+            structure = np.ones((3,3,3))
+        elif brain_mask.ndim == 2:
+            structure = np.ones((3,3))
+        else:
+            structure = np.ones((3,))
+        
+        brain_mask = ndimage.binary_opening(brain_mask, structure=structure)
         
         return torch.from_numpy(brain_mask.astype(np.float32))
     
@@ -203,7 +219,15 @@ class BrainOnlyTransform:
         # Clean up the mask
         from scipy import ndimage
         brain_mask = ndimage.binary_fill_holes(brain_mask)
-        brain_mask = ndimage.binary_opening(brain_mask, structure=np.ones((3,3,3)))
+        # Create structure with same dimensionality as the data
+        if brain_mask.ndim == 3:
+            structure = np.ones((3,3,3))
+        elif brain_mask.ndim == 2:
+            structure = np.ones((3,3))
+        else:
+            structure = np.ones((3,))
+        
+        brain_mask = ndimage.binary_opening(brain_mask, structure=structure)
         
         return torch.from_numpy(brain_mask.astype(np.float32))
 
@@ -304,7 +328,7 @@ class BraTS2023Preprocessor:
         """Get validation transforms (no augmentation)"""
         return self.get_train_transforms(is_training=False)
     
-    def create_data_dicts(self, data_path: str) -> List[Dict[str, str]]:
+    def create_data_dicts(self, data_path: str, require_segmentation: bool = True) -> List[Dict[str, str]]:
         """Create data dictionaries for MONAI dataset"""
         data_dicts = []
         
@@ -331,7 +355,7 @@ class BraTS2023Preprocessor:
                     found_all_modalities = False
                     break
             
-            # Find segmentation file
+            # Find segmentation file (optional for validation data)
             seg_file_underscore = os.path.join(patient_path, f"{patient_id}_seg.nii.gz")
             seg_file_hyphen = os.path.join(patient_path, f"{patient_id}-seg.nii.gz")
             
@@ -339,7 +363,7 @@ class BraTS2023Preprocessor:
                 data_dict[self.seg_key] = seg_file_underscore
             elif os.path.exists(seg_file_hyphen):
                 data_dict[self.seg_key] = seg_file_hyphen
-            else:
+            elif require_segmentation:
                 found_all_modalities = False
             
             if found_all_modalities:

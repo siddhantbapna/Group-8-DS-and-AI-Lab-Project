@@ -18,3 +18,4 @@ checkpoints/
 tensorboard/
 venv/
 pika
+processed_data/

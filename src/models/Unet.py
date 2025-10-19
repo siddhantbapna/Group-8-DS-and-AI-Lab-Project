@@ -44,7 +44,9 @@ class Up(nn.Module):
         super().__init__()
         if bilinear:
             self.up = nn.Upsample(scale_factor=2, mode='trilinear', align_corners=True)
-            self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
+            # We need to account for the skip connection channels
+            # The actual input channels will be determined at runtime
+            self.conv = None  # Will be created in forward pass
         else:
             self.up = nn.ConvTranspose3d(in_channels, in_channels // 2, kernel_size=2, stride=2)
             self.conv = DoubleConv(in_channels, out_channels)
@@ -62,6 +64,13 @@ class Up(nn.Module):
                         diff_x // 2, diff_x - diff_x // 2])
         
         x = torch.cat([x2, x1], dim=1)
+        
+        # Create conv layer dynamically if using bilinear upsampling
+        if self.conv is None:
+            total_channels = x.size(1)
+            out_channels = x1.size(1)  # Output channels should match x1 channels
+            self.conv = DoubleConv(total_channels, out_channels).to(x.device)
+        
         return self.conv(x)
 
 class OutConv(nn.Module):
@@ -91,11 +100,11 @@ class UNet3D(nn.Module):
         factor = 2 if bilinear else 1
         self.down4 = Down(features[3], features[3] // factor)
         
-        self.up1 = Up(features[3], features[2] // factor, bilinear)
+        self.up1 = Up(features[3] // factor, features[2] // factor, bilinear)
         self.up2 = Up(features[2], features[1] // factor, bilinear)
         self.up3 = Up(features[1], features[0] // factor, bilinear)
-        self.up4 = Up(features[0], features[0], bilinear)
-        self.outc = OutConv(features[0], out_channels)
+        self.up4 = Up(features[0], features[0] // factor, bilinear)
+        self.outc = OutConv(features[0] // factor, out_channels)
 
     def forward(self, x):
         x1 = self.inc(x)
@@ -222,10 +231,13 @@ class OutConv2D(nn.Module):
 
 def create_unet(model_name: str = "unet3d", **kwargs) -> nn.Module:
     """Create UNet model"""
+    # Remove unsupported parameters
+    kwargs_clean = {k: v for k, v in kwargs.items() if k in ['in_channels', 'out_channels', 'features', 'bilinear']}
+    
     if model_name.lower() == "unet3d":
-        return UNet3D(**kwargs)
+        return UNet3D(**kwargs_clean)
     elif model_name.lower() == "unet":
-        return UNet(**kwargs)
+        return UNet(**kwargs_clean)
     else:
         raise ValueError(f"Unknown UNet variant: {model_name}")
 
