@@ -6,10 +6,7 @@ This document outlines the architecture chosen for the task of 3D semantic segme
 1. **3D Attention U-Net**
 2. **3D Attention U-Net with K-Fold**
 
-
 <br>
-<br>
-
 
 ## **1. 3D Attention U-Net**
 
@@ -48,7 +45,7 @@ The model is a **3D Attention U-Net**, a CNN-based encoder–decoder architectur
 * **Decoder:** Four stages of **UpConv (2×2×2)** followed by concatenation (with attention-refined skips) and **Conv3D (3×3×3)** + **ReLU** layers. Channels decrease symmetrically from **256 → 128 → 64 → 32 → 16**.
 * **Output Layer:** **Conv3D (1×1×1)** with **Softmax** activation, generating a **3-class segmentation map (3 × 128 × 128 × 128)**.
 
-### **1.3 Visualization of Architecture (New Section)**
+### **1.3 Visualization of Architecture**
 
 ![3D Attention U-Net Architecture](./model_architecture_img.jpeg)
 *Figure: 3D Attention U-Net showing encoder, decoder, skip connections, and attention gates.*
@@ -66,15 +63,14 @@ The dataset is **multi-modal**, consisting of **four MRI modalities** (T1, T1c, 
 
 * **Dice Loss** is used to handle class imbalance in medical imaging:
 
-[
-\text{Dice Loss} = 1 - \frac{2 |P \cap G|}{|P| + |G|}
-]
+\( \text{Dice Loss} = 1 - \dfrac{2 |P \cap G|}{|P| + |G|} \)
 
-where (P) = predicted mask, (G) = ground truth. Minimizing this encourages maximal spatial overlap.
+where \( P \) is the predicted mask and \( G \) is the ground truth.  
+Minimizing this loss encourages maximal spatial overlap between prediction and truth.
 
 **Evaluation Metric:**
 
-* **Dice Coefficient (0–1)** measures overlap between predicted and ground truth masks, providing an intuitive performance measure.
+* **Dice Coefficient (0–1)** measures the overlap between the predicted and ground truth masks, providing an intuitive measure of segmentation accuracy.
 
 ### **1.6 Justification for Architectural Choice**
 
@@ -197,5 +193,3 @@ Employing a K-Fold strategy is a standard best practice in medical imaging and i
 #### Example
 ![Alt text](./sb/kfoldsb/SBKfold_Volume_1.png)
 ![Alt text](./sb/kfoldsb/SBKfold_graph_1.png)
-
-
