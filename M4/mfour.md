@@ -6,7 +6,7 @@ Milestone 4 centers on the initial training phase of brain tumor segmentation mo
 
 ### Dataset Details
 
-The foundation for model training in this phase is the BraTS 2023 dataset, which provides multi-modal MRI scans, specifically T1, T2, FLAIR, and T1ce modalities, tailored for brain tumor segmentation tasks. Following official guidelines, the data is divided into training, validation, and test sets. Preprocessing involved several steps: skull stripping, intensity normalization, resampling, and cropping to a fixed resolution, ensuring the dataset is suitable for model input.
+The foundation for model training in this phase is the BraTS 2023 dataset, which provides multi-modal MRI scans, specifically T1, T2, FLAIR, and T1ce modalities, tailored for brain tumor segmentation tasks. Following official guidelines, the data is divided into training, validation, and test sets. Preprocessing involved several steps: ConvertToMultiChannelBasedOnBratsClassesd, intensity normalization, resampling, and cropping to a fixed resolution, ensuring the dataset is suitable for model input.
 
 ### Model Architecture
 
@@ -19,6 +19,8 @@ The model chosen for this milestone is an Attention U-Net built with the MONAI f
 - **strides=(2, 2, 2, 2)**: Stride values for downsampling convolutions.
 - **Input Shape**: (Batch Size, 4, 128, 128, 128)
 - **Output Shape**: (Batch Size, 3, 128, 128, 128)
+
+![3D Attention U-Net Architecture](../M3/sb/model.png)
 
 ### Training Setup
 
@@ -35,7 +37,7 @@ The AdamW optimizer, a variant of Adam with improved weight decay, was employed.
 - **Batch Size**: 2
 - **Number of Epochs**: 20, with additional sets of 30 and 40 epochs to further refine the model
 - **Early Stopping**: Implemented with a patience of 7 epochs; training is halted if the validation Dice score fails to improve for 7 consecutive epochs.
-- **Hardware**: Training performed on a GPU.
+- **Hardware**: Training performed on a GPU P100.
 
 ### Model Summary
 
@@ -45,7 +47,6 @@ Automatic mixed-precision (AMP) training was utilized through `torch.cuda.amp.au
 
 ### Hyperparameter Experiments
 
-Various hyperparameters were systematically explored and documented:
 
 | Hyperparameter      | Values Explored | Best Value |
 |---------------------|-----------------|------------|
@@ -79,9 +80,9 @@ The Attention U-Net architecture may internally utilize dropout, and the AdamW o
 
 #### Training and Validation Curves
 
-The notebook includes visualizations that compare predicted segmentation masks with ground truth samples from the validation set. These qualitative examples display the segmentation of the whole tumor, tumor core, and enhancing tumor on central axial slices.
+The plot shows a typical training process where the training loss decreases significantly, while the validation loss initially decreases and later fluctuates, indicating potential overfitting after a certain point. The saved checkpoints reflect attempts to preserve the model’s best state during the training process.
 
-![Validation curves](images/Picture1.jpg "Training vs Validation")
+![Validation curves](images/trainingGraph.jpg "Training vs Validation")
 
 ### Observed Behavior
 
@@ -89,7 +90,7 @@ Training proceeded as expected, with the model learning to segment tumor regions
 
 ### Model Artifacts
 
-The best-performing model, determined by the validation Dice score, was saved as `best_model_fold_0_newsb1,2,3,4,5.pth`.
+The best-performing model, determined by the validation Dice score, was saved as `best_model_fold_0_newsb1,2,3,4,5.pth` as we kept training it.
 
 ### Observations and Notes for Next Milestone
 
@@ -99,12 +100,14 @@ Initial results are promising, with the model achieving a reasonable Dice score 
 
 #### Issues or Unexpected Behavior
 
-No significant issues were encountered during the initial training phase. During a small train-test, a Dice score of 0.9 was achieved; however, further analysis revealed backend confusion affecting the Dice calculation. The Kfold model was also tested, but the no-fold version performed better, so the Kfold version was retained.
+No significant issues were encountered during the initial training phase. During a small train-test, a Dice score of 0.9 was achieved; however, further analysis revealed "background of the image" was affecting the Dice calculation. The Kfold model was also tested, but the no-fold version performed better, so we continued with no fold version.
+
 
 #### Ideas for Further Tuning or Improvements
 
 - **Hyperparameter Tuning**: Future work may include a more systematic search for optimal learning rates, batch sizes, and other parameters.
-- **Model Architecture**: Testing alternative architectures, such as Swin UNETR, which has demonstrated strong performance in BraTS challenges.
+- **Model Architecture**: Testing alternative architectures, such as Swin UNETR, or different methods like training each class individually and then using them as an ensemble.
 - **Post-processing**: Refining post-processing steps, like removing small, disconnected predicted regions, to improve segmentation accuracy.
 - **Ensemble Methods**: Combining predictions from multiple models trained with different initializations or data folds could enhance performance.
 - **Error Analysis**: Conducting a deeper error analysis on the validation set to identify and address specific model shortcomings.
+
