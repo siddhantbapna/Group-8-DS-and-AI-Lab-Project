@@ -20,7 +20,7 @@ The model chosen for this milestone is an Attention U-Net built with the MONAI f
 - **Input Shape**: (Batch Size, 4, 128, 128, 128)
 - **Output Shape**: (Batch Size, 3, 128, 128, 128)
 
-![3D Attention U-Net Architecture](../M3/sb/model.png)
+![3D Attention U-Net Architecture](../Milestone-3/images/model.png)
 
 ### Training Setup
 
