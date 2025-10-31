@@ -77,7 +77,7 @@ def get_transforms_3d(train: bool) -> Compose:
 		ScaleIntensityRanged(keys=["t1", "t1ce", "t2", "flair"], a_min=0, a_max=1400, b_min=0.0, b_max=1.0, clip=True),
 		CropForegroundd(keys=["t1", "t1ce", "t2", "flair", "label"], source_key="flair"),
 		# Map BraTS labels (0,1,2,3) to (0,1,2) for 3-class segmentation
-		MapLabelValueD(keys=["label"], orig_labels=[0, 1, 2, 3], target_labels=[0, 1, 2, 4]),
+		MapLabelValueD(keys=["label"], orig_labels=[0, 1, 2, 3], target_labels=[0, 1, 2, 2]),
 	]
 	if train:
 		aug = [
@@ -141,6 +141,26 @@ def create_datasets(spatial_dims: int = 3, cache_rate: float = 0.2) -> Tuple[Dat
 
 def create_loaders(train_ds: Dataset, val_ds: Dataset, spatial_dims: int) -> Tuple[DataLoader, DataLoader]:
 	batch = train_cfg.batch_size_3d if spatial_dims == 3 else train_cfg.batch_size_2d
-	train_loader = DataLoader(train_ds, batch_size=batch, shuffle=True, num_workers=train_cfg.num_workers, pin_memory=True)
-	val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=train_cfg.num_workers, pin_memory=True)
+	# Choose worker count based on CPU if not explicitly tuned
+
+	auto_workers = max(4, (os.cpu_count() or 8) // 2)
+	num_workers = train_cfg.num_workers if train_cfg.num_workers and train_cfg.num_workers > 0 else auto_workers
+	train_loader = DataLoader(
+		train_ds,
+		batch_size=batch,
+		shuffle=True,
+		num_workers=num_workers,
+		pin_memory=True,
+		persistent_workers=(num_workers > 0),
+		prefetch_factor=4,
+	)
+	val_loader = DataLoader(
+		val_ds,
+		batch_size=1,
+		shuffle=False,
+		num_workers=num_workers,
+		pin_memory=True,
+		persistent_workers=(num_workers > 0),
+		prefetch_factor=2,
+	)
 	return train_loader, val_loader

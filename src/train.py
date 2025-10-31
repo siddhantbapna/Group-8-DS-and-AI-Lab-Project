@@ -8,7 +8,7 @@ from datetime import datetime
 
 import torch
 from torch.optim import AdamW
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from torch.utils.tensorboard import SummaryWriter
 
 from monai.data import decollate_batch
@@ -66,14 +66,14 @@ def validate(model: torch.nn.Module, val_loader, post_pred, post_label, device, 
 				continue
 	mean_dice = dice_metric_mean.aggregate().item()
 	per_class_tensor = dice_metric_pc.aggregate()
-	# Ensure per-class dice is a 1D list of floats
+	# Convert to a 1D Python list and replace NaNs with None for JSON compatibility
+	per_class = []
 	if hasattr(per_class_tensor, 'detach'):
 		pc = per_class_tensor.detach().cpu()
 		if pc.ndim > 1:
 			pc = pc.mean(dim=0)
-		per_class = pc.tolist()
-	else:
-		per_class = []
+		# Replace NaNs (classes absent in GT) with None
+		per_class = [float(v.item()) if torch.isfinite(v) else None for v in pc]
 	dice_metric_mean.reset()
 	dice_metric_pc.reset()
 	return mean_dice, val_loss_total / max(1, len(val_loader)), per_class
@@ -145,12 +145,18 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 	
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	logger.info(f"Using device: {device}")
+	# Optimize cuDNN kernels for variable input shapes
+	try:
+		torch.backends.cudnn.benchmark = True
+	except Exception:
+		pass
 
 	# Determine target epochs early and disable caching for quick smoke tests
 	target_epochs = max_epochs if isinstance(max_epochs, int) and max_epochs > 0 else train_cfg.max_epochs
 	from time import perf_counter
 	start_build = perf_counter()
-	cache_rate = 0.0 if target_epochs <= 1 else 0.2
+	# Lower cache rate to reduce RAM pressure on large datasets
+	cache_rate = 0.0 if target_epochs <= 1 else 0.05
 	logger.info(f"Building datasets (cache_rate={cache_rate}) …")
 	train_ds, val_ds = create_datasets(spatial_dims=spatial_dims, cache_rate=cache_rate)
 	train_loader, val_loader = create_loaders(train_ds, val_ds, spatial_dims)
@@ -172,7 +178,8 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 
 	optimizer = AdamW(model.parameters(), lr=train_cfg.lr, weight_decay=train_cfg.weight_decay)
 	scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, target_epochs), eta_min=1e-6)
-	scaler = GradScaler(enabled=train_cfg.amp)
+	# Use new torch.amp API; enable only for CUDA
+	scaler = GradScaler("cuda", enabled=(train_cfg.amp and torch.cuda.is_available()))
 	# Class weights for CE to reduce background dominance: [bg, class1, class2]
 	ce_weight = torch.tensor([0.2, 1.0, 1.0], device=device)
 	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True, weight=ce_weight)
@@ -190,7 +197,7 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 	best_dice = -1.0
 	patience_counter = 0
 	patience = train_cfg.early_stopping_patience
-	training_history = {"train_loss": [], "val_loss": [], "dice": []}
+	training_history = {"train_loss": [], "val_loss": [], "dice": [], "dice_per_class": []}
 	
 	# Log training configuration
 	logger.info("Training Configuration:")
@@ -228,7 +235,7 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 			labels = labels.to(device, non_blocking=True)
 
 			optimizer.zero_grad(set_to_none=True)
-			with autocast(enabled=train_cfg.amp):
+			with autocast(device_type="cuda", enabled=(train_cfg.amp and torch.cuda.is_available())):
 				outputs = model(inputs)
 				loss = loss_fn(outputs, labels)
 			
@@ -272,19 +279,21 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 		# Per-class dice (if available)
 		if per_class_dice:
 			for cls_idx, cls_dice in enumerate(per_class_dice, start=1):
-				writer.add_scalar(f"Metrics/Dice_Class_{cls_idx}", cls_dice, epoch)
+				if cls_dice is not None:
+					writer.add_scalar(f"Metrics/Dice_Class_{cls_idx}", cls_dice, epoch)
 		
 		# Step scheduler and log learning rate
 		scheduler.step()
 		current_lr = optimizer.param_groups[0]['lr']
 		writer.add_scalar("Learning_Rate", current_lr, epoch)
 		
-		# Save training history (include per-class dice)
+		# Save training history (include per-class dice per epoch)
+		if per_class_dice:
+			training_history["dice_per_class"].append(per_class_dice)
+		else:
+			training_history["dice_per_class"].append([])
 		with open(history_path, 'w') as f:
-			out_hist = dict(training_history)
-			if per_class_dice:
-				out_hist["dice_per_class"] = per_class_dice
-			json.dump(out_hist, f, indent=2)
+			json.dump(training_history, f, indent=2)
 
 		# Check for improvement
 		is_best = mean_dice > best_dice
