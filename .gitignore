@@ -1,21 +1,31 @@
-*.env
-*.log
-*.log.*
-*.log.*.*
-*.log.*.*.*
-*.log.*.*.*.*
-*.log.*.*.*.*.*
-*.log.*.*.*.*.*.*
-*.log.*.*.*.*.*.*.*
-*.log.*.*.*.*.*.*.*.*
-*.log.*.*.*.*.*.*.*.*.*
-*.log.*.*.*.*.*.*.*.*.*.*
-*.log.*.*.*.*.*.*.*.*.*.*.*
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.env
+.venv
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Data and outputs
 data/
 outputs/
-checkpoints/
-tensorboard/
-venv/
-pika
-processed_data/
+outputs/logs/
+outputs/models/
+outputs/predictions/
+
+# Virtual env
+pika/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Cache and logs
+*.log
+.wandb/
+**/.mypy_cache/
+**/.pytest_cache/

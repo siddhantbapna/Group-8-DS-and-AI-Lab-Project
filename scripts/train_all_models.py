@@ -1,351 +1,226 @@
 #!/usr/bin/env python3
 """
-Train all models sequentially with comprehensive logging and comparison
+Automated training script for all models
+Runs all models for specified epochs and generates comparison reports
 """
 
 import os
 import sys
+import subprocess
 import time
+from typing import List, Dict
 import json
-import logging
-from datetime import datetime
-from typing import Dict, List, Any
-import pandas as pd
+import glob
 
-# Add src to path
-sys.path.append('src')
+# Add project root to path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.config import Config, DataConfig, ModelConfig, TrainingConfig, SystemConfig
-from src.train import Trainer, CrossValidationTrainer
-from src.models import get_available_models, get_model_info
+from config.config import paths
+from src.visualization import compare_models_performance
 
-class AllModelsTrainer:
-    """
-    Train all available models sequentially with comprehensive tracking
-    """
+
+def run_training(model_name: str, epochs: int, spatial_dims: int = 3) -> bool:
+    """Run training for a single model"""
+    print(f"\n{'='*60}")
+    print(f"Training {model_name} for {epochs} epochs")
+    print(f"{'='*60}")
     
-    def __init__(self, base_config: Config = None):
-        self.base_config = base_config or Config()
-        self.available_models = get_available_models()
-        self.training_results = {}
-        self.start_time = time.time()
-        
-        # Setup logging
-        self.setup_logging()
-        
-        # Create results directory
-        self.results_dir = "training_results"
-        os.makedirs(self.results_dir, exist_ok=True)
-        
-        self.logger.info(f"Initialized AllModelsTrainer with {len(self.available_models)} models")
-        self.logger.info(f"Available models: {self.available_models}")
+    # Update config for specified epochs
+    from config.config import train_cfg
+    original_epochs = train_cfg.max_epochs
+    train_cfg.max_epochs = epochs
     
-    def setup_logging(self):
-        """Setup comprehensive logging"""
-        log_file = os.path.join(self.results_dir, f"all_models_training_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+    try:
+        # Run training
+        cmd = [
+            sys.executable, "main.py",
+            "--model", model_name,
+            "--mode", "train",
+            "--epochs", str(epochs),
+            "--no-resume",
+        ]
         
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler()
-            ]
-        )
-        
-        self.logger = logging.getLogger("AllModelsTrainer")
-    
-    def create_model_config(self, model_name: str) -> Config:
-        """Create configuration for specific model"""
-        config = Config()
-        
-        # Update model configuration
-        config.model.model_name = model_name
-        
-        # Model-specific optimizations
-        if model_name == "nnunet":
-            # nnUNet is larger, use smaller batch size
-            config.training.batch_size = 1
-            config.training.num_epochs = 80  # Fewer epochs for larger model
-        elif model_name == "attentionunet":
-            # Attention UNet is also large
-            config.training.batch_size = 1
-            config.training.num_epochs = 90
-        elif model_name == "vnet":
-            # VNet is large
-            config.training.batch_size = 1
-            config.training.num_epochs = 90
-        else:
-            # Standard models
-            config.training.batch_size = 2
-            config.training.num_epochs = 100
-        
-        # Use optimized settings from EDA
-        config.data.brain_only_training = True
-        config.data.brain_mask_method = "otsu"
-        config.data.background_weight = 0.05
-        config.data.foreground_sampling = True
-        config.training.loss_function = "weighted_dice_bce"
-        config.training.scheduler = "poly"
-        config.training.optimizer = "adamw"
-        
-        return config
-    
-    def train_single_model(self, model_name: str, use_cv: bool = True) -> Dict[str, Any]:
-        """Train a single model"""
-        self.logger.info(f"\n{'='*60}")
-        self.logger.info(f"Starting training for model: {model_name}")
-        self.logger.info(f"{'='*60}")
-        
-        # Create model-specific configuration
-        config = self.create_model_config(model_name)
-        
-        # Get model info
-        try:
-            model_info = get_model_info(model_name)
-            self.logger.info(f"Model info: {model_info}")
-        except Exception as e:
-            self.logger.warning(f"Could not get model info: {e}")
-            model_info = {"name": model_name, "total_parameters": "unknown"}
-        
-        # Record start time
-        model_start_time = time.time()
-        
-        try:
-            if use_cv:
-                # Cross-validation training
-                self.logger.info(f"Training {model_name} with {config.data.n_folds}-fold cross-validation")
-                cv_trainer = CrossValidationTrainer(config)
-                cv_trainer.train_all_folds()
-                
-                # Collect results from all folds
-                fold_results = []
-                for fold_result in cv_trainer.fold_results:
-                    fold_results.append({
-                        'fold': fold_result['fold'],
-                        'best_metric': fold_result['best_metric'],
-                        'final_epoch': len(fold_result['training_history'])
-                    })
-                
-                # Calculate average performance
-                dice_scores = [result['best_metric'] for result in fold_results]
-                avg_dice = sum(dice_scores) / len(dice_scores)
-                std_dice = (sum([(x - avg_dice) ** 2 for x in dice_scores]) / len(dice_scores)) ** 0.5
-                
-                result = {
-                    'model_name': model_name,
-                    'model_info': model_info,
-                    'training_type': 'cross_validation',
-                    'n_folds': config.data.n_folds,
-                    'fold_results': fold_results,
-                    'average_dice': avg_dice,
-                    'std_dice': std_dice,
-                    'best_fold': max(fold_results, key=lambda x: x['best_metric']),
-                    'worst_fold': min(fold_results, key=lambda x: x['best_metric']),
-                    'training_time': time.time() - model_start_time,
-                    'config': {
-                        'batch_size': config.training.batch_size,
-                        'num_epochs': config.training.num_epochs,
-                        'learning_rate': config.training.learning_rate,
-                        'loss_function': config.training.loss_function,
-                        'optimizer': config.training.optimizer,
-                        'scheduler': config.training.scheduler
-                    }
-                }
+        print(f"Running command: {' '.join(cmd)}")
+        # Stream live stdout so user sees progress bars and device logs
+        with subprocess.Popen(
+            cmd,
+            cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+        ) as proc:
+            for line in proc.stdout:
+                print(line, end="")
+            proc.wait()
+            if proc.returncode == 0:
+                print(f"[SUCCESS] {model_name} training completed successfully")
+                return True
             else:
-                # Single fold training
-                self.logger.info(f"Training {model_name} on single fold")
-                trainer = Trainer(config, fold=0)
-                trainer.train()
-                
-                result = {
-                    'model_name': model_name,
-                    'model_info': model_info,
-                    'training_type': 'single_fold',
-                    'best_metric': trainer.best_metric,
-                    'training_time': time.time() - model_start_time,
-                    'config': {
-                        'batch_size': config.training.batch_size,
-                        'num_epochs': config.training.num_epochs,
-                        'learning_rate': config.training.learning_rate,
-                        'loss_function': config.training.loss_function,
-                        'optimizer': config.training.optimizer,
-                        'scheduler': config.training.scheduler
-                    }
-                }
+                print(f"[FAILED] {model_name} training failed")
+                return False
             
-            self.logger.info(f"✅ {model_name} training completed successfully!")
-            self.logger.info(f"Training time: {result['training_time']:.2f} seconds")
-            
-            if use_cv:
-                self.logger.info(f"Average Dice Score: {result['average_dice']:.4f} ± {result['std_dice']:.4f}")
-                self.logger.info(f"Best fold: {result['best_fold']['fold']} (Dice: {result['best_fold']['best_metric']:.4f})")
-            else:
-                self.logger.info(f"Best Dice Score: {result['best_metric']:.4f}")
-            
-            return result
-            
-        except Exception as e:
-            self.logger.error(f"❌ Error training {model_name}: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            
-            return {
-                'model_name': model_name,
-                'model_info': model_info,
-                'training_type': 'cross_validation' if use_cv else 'single_fold',
-                'error': str(e),
-                'training_time': time.time() - model_start_time,
-                'success': False
-            }
+    except Exception as e:
+        print(f"[FAILED] {model_name} training failed with exception: {e}")
+        return False
+    finally:
+        # Restore original epochs
+        train_cfg.max_epochs = original_epochs
+
+
+def get_available_models() -> List[str]:
+    """Get list of available models"""
+    return ["unet2d", "unet3d", "attenunet", "nnunet", "resunet", "vnet"]
+
+
+def check_model_completion(model_name: str) -> bool:
+    """Check if model training is complete"""
+    best_path = os.path.join(paths.models, f"best_{model_name}.pth")
+    history_path = os.path.join(paths.logs, f"training_history_{model_name}.json")
     
-    def train_all_models(self, use_cv: bool = True, models_to_train: List[str] = None):
-        """Train all models sequentially"""
-        if models_to_train is None:
-            models_to_train = self.available_models
-        
-        self.logger.info(f"\n🚀 Starting training of {len(models_to_train)} models")
-        self.logger.info(f"Models to train: {models_to_train}")
-        self.logger.info(f"Cross-validation: {'Yes' if use_cv else 'No'}")
-        self.logger.info(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-        for i, model_name in enumerate(models_to_train, 1):
-            self.logger.info(f"\n📊 Progress: {i}/{len(models_to_train)} models")
-            
-            # Train the model
-            result = self.train_single_model(model_name, use_cv)
-            self.training_results[model_name] = result
-            
-            # Save intermediate results
-            self.save_results()
-            
-            # Log progress
-            elapsed_time = time.time() - self.start_time
-            remaining_models = len(models_to_train) - i
-            if i > 0:
-                avg_time_per_model = elapsed_time / i
-                estimated_remaining = avg_time_per_model * remaining_models
-                self.logger.info(f"⏱️  Elapsed: {elapsed_time/3600:.2f}h, Estimated remaining: {estimated_remaining/3600:.2f}h")
-        
-        # Final summary
-        self.generate_final_summary()
+    return os.path.exists(best_path) and os.path.exists(history_path)
+
+
+def generate_training_report(epochs: int) -> str:
+    """Generate comprehensive training report"""
+    models = get_available_models()
+    report_path = os.path.join(paths.logs, f"training_report_{epochs}epochs.md")
     
-    def save_results(self):
-        """Save training results to JSON"""
-        results_file = os.path.join(self.results_dir, "training_results.json")
-        with open(results_file, 'w') as f:
-            json.dump(self.training_results, f, indent=2, default=str)
+    with open(report_path, 'w') as f:
+        f.write(f"# Training Report - {epochs} Epochs\n\n")
+        f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         
-        # Also save as CSV for easy analysis
-        self.save_results_csv()
+        f.write("## Model Status\n\n")
+        f.write("| Model | Status | Best Model | History |\n")
+        f.write("|-------|--------|------------|----------|\n")
+        
+        for model in models:
+            status = "[SUCCESS] Complete" if check_model_completion(model) else "[FAILED] Failed/Incomplete"
+            best_exists = "[SUCCESS]" if os.path.exists(os.path.join(paths.models, f"best_{model}.pth")) else "[FAILED]"
+            history_exists = "[SUCCESS]" if os.path.exists(os.path.join(paths.logs, f"training_history_{model}.json")) else "[FAILED]"
+            
+            f.write(f"| {model} | {status} | {best_exists} | {history_exists} |\n")
+        
+        f.write("\n## Performance Summary\n\n")
+        
+        # Load performance data
+        performance_data = []
+        for model in models:
+            history_pattern = os.path.join(paths.logs, f"training_history_{model}.json")
+            history_files = glob.glob(history_pattern)
+            
+            if history_files:
+                with open(history_files[0], 'r') as hf:
+                    history = json.load(hf)
+                
+                best_dice = max(history['dice']) if history['dice'] else 0
+                final_dice = history['dice'][-1] if history['dice'] else 0
+                best_epoch = history['dice'].index(best_dice) + 1 if history['dice'] else 0
+                final_train_loss = history['train_loss'][-1] if history['train_loss'] else 0
+                final_val_loss = history['val_loss'][-1] if history['val_loss'] else 0
+                
+                performance_data.append({
+                    'model': model,
+                    'best_dice': best_dice,
+                    'final_dice': final_dice,
+                    'best_epoch': best_epoch,
+                    'final_train_loss': final_train_loss,
+                    'final_val_loss': final_val_loss
+                })
+        
+        if performance_data:
+            # Sort by best dice score
+            performance_data.sort(key=lambda x: x['best_dice'], reverse=True)
+            
+            f.write("| Rank | Model | Best Dice | Final Dice | Best Epoch | Final Train Loss | Final Val Loss |\n")
+            f.write("|------|-------|-----------|------------|------------|------------------|----------------|\n")
+            
+            for i, data in enumerate(performance_data, 1):
+                f.write(f"| {i} | {data['model']} | {data['best_dice']:.4f} | {data['final_dice']:.4f} | "
+                       f"{data['best_epoch']} | {data['final_train_loss']:.4f} | {data['final_val_loss']:.4f} |\n")
+            
+            f.write(f"\n## Best Performing Model\n\n")
+            f.write(f"**{performance_data[0]['model']}** achieved the highest Dice score of **{performance_data[0]['best_dice']:.4f}**\n\n")
+        
+        f.write("## Files Generated\n\n")
+        f.write("- Model checkpoints: `outputs/models/best_*.pth`\n")
+        f.write("- Training histories: `outputs/logs/training_history_*.json`\n")
+        f.write("- TensorBoard logs: `outputs/logs/tensorboard/`\n")
+        f.write("- Training logs: `outputs/logs/*.log`\n")
+        f.write("- Comparison plots: `outputs/logs/model_comparison_*.png`\n")
     
-    def save_results_csv(self):
-        """Save results as CSV for analysis"""
-        if not self.training_results:
-            return
-        
-        rows = []
-        for model_name, result in self.training_results.items():
-            if result.get('success', True):  # Skip failed models
-                row = {
-                    'model_name': model_name,
-                    'total_parameters': result.get('model_info', {}).get('total_parameters', 'unknown'),
-                    'training_type': result.get('training_type', 'unknown'),
-                    'training_time_hours': result.get('training_time', 0) / 3600,
-                }
-                
-                if result.get('training_type') == 'cross_validation':
-                    row.update({
-                        'average_dice': result.get('average_dice', 0),
-                        'std_dice': result.get('std_dice', 0),
-                        'best_fold_dice': result.get('best_fold', {}).get('best_metric', 0),
-                        'worst_fold_dice': result.get('worst_fold', {}).get('best_metric', 0),
-                        'n_folds': result.get('n_folds', 0)
-                    })
-                else:
-                    row.update({
-                        'best_dice': result.get('best_metric', 0)
-                    })
-                
-                rows.append(row)
-        
-        if rows:
-            df = pd.DataFrame(rows)
-            csv_file = os.path.join(self.results_dir, "training_results.csv")
-            df.to_csv(csv_file, index=False)
-            self.logger.info(f"Results saved to CSV: {csv_file}")
-    
-    def generate_final_summary(self):
-        """Generate final training summary"""
-        total_time = time.time() - self.start_time
-        
-        self.logger.info(f"\n{'='*80}")
-        self.logger.info(f"🎉 ALL MODELS TRAINING COMPLETED!")
-        self.logger.info(f"{'='*80}")
-        self.logger.info(f"Total training time: {total_time/3600:.2f} hours")
-        self.logger.info(f"Models trained: {len(self.training_results)}")
-        
-        # Summary table
-        self.logger.info(f"\n📊 FINAL RESULTS SUMMARY:")
-        self.logger.info(f"{'Model':<15} {'Parameters':<12} {'Avg Dice':<10} {'Std':<8} {'Time(h)':<8}")
-        self.logger.info(f"{'-'*60}")
-        
-        for model_name, result in self.training_results.items():
-            if result.get('success', True):
-                params = result.get('model_info', {}).get('total_parameters', 'unknown')
-                if isinstance(params, int):
-                    params = f"{params:,}"
-                
-                if result.get('training_type') == 'cross_validation':
-                    avg_dice = result.get('average_dice', 0)
-                    std_dice = result.get('std_dice', 0)
-                    self.logger.info(f"{model_name:<15} {params:<12} {avg_dice:<10.4f} {std_dice:<8.4f} {result.get('training_time', 0)/3600:<8.2f}")
-                else:
-                    best_dice = result.get('best_metric', 0)
-                    self.logger.info(f"{model_name:<15} {params:<12} {best_dice:<10.4f} {'N/A':<8} {result.get('training_time', 0)/3600:<8.2f}")
-        
-        # Best model
-        if self.training_results:
-            best_model = max(
-                [(name, result) for name, result in self.training_results.items() if result.get('success', True)],
-                key=lambda x: x[1].get('average_dice', x[1].get('best_metric', 0))
-            )
-            self.logger.info(f"\n🏆 BEST MODEL: {best_model[0]} (Dice: {best_model[1].get('average_dice', best_model[1].get('best_metric', 0)):.4f})")
-        
-        self.logger.info(f"\n📁 Results saved to: {self.results_dir}/")
-        self.logger.info(f"   - training_results.json (detailed results)")
-        self.logger.info(f"   - training_results.csv (summary table)")
+    return report_path
+
 
 def main():
-    """Main function"""
+    """Main training orchestration"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='Train all models sequentially')
-    parser.add_argument('--models', nargs='+', default=None,
-                       help='Specific models to train (default: all)')
-    parser.add_argument('--no-cv', action='store_true',
-                       help='Disable cross-validation (single fold only)')
-    parser.add_argument('--quick', action='store_true',
-                       help='Quick test with fewer epochs')
+    parser = argparse.ArgumentParser(description="Train all models for comparison")
+    parser.add_argument("--epochs", type=int, default=2, help="Number of epochs to train (default: 2)")
+    parser.add_argument("--models", nargs="+", default=None, help="Specific models to train (default: all)")
+    parser.add_argument("--skip-existing", action="store_true", help="Skip models that already have checkpoints")
+    parser.add_argument("--generate-report", action="store_true", default=True, help="Generate training report")
     
     args = parser.parse_args()
     
-    # Create trainer
-    trainer = AllModelsTrainer()
+    # Get models to train
+    if args.models:
+        models_to_train = args.models
+    else:
+        models_to_train = get_available_models()
     
-    # Quick test mode
-    if args.quick:
-        trainer.logger.info("🚀 Quick test mode - using fewer epochs")
-        # Override config for quick testing
-        original_config = trainer.base_config
-        original_config.training.num_epochs = 5
-        original_config.data.n_folds = 2
+    print(f"Training {len(models_to_train)} models for {args.epochs} epochs")
+    print(f"Models: {', '.join(models_to_train)}")
     
-    # Train models
-    use_cv = not args.no_cv
-    models_to_train = args.models if args.models else None
+    # Track results
+    results = {}
+    start_time = time.time()
     
-    trainer.train_all_models(use_cv=use_cv, models_to_train=models_to_train)
+    for model in models_to_train:
+        # Check if model already exists
+        if args.skip_existing and check_model_completion(model):
+            print(f"[SKIP] Skipping {model} - already completed")
+            results[model] = "skipped"
+            continue
+        
+        # Determine spatial dimensions
+        spatial_dims = 2 if model == "unet2d" else 3
+        
+        # Run training
+        success = run_training(model, args.epochs, spatial_dims)
+        results[model] = "success" if success else "failed"
+        
+        # Small delay between models
+        time.sleep(2)
+    
+    # Print summary
+    total_time = time.time() - start_time
+    print(f"\n{'='*60}")
+    print("TRAINING SUMMARY")
+    print(f"{'='*60}")
+    print(f"Total time: {total_time/60:.1f} minutes")
+    print(f"Models trained: {len(models_to_train)}")
+    
+    for model, status in results.items():
+        status_icon = "[SUCCESS]" if status == "success" else "[SKIPPED]" if status == "skipped" else "[FAILED]"
+        print(f"{status_icon} {model}: {status}")
+    
+    # Generate comparison plots
+    successful_models = [model for model, status in results.items() if status == "success"]
+    if len(successful_models) > 1:
+        print(f"\nGenerating comparison plots for {len(successful_models)} models...")
+        comparison_path = os.path.join(paths.logs, f"model_comparison_{args.epochs}epochs.png")
+        compare_models_performance(successful_models, comparison_path)
+    
+    # Generate report
+    if args.generate_report:
+        print("\nGenerating training report...")
+        report_path = generate_training_report(args.epochs)
+        print(f"Training report saved to: {report_path}")
+    
+    print(f"\nTraining complete! Check outputs/logs/ for results.")
+
 
 if __name__ == "__main__":
     main()

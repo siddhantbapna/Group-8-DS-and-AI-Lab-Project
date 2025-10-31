@@ -1,662 +1,325 @@
-"""
-Comprehensive training pipeline with cross-validation support for brain MRI segmentation
-"""
+from __future__ import annotations
+
 import os
-import time
-import logging
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.cuda.amp import GradScaler, autocast
-from torch.utils.tensorboard import SummaryWriter
-import numpy as np
-from typing import Dict, List, Tuple, Optional, Any
-from tqdm import tqdm
 import json
+import logging
+from typing import Tuple, Dict, Any
 from datetime import datetime
 
-from config.config import Config
-from src.preprocessing import BraTS2023Preprocessor
+import torch
+from torch.optim import AdamW
+from torch.cuda.amp import GradScaler, autocast
+from torch.utils.tensorboard import SummaryWriter
+
+from monai.data import decollate_batch
+from tqdm import tqdm
+from monai.losses import DiceCELoss
+from monai.metrics import DiceMetric
+from monai.inferers import sliding_window_inference
+from monai.transforms import AsDiscrete, Compose
+
+from config.config import paths, train_cfg, model_cfg
+from src.dataset import create_datasets, create_loaders
 from src.models import create_model
-from src.metrics import MetricsComputer, MetricTracker, create_loss_function
-from src.checkpoints import CheckpointManager, CheckpointManagerFactory
 
-class EarlyStopping:
-    """Early stopping utility"""
-    
-    def __init__(self, patience: int = 15, min_delta: float = 0.001, mode: str = 'max'):
-        self.patience = patience
-        self.min_delta = min_delta
-        self.mode = mode
-        self.counter = 0
-        self.best_score = float('-inf') if mode == 'max' else float('inf')
-        self.early_stop = False
-    
-    def __call__(self, score: float) -> bool:
-        if self.mode == 'max':
-            if score > self.best_score + self.min_delta:
-                self.best_score = score
-                self.counter = 0
-            else:
-                self.counter += 1
-        else:
-            if score < self.best_score - self.min_delta:
-                self.best_score = score
-                self.counter = 0
-            else:
-                self.counter += 1
-        
-        if self.counter >= self.patience:
-            self.early_stop = True
-        
-        return self.early_stop
 
-class Trainer:
-    """
-    Comprehensive trainer for brain MRI segmentation
-    """
-    
-    def __init__(self, config: Config, fold: int = 0):
-        self.config = config
-        self.fold = fold
-        self.device = torch.device(config.system.device)
-        
-        # Setup logging
-        self.setup_logging()
-        
-        # Initialize components
-        self.preprocessor = BraTS2023Preprocessor(config.data)
-        self.model = None
-        self.optimizer = None
-        self.scheduler = None
-        self.scaler = None
-        self.loss_function = None
-        self.metrics_computer = None
-        self.checkpoint_manager = None
-        self.early_stopping = None
-        self.writer = None
-        
-        # Training state
-        self.current_epoch = 0
-        self.best_metric = float('-inf')
-        self.training_history = []
-        
-    def setup_logging(self):
-        """Setup logging configuration"""
-        log_dir = os.path.join(self.config.system.log_dir, f"fold_{self.fold}")
-        os.makedirs(log_dir, exist_ok=True)
-        
-        log_file = os.path.join(log_dir, f"training_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-        
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler()
-            ]
-        )
-        
-        self.logger = logging.getLogger(f"Trainer_Fold_{self.fold}")
-    
-    def setup_model(self):
-        """Setup model, optimizer, and scheduler"""
-        # Create model
-        self.model = create_model(
-            self.config.model.model_name,
-            in_channels=self.config.model.in_channels,
-            out_channels=self.config.model.out_channels,
-            features=self.config.model.features,
-            dropout=self.config.model.dropout
-        ).to(self.device)
-        
-        # Create optimizer
-        if self.config.training.optimizer.lower() == 'adam':
-            self.optimizer = optim.Adam(
-                self.model.parameters(),
-                lr=self.config.training.learning_rate,
-                weight_decay=self.config.training.weight_decay
-            )
-        elif self.config.training.optimizer.lower() == 'adamw':
-            self.optimizer = optim.AdamW(
-                self.model.parameters(),
-                lr=self.config.training.learning_rate,
-                weight_decay=self.config.training.weight_decay
-            )
-        elif self.config.training.optimizer.lower() == 'sgd':
-            self.optimizer = optim.SGD(
-                self.model.parameters(),
-                lr=self.config.training.learning_rate,
-                weight_decay=self.config.training.weight_decay,
-                momentum=0.9
-            )
-        else:
-            raise ValueError(f"Unknown optimizer: {self.config.training.optimizer}")
-        
-        # Create scheduler
-        if self.config.training.scheduler.lower() == 'cosine':
-            self.scheduler = optim.lr_scheduler.CosineAnnealingLR(
-                self.optimizer, T_max=self.config.training.num_epochs
-            )
-        elif self.config.training.scheduler.lower() == 'step':
-            self.scheduler = optim.lr_scheduler.StepLR(
-                self.optimizer, step_size=30, gamma=0.1
-            )
-        elif self.config.training.scheduler.lower() == 'plateau':
-            self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, mode='max', factor=0.5, patience=10
-            )
-        elif self.config.training.scheduler.lower() == 'poly':
-            # Polynomial learning rate scheduler: (1 - epoch/num_epochs)^0.9
-            poly_lambda = lambda epoch: (1 - epoch / self.config.training.num_epochs) ** 0.9
-            self.scheduler = optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda=poly_lambda)
-        else:
-            self.scheduler = None
-        
-        # Create loss function
-        self.loss_function = create_loss_function(self.config.training.loss_function)
-        
-        # Create metrics computer
-        self.metrics_computer = MetricsComputer(
-            num_classes=self.config.model.out_channels,
-            include_background=False
-        )
-        
-        # Create checkpoint manager
-        model_name = f"{self.config.model.model_name}_fold_{self.fold}"
-        self.checkpoint_manager = CheckpointManagerFactory.create_manager(
-            model_name, self.config.system.checkpoint_dir
-        )
-        
-        # Create early stopping
-        self.early_stopping = EarlyStopping(
-            patience=self.config.training.patience,
-            min_delta=self.config.training.min_delta
-        )
-        
-        # Create tensorboard writer
-        tb_dir = os.path.join(self.config.system.log_dir, f"tensorboard_fold_{self.fold}")
-        self.writer = SummaryWriter(tb_dir)
-        
-        # Create mixed precision scaler
-        if self.config.training.use_amp:
-            self.scaler = GradScaler()
-        
-        self.logger.info(f"Model setup complete. Parameters: {sum(p.numel() for p in self.model.parameters()):,}")
-    
-    def setup_data(self):
-        """Setup data loaders"""
-        # Create data dictionaries
-        train_data_dicts = self.preprocessor.create_data_dicts(self.config.data.train_data_path)
-        
-        # Create cross-validation splits
-        cv_splits = self.preprocessor.create_cross_validation_splits(train_data_dicts)
-        
-        if self.fold >= len(cv_splits):
-            raise ValueError(f"Fold {self.fold} not available. Total folds: {len(cv_splits)}")
-        
-        # Get data for current fold
-        train_data, val_data = cv_splits[self.fold]
-        
-        # Create transforms
-        train_transforms = self.preprocessor.get_train_transforms(is_training=True)
-        val_transforms = self.preprocessor.get_val_transforms()
-        
-        # Create datasets
-        train_dataset, val_dataset = self.preprocessor.create_datasets(
-            train_data, val_data, train_transforms, val_transforms
-        )
-        
-        # Create data loaders
-        self.train_loader, self.val_loader = self.preprocessor.create_dataloaders(
-            train_dataset, val_dataset, 
-            self.config.training.batch_size, 
-            self.config.system.num_workers
-        )
-        
-        self.logger.info(f"Data setup complete. Train: {len(train_dataset)}, Val: {len(val_dataset)}")
-    
-    def train_epoch(self) -> Dict[str, float]:
-        """Train for one epoch"""
-        self.model.train()
-        epoch_loss = 0.0
-        epoch_metrics = {}
-        
-        # Initialize metric tracker
-        metric_tracker = MetricTracker(
-            num_classes=self.config.model.out_channels,
-            include_background=False
-        )
-        
-        progress_bar = tqdm(self.train_loader, desc=f"Epoch {self.current_epoch}")
-        
-        for batch_idx, batch_data in enumerate(progress_bar):
-            # Stack all modalities
-            modalities = []
-            for modality in self.config.data.modality_keys:
-                modalities.append(batch_data[modality])
-            inputs = torch.cat(modalities, dim=1).to(self.device)  # Stack along channel dimension
-            targets = batch_data[self.config.data.seg_key].to(self.device)
-            
-            # Targets are already one-hot encoded by ConvertToMultiChannelBasedOnBratsClassesd
-            # No need for manual mapping - the preprocessing already handles BraTS label conversion
-            
-            # Forward pass
-            self.optimizer.zero_grad()
-            
-            if self.config.training.use_amp:
-                with autocast():
-                    outputs = self.model(inputs)
-                    loss = self.loss_function(outputs, targets)
-                
-                # Backward pass
-                self.scaler.scale(loss).backward()
-                
-                # Gradient clipping
-                if self.config.training.max_grad_norm > 0:
-                    self.scaler.unscale_(self.optimizer)
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.config.training.max_grad_norm
-                    )
-                
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
-            else:
-                outputs = self.model(inputs)
-                loss = self.loss_function(outputs, targets)
-                
-                # Backward pass
-                loss.backward()
-                
-                # Gradient clipping
-                if self.config.training.max_grad_norm > 0:
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.config.training.max_grad_norm
-                    )
-                
-                self.optimizer.step()
-            
-            # Update metrics
-            epoch_loss += loss.item()
-            metric_tracker.update(outputs, targets)
-            
-            # Calculate metrics for progress bar
-            with torch.no_grad():
-                predictions = torch.argmax(outputs, dim=1)
-                
-                # Targets are already one-hot encoded, convert to class indices
-                targets_class = torch.argmax(targets, dim=1)
-                
-                # Calculate pixel-wise accuracy (dominated by background)
-                correct = (predictions == targets_class).float()
-                pixel_accuracy = correct.mean().item()
-                
-                # Calculate class-balanced accuracy (better for imbalanced data)
-                class_accuracies = []
-                for class_id in range(self.config.model.out_channels):
-                    class_mask = (targets_class == class_id)
-                    if class_mask.sum() > 0:  # Only if class exists in batch
-                        class_correct = (predictions == targets_class) & class_mask
-                        class_acc = class_correct.sum().float() / class_mask.sum().float()
-                        class_accuracies.append(class_acc.item())
-                
-                # Average class accuracy (excluding background if it dominates)
-                if len(class_accuracies) > 1:
-                    balanced_accuracy = np.mean(class_accuracies[1:])  # Exclude background
-                else:
-                    balanced_accuracy = pixel_accuracy
-                
-                # Calculate simple Dice score for tumor classes
-                dice_scores = []
-                for class_id in range(1, self.config.model.out_channels):  # Skip background
-                    pred_mask = (predictions == class_id)
-                    true_mask = (targets_class == class_id)
-                    
-                    intersection = (pred_mask & true_mask).sum().float()
-                    union = pred_mask.sum().float() + true_mask.sum().float()
-                    
-                    if union > 0:
-                        dice = (2.0 * intersection) / union
-                        dice_scores.append(dice.item())
-                
-                mean_dice = np.mean(dice_scores) if dice_scores else 0.0
-            
-            # Update progress bar with better metrics
-            progress_bar.set_postfix({
-                'Loss': f'{loss.item():.4f}',
-                'PixAcc': f'{pixel_accuracy:.3f}',
-                'BalAcc': f'{balanced_accuracy:.3f}',
-                'Dice': f'{mean_dice:.3f}',
-                'AvgLoss': f'{epoch_loss / (batch_idx + 1):.3f}'
-            })
-            
-            # Log to tensorboard
-            if batch_idx % self.config.system.log_interval == 0:
-                global_step = self.current_epoch * len(self.train_loader) + batch_idx
-                self.writer.add_scalar('Train/Loss', loss.item(), global_step)
-                self.writer.add_scalar('Train/Learning_Rate', self.optimizer.param_groups[0]['lr'], global_step)
-        
-        # Compute epoch metrics
-        epoch_metrics = metric_tracker.get_average_metrics()
-        epoch_metrics['loss'] = epoch_loss / len(self.train_loader)
-        
-        return epoch_metrics
-    
-    def validate_epoch(self) -> Dict[str, float]:
-        """Validate for one epoch"""
-        self.model.eval()
-        epoch_loss = 0.0
-        epoch_metrics = {}
-        
-        # Initialize metric tracker
-        metric_tracker = MetricTracker(
-            num_classes=self.config.model.out_channels,
-            include_background=False
-        )
-        
-        with torch.no_grad():
-            progress_bar = tqdm(self.val_loader, desc="Validation")
-            
-            for batch_idx, batch_data in enumerate(progress_bar):
-                # Stack all modalities
-                modalities = []
-                for modality in self.config.data.modality_keys:
-                    modalities.append(batch_data[modality])
-                inputs = torch.cat(modalities, dim=1).to(self.device)  # Stack along channel dimension
-                targets = batch_data[self.config.data.seg_key].to(self.device)
-                
-                # Targets are already one-hot encoded by ConvertToMultiChannelBasedOnBratsClassesd
-                # No need for manual mapping - the preprocessing already handles BraTS label conversion
-                
-                # Forward pass
-                if self.config.training.use_amp:
-                    with autocast():
-                        outputs = self.model(inputs)
-                        loss = self.loss_function(outputs, targets)
-                else:
-                    outputs = self.model(inputs)
-                    loss = self.loss_function(outputs, targets)
-                
-                # Update metrics
-                epoch_loss += loss.item()
-                metric_tracker.update(outputs, targets)
-                
-                # Calculate metrics for progress bar
-                with torch.no_grad():
-                    predictions = torch.argmax(outputs, dim=1)
-                    
-                    # Targets are already one-hot encoded, convert to class indices
-                    targets_class = torch.argmax(targets, dim=1)
-                    
-                    # Calculate pixel-wise accuracy (dominated by background)
-                    correct = (predictions == targets_class).float()
-                    pixel_accuracy = correct.mean().item()
-                    
-                    # Calculate class-balanced accuracy (better for imbalanced data)
-                    class_accuracies = []
-                    for class_id in range(self.config.model.out_channels):
-                        class_mask = (targets_class == class_id)
-                        if class_mask.sum() > 0:  # Only if class exists in batch
-                            class_correct = (predictions == targets_class) & class_mask
-                            class_acc = class_correct.sum().float() / class_mask.sum().float()
-                            class_accuracies.append(class_acc.item())
-                    
-                    # Average class accuracy (excluding background if it dominates)
-                    if len(class_accuracies) > 1:
-                        balanced_accuracy = np.mean(class_accuracies[1:])  # Exclude background
-                    else:
-                        balanced_accuracy = pixel_accuracy
-                    
-                    # Calculate simple Dice score for tumor classes
-                    dice_scores = []
-                    for class_id in range(1, self.config.model.out_channels):  # Skip background
-                        pred_mask = (predictions == class_id)
-                        true_mask = (targets_class == class_id)
-                        
-                        intersection = (pred_mask & true_mask).sum().float()
-                        union = pred_mask.sum().float() + true_mask.sum().float()
-                        
-                        if union > 0:
-                            dice = (2.0 * intersection) / union
-                            dice_scores.append(dice.item())
-                    
-                    mean_dice = np.mean(dice_scores) if dice_scores else 0.0
-                
-                # Update progress bar with better metrics
-                progress_bar.set_postfix({
-                    'Loss': f'{loss.item():.4f}',
-                    'PixAcc': f'{pixel_accuracy:.3f}',
-                    'BalAcc': f'{balanced_accuracy:.3f}',
-                    'Dice': f'{mean_dice:.3f}',
-                    'AvgLoss': f'{epoch_loss / (batch_idx + 1):.3f}'
-                })
-        
-        # Compute epoch metrics
-        epoch_metrics = metric_tracker.get_average_metrics()
-        epoch_metrics['loss'] = epoch_loss / len(self.val_loader)
-        
-        return epoch_metrics
-    
-    def train(self, resume_from_checkpoint: Optional[str] = None):
-        """Main training loop"""
-        self.logger.info("Starting training...")
-        
-        # Setup components
-        self.setup_model()
-        self.setup_data()
-        
-        # Save model summary
-        self.checkpoint_manager.save_model_summary(
-            self.model, self.config.to_dict()
-        )
-        
-        # Resume from checkpoint if provided
-        if resume_from_checkpoint:
-            self.logger.info(f"Resuming from checkpoint: {resume_from_checkpoint}")
-            checkpoint_data = self.checkpoint_manager.load_checkpoint(
-                resume_from_checkpoint, self.model, self.optimizer, self.scheduler, self.device
-            )
-            self.current_epoch = checkpoint_data['epoch'] + 1
-            self.best_metric = checkpoint_data['best_metric']
-        
-        # Training loop
-        for epoch in range(self.current_epoch, self.config.training.num_epochs):
-            self.current_epoch = epoch
-            epoch_start_time = time.time()
-            
-            # Train
-            train_metrics = self.train_epoch()
-            
-            # Validate
-            val_metrics = self.validate_epoch()
-            
-            # Update scheduler
-            if self.scheduler:
-                if isinstance(self.scheduler, optim.lr_scheduler.ReduceLROnPlateau):
-                    self.scheduler.step(val_metrics.get('dice_class_1', 0))
-                else:
-                    self.scheduler.step()
-            
-            # Check if this is the best model
-            current_metric = val_metrics.get('dice_class_1', 0)  # Use WT dice as main metric
-            is_best = self.checkpoint_manager.update_best_metric(current_metric, epoch)
-            
-            # Save checkpoint
-            if epoch % self.config.system.save_interval == 0 or is_best:
-                try:
-                    checkpoint_path = self.checkpoint_manager.save_checkpoint(
-                        epoch, self.model, self.optimizer, self.scheduler,
-                        val_metrics, val_metrics['loss'], is_best
-                    )
-                    self.logger.info(f"Checkpoint saved: {checkpoint_path}")
-                except Exception as e:
-                    self.logger.error(f"Failed to save checkpoint: {e}")
-                    import traceback
-                    self.logger.error(traceback.format_exc())
-            
-            # Log metrics
-            epoch_time = time.time() - epoch_start_time
-            train_acc = train_metrics.get('accuracy', 0.0)
-            val_acc = val_metrics.get('accuracy', 0.0)
-            val_dice = val_metrics.get('mean_dice', 0.0)
-            self.logger.info(
-                f"Epoch {epoch}/{self.config.training.num_epochs} - "
-                f"Train Loss: {train_metrics['loss']:.4f}, Train Acc: {train_acc:.4f}, "
-                f"Val Loss: {val_metrics['loss']:.4f}, Val Acc: {val_acc:.4f}, "
-                f"Val Dice: {val_dice:.4f}, Time: {epoch_time:.2f}s"
-            )
-            
-            # Log to tensorboard
-            self.writer.add_scalar('Epoch/Train_Loss', train_metrics['loss'], epoch)
-            self.writer.add_scalar('Epoch/Val_Loss', val_metrics['loss'], epoch)
-            self.writer.add_scalar('Epoch/Train_Accuracy', train_acc, epoch)
-            self.writer.add_scalar('Epoch/Val_Accuracy', val_acc, epoch)
-            self.writer.add_scalar('Epoch/Val_Dice', val_dice, epoch)
-            
-            # Log additional metrics if available
-            if 'mean_dice' in train_metrics:
-                self.writer.add_scalar('Epoch/Train_Dice', train_metrics['mean_dice'], epoch)
-            
-            # Store training history
-            self.training_history.append({
-                'epoch': epoch,
-                'train_metrics': train_metrics,
-                'val_metrics': val_metrics,
-                'epoch_time': epoch_time
-            })
-            
-            # Early stopping
-            if self.early_stopping(current_metric):
-                self.logger.info(f"Early stopping triggered at epoch {epoch}")
-                break
-        
-        # Save final results
-        self.save_training_results()
-        
-        self.logger.info("Training completed!")
-    
-    def save_training_results(self):
-        """Save training results and history"""
-        results_dir = os.path.join(self.config.system.output_dir, f"results_fold_{self.fold}")
-        os.makedirs(results_dir, exist_ok=True)
-        
-        # Save training history
-        history_path = os.path.join(results_dir, "training_history.json")
-        with open(history_path, 'w') as f:
-            json.dump(self.training_history, f, indent=2)
-        
-        # Save final metrics
-        if self.training_history:
-            final_metrics = self.training_history[-1]['val_metrics']
-            metrics_path = os.path.join(results_dir, "final_metrics.json")
-            with open(metrics_path, 'w') as f:
-                json.dump(final_metrics, f, indent=2)
-        
-        # Export best model
-        best_model_path = os.path.join(results_dir, "best_model.pth")
-        self.checkpoint_manager.export_model(
-            self.model, best_model_path, "pytorch"
-        )
-        
-        self.logger.info(f"Training results saved to: {results_dir}")
+def validate(model: torch.nn.Module, val_loader, post_pred, post_label, device, spatial_dims=3) -> Tuple[float, float, list]:
+	model.eval()
+	dice_metric_mean = DiceMetric(include_background=False, reduction="mean")
+	dice_metric_pc = DiceMetric(include_background=False, reduction="none")
+	val_loss_total = 0.0
+	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
+	
+	# Choose appropriate ROI size and overlap based on spatial dimensions
+	if spatial_dims == 2:
+		roi_size = tuple(train_cfg.slide_infer_roi_2d)
+		overlap = train_cfg.overlap_2d
+	else:
+		roi_size = tuple(train_cfg.slide_infer_roi_3d)
+		overlap = train_cfg.overlap_3d
+	
+	with torch.no_grad():
+		for batch in tqdm(val_loader, desc="Validation", unit="batch"):
+			inputs = torch.cat([batch["t1"], batch["t1ce"], batch["t2"], batch["flair"]], dim=1).to(device)
+			labels = batch.get("label")
+			if labels is not None:
+				labels = labels.to(device)
+				
+				# For 2D models, we don't need sliding window inference since inputs are already 2D
+				if spatial_dims == 2:
+					pred = model(inputs)
+				else:
+					pred = sliding_window_inference(
+						inputs,
+						roi_size=roi_size,
+						sw_batch_size=1,
+						overlap=overlap,
+						predictor=model,
+					)
+				val_loss_total += loss_fn(pred, labels).item()
+				pred_list = [post_pred(i) for i in decollate_batch(pred)]
+				label_list = [post_label(i) for i in decollate_batch(labels)]
+				# update both mean and per-class metrics
+				dice_metric_mean(y_pred=pred_list, y=label_list)
+				dice_metric_pc(y_pred=pred_list, y=label_list)
+			else:
+				continue
+	mean_dice = dice_metric_mean.aggregate().item()
+	per_class_tensor = dice_metric_pc.aggregate()
+	# Ensure per-class dice is a 1D list of floats
+	if hasattr(per_class_tensor, 'detach'):
+		pc = per_class_tensor.detach().cpu()
+		if pc.ndim > 1:
+			pc = pc.mean(dim=0)
+		per_class = pc.tolist()
+	else:
+		per_class = []
+	dice_metric_mean.reset()
+	dice_metric_pc.reset()
+	return mean_dice, val_loss_total / max(1, len(val_loader)), per_class
 
-class CrossValidationTrainer:
-    """
-    Cross-validation trainer for multiple folds
-    """
-    
-    def __init__(self, config: Config):
-        self.config = config
-        self.fold_results = []
-    
-    def train_all_folds(self, resume_fold: Optional[int] = None):
-        """Train all folds"""
-        self.logger = logging.getLogger("CrossValidationTrainer")
-        
-        for fold in range(self.config.data.n_folds):
-            if resume_fold is not None and fold < resume_fold:
-                continue
-            
-            self.logger.info(f"Starting training for fold {fold}")
-            
-            # Create trainer for this fold
-            trainer = Trainer(self.config, fold)
-            
-            try:
-                # Train
-                trainer.train()
-                
-                # Store results
-                self.fold_results.append({
-                    'fold': fold,
-                    'best_metric': trainer.best_metric,
-                    'training_history': trainer.training_history
-                })
-                
-            except Exception as e:
-                self.logger.error(f"Error training fold {fold}: {e}")
-                continue
-        
-        # Save cross-validation results
-        self.save_cv_results()
-    
-    def save_cv_results(self):
-        """Save cross-validation results"""
-        cv_results_dir = os.path.join(self.config.system.output_dir, "cv_results")
-        os.makedirs(cv_results_dir, exist_ok=True)
-        
-        # Compute average metrics
-        if self.fold_results:
-            avg_metrics = self.compute_average_metrics()
-            
-            # Save results
-            results_path = os.path.join(cv_results_dir, "cv_results.json")
-            with open(results_path, 'w') as f:
-                json.dump({
-                    'fold_results': self.fold_results,
-                    'average_metrics': avg_metrics
-                }, f, indent=2)
-            
-            self.logger.info(f"Cross-validation results saved to: {cv_results_dir}")
-            self.logger.info(f"Average Dice Score: {avg_metrics.get('dice_class_1', 0):.4f}")
-    
-    def compute_average_metrics(self) -> Dict[str, float]:
-        """Compute average metrics across all folds"""
-        if not self.fold_results:
-            return {}
-        
-        # Get all metrics from the last epoch of each fold
-        all_metrics = []
-        for fold_result in self.fold_results:
-            if fold_result['training_history']:
-                last_epoch_metrics = fold_result['training_history'][-1]['val_metrics']
-                all_metrics.append(last_epoch_metrics)
-        
-        if not all_metrics:
-            return {}
-        
-        # Compute averages
-        avg_metrics = {}
-        for key in all_metrics[0].keys():
-            values = [metrics[key] for metrics in all_metrics]
-            avg_metrics[key] = np.mean(values)
-            avg_metrics[f"{key}_std"] = np.std(values)
-        
-        return avg_metrics
 
-# Example usage
+def save_checkpoint(model: torch.nn.Module, optimizer: torch.optim.Optimizer, 
+                   scaler: GradScaler, epoch: int, metrics: Dict[str, float], 
+                   filepath: str, is_best: bool = False):
+	"""Save training checkpoint with all necessary state"""
+	checkpoint = {
+		"epoch": epoch,
+		"model_state_dict": model.state_dict(),
+		"optimizer_state_dict": optimizer.state_dict(),
+		"scaler_state_dict": scaler.state_dict(),
+		"metrics": metrics,
+		"is_best": is_best
+	}
+	torch.save(checkpoint, filepath)
+
+
+def load_checkpoint(filepath: str, model: torch.nn.Module, optimizer: torch.optim.Optimizer, 
+                   scaler: GradScaler) -> Tuple[int, Dict[str, float]]:
+	"""Load training checkpoint and restore state"""
+	if not os.path.exists(filepath):
+		return 0, {}
+	
+	checkpoint = torch.load(filepath, map_location="cpu")
+	model.load_state_dict(checkpoint["model_state_dict"])
+	optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+	scaler.load_state_dict(checkpoint["scaler_state_dict"])
+	
+	epoch = checkpoint.get("epoch", 0)
+	metrics = checkpoint.get("metrics", {})
+	return epoch, metrics
+
+
+def setup_logging(model_name: str) -> Tuple[logging.Logger, SummaryWriter]:
+	"""Setup logging and TensorBoard writer"""
+	# Create timestamp for unique run
+	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+	run_name = f"{model_name}_{timestamp}"
+	
+	# Setup file logging
+	log_file = os.path.join(paths.logs, f"{run_name}.log")
+	logging.basicConfig(
+		level=logging.INFO,
+		format='%(asctime)s - %(levelname)s - %(message)s',
+		handlers=[
+			logging.FileHandler(log_file),
+			logging.StreamHandler()
+		]
+	)
+	logger = logging.getLogger(__name__)
+	
+	# Setup TensorBoard
+	tb_dir = os.path.join(paths.logs, "tensorboard", run_name)
+	writer = SummaryWriter(tb_dir)
+	
+	logger.info(f"Logging setup complete. Run: {run_name}")
+	logger.info(f"TensorBoard logs: {tb_dir}")
+	logger.info(f"File logs: {log_file}")
+	
+	return logger, writer
+
+
+def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = None, max_epochs: int | None = None, no_resume: bool = False):
+	# Setup logging and TensorBoard
+	logger, writer = setup_logging(model_name)
+	
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	logger.info(f"Using device: {device}")
+
+	# Determine target epochs early and disable caching for quick smoke tests
+	target_epochs = max_epochs if isinstance(max_epochs, int) and max_epochs > 0 else train_cfg.max_epochs
+	from time import perf_counter
+	start_build = perf_counter()
+	cache_rate = 0.0 if target_epochs <= 1 else 0.2
+	logger.info(f"Building datasets (cache_rate={cache_rate}) …")
+	train_ds, val_ds = create_datasets(spatial_dims=spatial_dims, cache_rate=cache_rate)
+	train_loader, val_loader = create_loaders(train_ds, val_ds, spatial_dims)
+	logger.info(f"Datasets built in {perf_counter()-start_build:.1f}s")
+	logger.info(f"Dataset loaded - Train: {len(train_ds)}, Val: {len(val_ds)}")
+
+	model = create_model(
+		name=model_name,
+		in_channels=model_cfg.in_channels,
+		out_channels=model_cfg.out_channels,
+		feature_sizes_2d=model_cfg.feature_sizes_2d,
+		feature_sizes_3d=model_cfg.feature_sizes_3d,
+	).to(device)
+	
+	# Log model info
+	total_params = sum(p.numel() for p in model.parameters())
+	trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+	logger.info(f"Model: {model_name} | Total params: {total_params:,} | Trainable: {trainable_params:,}")
+
+	optimizer = AdamW(model.parameters(), lr=train_cfg.lr, weight_decay=train_cfg.weight_decay)
+	scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, target_epochs), eta_min=1e-6)
+	scaler = GradScaler(enabled=train_cfg.amp)
+	# Class weights for CE to reduce background dominance: [bg, class1, class2]
+	ce_weight = torch.tensor([0.2, 1.0, 1.0], device=device)
+	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True, weight=ce_weight)
+
+	post_pred = Compose([AsDiscrete(argmax=True, to_onehot=model_cfg.out_channels)])
+	post_label = Compose([AsDiscrete(to_onehot=model_cfg.out_channels)])
+
+	# Checkpoint paths
+	best_path = os.path.join(paths.models, f"best_{model_name}.pth")
+	latest_path = os.path.join(paths.models, f"latest_{model_name}.pth")
+	history_path = os.path.join(paths.logs, f"training_history_{model_name}.json")
+
+	# Initialize training state
+	start_epoch = 0
+	best_dice = -1.0
+	patience_counter = 0
+	patience = train_cfg.early_stopping_patience
+	training_history = {"train_loss": [], "val_loss": [], "dice": []}
+	
+	# Log training configuration
+	logger.info("Training Configuration:")
+	logger.info(f"  - Model: {model_name}")
+	logger.info(f"  - Spatial dims: {spatial_dims}")
+	logger.info(f"  - Batch size: {train_cfg.batch_size_3d if spatial_dims == 3 else train_cfg.batch_size_2d}")
+	logger.info(f"  - Learning rate: {train_cfg.lr}")
+	logger.info(f"  - AMP: {train_cfg.amp}")
+	logger.info(f"  - Gradient clipping: {train_cfg.clip_grad}")
+	logger.info(f"  - Early stopping patience: {patience}")
+
+	# Resume from checkpoint if provided
+	if resume_from and os.path.exists(resume_from):
+		start_epoch, prev_metrics = load_checkpoint(resume_from, model, optimizer, scaler)
+		best_dice = prev_metrics.get("best_dice", -1.0)
+		logger.info(f"Resumed from epoch {start_epoch}, best dice: {best_dice:.4f}")
+	elif (not no_resume) and os.path.exists(latest_path):
+		start_epoch, prev_metrics = load_checkpoint(latest_path, model, optimizer, scaler)
+		best_dice = prev_metrics.get("best_dice", -1.0)
+		logger.info(f"Resumed from latest checkpoint, epoch {start_epoch}, best dice: {best_dice:.4f}")
+
+	# Target epochs already computed above
+	logger.info(f"Starting training from epoch {start_epoch+1} to {target_epochs}")
+	
+	for epoch in range(start_epoch, target_epochs):
+		model.train()
+		epoch_loss = 0.0
+		num_batches = 0
+		
+		for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{target_epochs} [train]", unit="batch"):
+			inputs = torch.cat([batch["t1"], batch["t1ce"], batch["t2"], batch["flair"]], dim=1).to(device, non_blocking=True)
+			labels = batch.get("label")
+			if labels is None:
+				continue
+			labels = labels.to(device, non_blocking=True)
+
+			optimizer.zero_grad(set_to_none=True)
+			with autocast(enabled=train_cfg.amp):
+				outputs = model(inputs)
+				loss = loss_fn(outputs, labels)
+			
+			# Check for gradient explosion
+			if torch.isnan(loss) or torch.isinf(loss):
+				logger.warning(f"Invalid loss detected at epoch {epoch+1}, batch {num_batches}")
+				continue
+				
+			scaler.scale(loss).backward()
+			
+			# Gradient clipping to prevent explosion
+			if train_cfg.clip_grad and train_cfg.clip_grad > 0:
+				scaler.unscale_(optimizer)
+				grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), train_cfg.clip_grad)
+				if grad_norm > train_cfg.clip_grad * 2:
+					logger.warning(f"Large gradients detected, norm: {grad_norm:.2f}")
+			
+			scaler.step(optimizer)
+			scaler.update()
+			epoch_loss += loss.item()
+			num_batches += 1
+
+		if num_batches == 0:
+			logger.warning(f"No valid batches in epoch {epoch+1}, skipping...")
+			continue
+
+		# Validation
+		mean_dice, val_loss, per_class_dice = validate(model, val_loader, post_pred, post_label, device, spatial_dims)
+		avg_train_loss = epoch_loss / num_batches
+		
+		# Update history
+		training_history["train_loss"].append(avg_train_loss)
+		training_history["val_loss"].append(val_loss)
+		training_history["dice"].append(mean_dice)
+		
+		# Log to TensorBoard
+		writer.add_scalar("Loss/Train", avg_train_loss, epoch)
+		writer.add_scalar("Loss/Validation", val_loss, epoch)
+		writer.add_scalar("Metrics/Dice", mean_dice, epoch)
+		writer.add_scalar("Metrics/Best_Dice", best_dice, epoch)
+		# Per-class dice (if available)
+		if per_class_dice:
+			for cls_idx, cls_dice in enumerate(per_class_dice, start=1):
+				writer.add_scalar(f"Metrics/Dice_Class_{cls_idx}", cls_dice, epoch)
+		
+		# Step scheduler and log learning rate
+		scheduler.step()
+		current_lr = optimizer.param_groups[0]['lr']
+		writer.add_scalar("Learning_Rate", current_lr, epoch)
+		
+		# Save training history (include per-class dice)
+		with open(history_path, 'w') as f:
+			out_hist = dict(training_history)
+			if per_class_dice:
+				out_hist["dice_per_class"] = per_class_dice
+			json.dump(out_hist, f, indent=2)
+
+		# Check for improvement
+		is_best = mean_dice > best_dice
+		if is_best:
+			best_dice = mean_dice
+			patience_counter = 0
+			# Save best model
+			save_checkpoint(model, optimizer, scaler, epoch, 
+			               {"best_dice": best_dice, "val_loss": val_loss}, best_path, is_best=True)
+			logger.info(f"New best model saved! Dice: {best_dice:.4f}")
+		else:
+			patience_counter += 1
+
+		# Save latest checkpoint
+		save_checkpoint(model, optimizer, scaler, epoch, 
+		               {"best_dice": best_dice, "val_loss": val_loss}, latest_path)
+
+		# Log epoch summary
+		logger.info(f"Epoch {epoch+1}/{target_epochs} | "
+		           f"train_loss={avg_train_loss:.4f} | val_loss={val_loss:.4f} | "
+		           f"dice={mean_dice:.4f} | best_dice={best_dice:.4f} | "
+		           f"patience={patience_counter}/{patience}")
+
+		# Early stopping
+		if patience_counter >= patience:
+			logger.info(f"Early stopping triggered after {patience} epochs without improvement")
+			break
+
+	logger.info(f"Training completed. Best dice: {best_dice:.4f} | checkpoint: {best_path}")
+	logger.info(f"Training history saved to: {history_path}")
+	
+	# Close TensorBoard writer
+	writer.close()
+	logger.info("TensorBoard writer closed")
+
+
 if __name__ == "__main__":
-    from config.config import get_config
-    
-    # Get configuration
-    config = get_config('unet3d')
-    
-    # Create trainer
-    trainer = Trainer(config, fold=0)
-    
-    # Train
-    trainer.train()
-    
-    # Or run cross-validation
-    cv_trainer = CrossValidationTrainer(config)
-    cv_trainer.train_all_folds()
+	train()
