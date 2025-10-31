@@ -13,7 +13,7 @@ Based on the problem statement, the primary and secondary objectives of the Orca
 * Primary Objective: To design, build, and train a deep learning model that automatically and accurately segments brain tumors into their constituent sub-regions (enhancing tumor, tumor core, edema) from multi-modal MRI scans.
 
 
-![alt text](image.jpg "Title")
+![alt text](mriModalities.jpg "Title")
 
 Source : [https://www.aimspress.com/](https://www.aimspress.com/)
 
