@@ -25,7 +25,7 @@ class TrainConfig:
 	batch_size_3d: int = 1
 	num_workers: int = 4
 	max_epochs: int = 500
-	lr: float = 1e-3
+	lr: float = 1e-4
 	weight_decay: float = 1e-5
 	amp: bool = True
 	clip_grad: float = 1.0  # Gradient clipping to prevent explosion
@@ -46,7 +46,7 @@ class TrainConfig:
 @dataclass
 class ModelConfig:
 	in_channels: int = 4  # BraTS: T1, T1CE, T2, FLAIR
-	out_channels: int = 3  # WT/TC/ET or background+classes mapping downstream
+	out_channels: int = 3  # WT, TC, ET (multi-channel binary masks)
 	spatial_dims: int = 3
 	feature_sizes_2d: List[int] = None
 	feature_sizes_3d: List[int] = None

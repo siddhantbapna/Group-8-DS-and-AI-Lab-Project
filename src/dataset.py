@@ -19,7 +19,7 @@ from monai.transforms import (
 	RandAffined,
 	ToTensord,
 	EnsureTyped,
-	MapLabelValueD,
+	ConvertToMultiChannelBasedOnBratsClassesd,
 	Resized,
 	SqueezeDimd,
 )
@@ -69,15 +69,23 @@ def _gather_brats_cases(root: str) -> List[Dict[str, str]]:
 
 
 def get_transforms_3d(train: bool) -> Compose:
+	"""
+	3D transforms following notebook approach:
+	- Load images and labels, ensure channel-first
+	- Convert BraTS labels to multi-channel format: WT, TC, ET (3 channels)
+	- Labels become 3-channel binary masks via ConvertToMultiChannelBasedOnBratsClassesd
+	"""
+	# MODALITY_KEYS = ['t1c', 't1n', 't2f', 't2w']
+	# ALL_KEYS = MODALITY_KEYS + ['seg']
 	common = [
-		LoadImaged(keys=["t1", "t1ce", "t2", "flair", "label"], image_only=False),
-		EnsureChannelFirstd(keys=["t1", "t1ce", "t2", "flair", "label"]),
+		LoadImaged(keys=["t1", "t1ce", "t2", "flair", "label"], image_only=True, ensure_channel_first=True),
+		# Convert BraTS labels (0,1,2,3,4) to 3-channel format: [WT, TC, ET]
+		ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
 		Orientationd(keys=["t1", "t1ce", "t2", "flair", "label"], axcodes="RAS"),
 		Spacingd(keys=["t1", "t1ce", "t2", "flair", "label"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear",) * 4 + ("nearest",)),
 		ScaleIntensityRanged(keys=["t1", "t1ce", "t2", "flair"], a_min=0, a_max=1400, b_min=0.0, b_max=1.0, clip=True),
 		CropForegroundd(keys=["t1", "t1ce", "t2", "flair", "label"], source_key="flair"),
-		# Map BraTS labels (0,1,2,3) to (0,1,2) for 3-class segmentation
-		MapLabelValueD(keys=["label"], orig_labels=[0, 1, 2, 3], target_labels=[0, 1, 2, 2]),
+		# Labels are now 3-channel binary masks: [WT, TC, ET]
 	]
 	if train:
 		aug = [
@@ -93,15 +101,20 @@ def get_transforms_3d(train: bool) -> Compose:
 
 
 def get_transforms_2d(train: bool, spatial_dims: int = 2) -> Compose:
+	"""
+	2D pipeline following notebook approach:
+	- Convert labels to 3-channel format (WT, TC, ET) before 2D processing
+	- Resize and squeeze last dim to make slices 2D
+	"""
 	common = [
-		LoadImaged(keys=["t1", "t1ce", "t2", "flair", "label"], image_only=False),
-		EnsureChannelFirstd(keys=["t1", "t1ce", "t2", "flair", "label"]),
+		LoadImaged(keys=["t1", "t1ce", "t2", "flair", "label"], image_only=True, ensure_channel_first=True),
+		# Convert BraTS labels to 3-channel format: [WT, TC, ET]
+		ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
 		Orientationd(keys=["t1", "t1ce", "t2", "flair", "label"], axcodes="RAS"),
 		Spacingd(keys=["t1", "t1ce", "t2", "flair", "label"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear",) * 4 + ("nearest",)),
 		ScaleIntensityRanged(keys=["t1", "t1ce", "t2", "flair"], a_min=0, a_max=1400, b_min=0.0, b_max=1.0, clip=True),
 		CropForegroundd(keys=["t1", "t1ce", "t2", "flair", "label"], source_key="flair"),
-		# Map BraTS labels (0,1,2,3) to (0,1,2) for 3-class segmentation
-		MapLabelValueD(keys=["label"], orig_labels=[0, 1, 2, 3], target_labels=[0, 1, 2, 2]),
+		# Labels are now 3-channel binary masks: [WT, TC, ET]
 	]
 	if train:
 		aug = [

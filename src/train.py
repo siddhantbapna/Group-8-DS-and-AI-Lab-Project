@@ -13,22 +13,66 @@ from torch.utils.tensorboard import SummaryWriter
 
 from monai.data import decollate_batch
 from tqdm import tqdm
-from monai.losses import DiceCELoss
+import torch.nn as nn
 from monai.metrics import DiceMetric
 from monai.inferers import sliding_window_inference
-from monai.transforms import AsDiscrete, Compose
 
 from config.config import paths, train_cfg, model_cfg
 from src.dataset import create_datasets, create_loaders
 from src.models import create_model
 
 
-def validate(model: torch.nn.Module, val_loader, post_pred, post_label, device, spatial_dims=3) -> Tuple[float, float, list]:
+class DiceLoss(nn.Module):
+	"""Dice loss for binary segmentation"""
+	def __init__(self, smooth=1e-6):
+		super(DiceLoss, self).__init__()
+		self.smooth = smooth
+	
+	def forward(self, logits, targets):
+		# Apply sigmoid to logits for binary prediction
+		probs = torch.sigmoid(logits)
+		logits_flat = probs.view(-1)
+		targets_flat = targets.view(-1)
+		intersection = (logits_flat * targets_flat).sum()
+		union = logits_flat.sum() + targets_flat.sum()
+		dice_coeff = (2. * intersection + self.smooth) / (union + self.smooth)
+		return 1 - dice_coeff
+
+
+class DiceBCELoss(nn.Module):
+	"""Combined Dice and BCE loss following notebook approach"""
+	def __init__(self, weight_dice=0.5, weight_bce=0.5):
+		super().__init__()
+		self.dice_loss = DiceLoss()
+		self.bce_loss = nn.BCEWithLogitsLoss()
+		self.weight_dice = weight_dice
+		self.weight_bce = weight_bce
+	
+	def forward(self, logits, targets):
+		dice = self.dice_loss(logits, targets)
+		bce = self.bce_loss(logits, targets)
+		return self.weight_dice * dice + self.weight_bce * bce
+
+
+def dice_score_per_class(preds, targets, smooth=1e-6):
+	"""Compute Dice score per channel (WT, TC, ET) following notebook approach"""
+	preds = torch.sigmoid(preds) > 0.5  # Binary threshold
+	dice_scores = []
+	for i in range(preds.shape[1]):  # Iterate over channels (WT, TC, ET)
+		pred_flat = preds[:, i, ...].contiguous().view(-1)
+		target_flat = targets[:, i, ...].contiguous().view(-1)
+		intersection = (pred_flat * target_flat).sum()
+		union = pred_flat.sum() + target_flat.sum()
+		dice = (2. * intersection + smooth) / (union + smooth)
+		dice_scores.append(dice)
+	return torch.stack(dice_scores)
+
+
+def validate(model: torch.nn.Module, val_loader, loss_fn, device, spatial_dims=3) -> Tuple[float, float, list]:
+	"""Validation following notebook approach: 3-channel predictions directly"""
 	model.eval()
-	dice_metric_mean = DiceMetric(include_background=False, reduction="mean")
-	dice_metric_pc = DiceMetric(include_background=False, reduction="none")
 	val_loss_total = 0.0
-	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
+	all_dice_scores = []
 	
 	# Choose appropriate ROI size and overlap based on spatial dimensions
 	if spatial_dims == 2:
@@ -43,7 +87,7 @@ def validate(model: torch.nn.Module, val_loader, post_pred, post_label, device, 
 			inputs = torch.cat([batch["t1"], batch["t1ce"], batch["t2"], batch["flair"]], dim=1).to(device)
 			labels = batch.get("label")
 			if labels is not None:
-				labels = labels.to(device)
+				labels = labels.to(device)  # Already 3-channel: [WT, TC, ET]
 				
 				# For 2D models, we don't need sliding window inference since inputs are already 2D
 				if spatial_dims == 2:
@@ -56,26 +100,30 @@ def validate(model: torch.nn.Module, val_loader, post_pred, post_label, device, 
 						overlap=overlap,
 						predictor=model,
 					)
+				# pred is logits, shape: [B, 3, ...]
+				# labels is 3-channel binary masks, shape: [B, 3, ...]
 				val_loss_total += loss_fn(pred, labels).item()
-				pred_list = [post_pred(i) for i in decollate_batch(pred)]
-				label_list = [post_label(i) for i in decollate_batch(labels)]
-				# update both mean and per-class metrics
-				dice_metric_mean(y_pred=pred_list, y=label_list)
-				dice_metric_pc(y_pred=pred_list, y=label_list)
+				# Compute Dice per class (WT, TC, ET)
+				dice = dice_score_per_class(pred.cpu(), labels.cpu())
+				all_dice_scores.append(dice)
 			else:
 				continue
-	mean_dice = dice_metric_mean.aggregate().item()
-	per_class_tensor = dice_metric_pc.aggregate()
-	# Convert to a 1D Python list and replace NaNs with None for JSON compatibility
-	per_class = []
-	if hasattr(per_class_tensor, 'detach'):
-		pc = per_class_tensor.detach().cpu()
-		if pc.ndim > 1:
-			pc = pc.mean(dim=0)
-		# Replace NaNs (classes absent in GT) with None
-		per_class = [float(v.item()) if torch.isfinite(v) else None for v in pc]
-	dice_metric_mean.reset()
-	dice_metric_pc.reset()
+	
+	# Aggregate Dice scores across batches
+	if all_dice_scores:
+		avg_dice_per_class = torch.stack(all_dice_scores).mean(0)
+		mean_dice = avg_dice_per_class.mean().item()
+		per_class = [float(v.item()) if torch.isfinite(v) else None for v in avg_dice_per_class]
+	else:
+		mean_dice = 0.0
+		per_class = [None, None, None]
+	
+	# Ensure exactly three entries [WT, TC, ET]
+	if len(per_class) < 3:
+		per_class = per_class + [None] * (3 - len(per_class))
+	elif len(per_class) > 3:
+		per_class = per_class[:3]
+	
 	return mean_dice, val_loss_total / max(1, len(val_loader)), per_class
 
 
@@ -180,12 +228,8 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 	scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, target_epochs), eta_min=1e-6)
 	# Use new torch.amp API; enable only for CUDA
 	scaler = GradScaler("cuda", enabled=(train_cfg.amp and torch.cuda.is_available()))
-	# Class weights for CE to reduce background dominance: [bg, class1, class2]
-	ce_weight = torch.tensor([0.2, 1.0, 1.0], device=device)
-	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True, weight=ce_weight)
-
-	post_pred = Compose([AsDiscrete(argmax=True, to_onehot=model_cfg.out_channels)])
-	post_label = Compose([AsDiscrete(to_onehot=model_cfg.out_channels)])
+	# DiceBCE loss following notebook approach (no class weights needed for binary masks)
+	loss_fn = DiceBCELoss(weight_dice=0.5, weight_bce=0.5).to(device)
 
 	# Checkpoint paths
 	best_path = os.path.join(paths.models, f"best_{model_name}.pth")
@@ -198,6 +242,9 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 	patience_counter = 0
 	patience = train_cfg.early_stopping_patience
 	training_history = {"train_loss": [], "val_loss": [], "dice": [], "dice_per_class": []}
+	# Human-friendly class titles for per-class Dice (foreground classes only)
+	class_titles = ["Whole Tumor (WT)", "Tumor Core (TC)", "Enhancing Tumor (ET)"]
+	training_history["dice_per_class_titles"] = class_titles
 	
 	# Log training configuration
 	logger.info("Training Configuration:")
@@ -263,7 +310,7 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 			continue
 
 		# Validation
-		mean_dice, val_loss, per_class_dice = validate(model, val_loader, post_pred, post_label, device, spatial_dims)
+		mean_dice, val_loss, per_class_dice = validate(model, val_loader, loss_fn, device, spatial_dims)
 		avg_train_loss = epoch_loss / num_batches
 		
 		# Update history
@@ -278,9 +325,9 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 		writer.add_scalar("Metrics/Best_Dice", best_dice, epoch)
 		# Per-class dice (if available)
 		if per_class_dice:
-			for cls_idx, cls_dice in enumerate(per_class_dice, start=1):
+			for cls_idx, (title, cls_dice) in enumerate(zip(class_titles, per_class_dice), start=1):
 				if cls_dice is not None:
-					writer.add_scalar(f"Metrics/Dice_Class_{cls_idx}", cls_dice, epoch)
+					writer.add_scalar(f"Metrics/Dice_{title}", cls_dice, epoch)
 		
 		# Step scheduler and log learning rate
 		scheduler.step()
@@ -311,10 +358,17 @@ def train(model_name: str = "unet3d", spatial_dims: int = 3, resume_from: str = 
 		save_checkpoint(model, optimizer, scaler, epoch, 
 		               {"best_dice": best_dice, "val_loss": val_loss}, latest_path)
 
-		# Log epoch summary
+		# Log epoch summary with per-class dice
+		dice_str_parts = []
+		for i, (title, val) in enumerate(zip(class_titles, per_class_dice)):
+			if val is not None:
+				dice_str_parts.append(f"{title.split()[0]}:{val:.4f}")
+			else:
+				dice_str_parts.append(f"{title.split()[0]}:None")
+		dice_str = ", ".join(dice_str_parts)
 		logger.info(f"Epoch {epoch+1}/{target_epochs} | "
 		           f"train_loss={avg_train_loss:.4f} | val_loss={val_loss:.4f} | "
-		           f"dice={mean_dice:.4f} | best_dice={best_dice:.4f} | "
+		           f"dice={mean_dice:.4f} [{dice_str}] | best_dice={best_dice:.4f} | "
 		           f"patience={patience_counter}/{patience}")
 
 		# Early stopping
