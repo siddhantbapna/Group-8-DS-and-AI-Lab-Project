@@ -92,6 +92,6 @@ Feedback: “Add model architecture diagram and other Recommendations ”
 
 * Integrated all feedback from M3, including documentation clarity.
 * Repository cleaned, commented, and standardized for better maintainability.
-* Model comparison results were compiled and validated.
+* Model comparison results were compiled.
 
 ---

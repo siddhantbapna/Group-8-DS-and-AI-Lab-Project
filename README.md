@@ -8,13 +8,13 @@
 
 **Project ORCA** presents a deep learning–based approach for **automated brain tumor segmentation** using **multi-modal MRI data**.  
 Manual delineation of tumors is time-consuming and prone to subjective variation among radiologists.  
-This project builds an **Attention U-Net–based model** that automatically segments three tumor subregions — enhancing tumor, tumor core, and whole tumor — with strong generalization capability.
+This project builds an **Attention U-Net–based model** that automatically segments three tumor subregions enhancing tumor, tumor core, and whole tumor with strong generalization capability.
 
 Our approach combines **3D patch-based preprocessing**, **attention-driven feature learning**, and **cross-validation training** to achieve accurate and reproducible segmentation results.  
 
 ## Problem Statement (Milestone 1)
 
-Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment planning but is still performed manually — a process that’s **slow and subjective**.  
+Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment planning but is still performed manually, a process that’s **slow and subjective**.  
 **Project ORCA** aims to develop a **deep learning–based automated segmentation model** using the **BraTS dataset**, focusing on accurately identifying tumor sub-regions (enhancing tumor, core, edema) from multi-modal MRI (T1, T1ce, T2, FLAIR).
 
 **Objectives**
@@ -35,7 +35,7 @@ After reviewing U-Net, DeepMedic, V-Net, and Transformer-based methods, we selec
 
 ## Dataset & Preprocessing (Milestone 2)
 
-We use the **BraTS 2023 Dataset** — the global benchmark for brain tumor segmentation — containing 3D multi-modal MRI scans (T1, T1c, T2, FLAIR) and expert-annotated segmentation masks.
+We use the **BraTS 2023 Dataset**, the global benchmark for brain tumor segmentation containing 3D multi-modal MRI scans (T1, T1c, T2, FLAIR) and expert-annotated segmentation masks.
 
 **Why BraTS?**  
 - Clinically relevant and multi-institutional  
@@ -85,7 +85,7 @@ Parallelized CPU processing ensures fast execution and automatic cleanup of raw 
 
 This milestone focuses on designing and implementing the **3D Attention U-Net** model for brain tumor segmentation using multi-modal MRI data.
 
-### **1. Model — 3D Attention U-Net**
+### **1. Model : 3D Attention U-Net**
 
 The **Attention U-Net** enhances the classical U-Net with attention gates that emphasize tumor-relevant regions while suppressing irrelevant background.
 
@@ -136,13 +136,6 @@ Increased compute cost and complexity, but ensures more generalizable performanc
 | Predicted Output | ![Prediction](./Milestone-3/images/0foldsb/SBAttentionUnet_ResultOfBest_1.png)        |
 | Volume View      | ![Volume](./Milestone-3/images/0foldsb/SBAttentionUnet_ResultOfBest_1_Volume.png)     |
 
-**K-Fold Results:**
-
-| Example          | Visualization                                              |
-| :--------------- | :--------------------------------------------------------- |
-| Early Stop       | ![Early Stop](./Milestone-3/images/kfoldsb/SBKfold_Epoch_earlyend.png) |
-| Validation Graph | ![Graph](./Milestone-3/images/kfoldsb/SBKfold_graph_1.png)             |
-| Predicted Volume | ![Volume](./Milestone-3/images/kfoldsb/SBKfold_Volume_1.png)           |
 
 **Notebook:** [attention-btsb.ipynb](./Milestone-3/attention-btsb.ipynb)
 
@@ -162,7 +155,7 @@ This milestone focused on training an **Attention U-Net** using the **BraTS 2023
 
 ### Regularization & Augmentation
 
-Used MONAI Rand transforms — `RandFlipd`, `RandRotate90d`, `RandScaleIntensityd`, `Rand3DElasticd` — with weight decay and intensity normalization to reduce overfitting and boost generalization.
+Used MONAI Rand transforms : `RandFlipd`, `RandRotate90d`, `RandScaleIntensityd`, `Rand3DElasticd` with weight decay and intensity normalization to reduce overfitting and boost generalization.
 
 ### Results
 
@@ -175,7 +168,7 @@ Training achieved stable convergence with validation Dice ≈ **0.9** (after bac
 
 ### Next Steps
 
-Future plans include hyperparameter tuning, experimenting with transformer-based architectures (e.g., Swin UNETR), and exploring ensemble/post-processing techniques for further refinement.
+Future plans include hyperparameter tuning, experimenting with transformer-based architectures, and exploring ensemble/post-processing techniques for further refinement.
 
 ## Repository Structure
 
@@ -268,4 +261,4 @@ This project uses the BraTS 2023 dataset and related benchmark resources for bra
 ---
 
 *Last Updated: October 2025*  
-*Maintained by Group 8 — Project ORCA*
+*Maintained by Group 8 Project ORCA*
