@@ -151,19 +151,19 @@ Increased compute cost and complexity, but ensures more generalizable performanc
 
 | Stage            | Visualization                                                             |
 | :--------------- | :------------------------------------------------------------------------ |
-| Input Sample     | ![Input MRI](./images/0foldsb/SB_input_0.png)                             |
-| Initial Epoch    | ![Initial Training](./images/0foldsb/SBAttentionUnet_InitialTraining.png) |
-| Best Epoch       | ![Best Training](./images/0foldsb/SBAttentionUnet_BestTraining.png)       |
-| Predicted Output | ![Prediction](./images/0foldsb/SBAttentionUnet_ResultOfBest_1.png)        |
-| Volume View      | ![Volume](./images/0foldsb/SBAttentionUnet_ResultOfBest_1_Volume.png)     |
+| Input Sample     | ![Input MRI](./Milestone-3/images/0foldsb/SB_input_0.png)                             |
+| Initial Epoch    | ![Initial Training](./Milestone-3/images/0foldsb/SBAttentionUnet_InitialTraining.png) |
+| Best Epoch       | ![Best Training](./Milestone-3/images/0foldsb/SBAttentionUnet_BestTraining.png)       |
+| Predicted Output | ![Prediction](./Milestone-3/images/0foldsb/SBAttentionUnet_ResultOfBest_1.png)        |
+| Volume View      | ![Volume](./Milestone-3/images/0foldsb/SBAttentionUnet_ResultOfBest_1_Volume.png)     |
 
 **K-Fold Results:**
 
 | Example          | Visualization                                              |
 | :--------------- | :--------------------------------------------------------- |
-| Early Stop       | ![Early Stop](./images/kfoldsb/SBKfold_Epoch_earlyend.png) |
-| Validation Graph | ![Graph](./images/kfoldsb/SBKfold_graph_1.png)             |
-| Predicted Volume | ![Volume](./images/kfoldsb/SBKfold_Volume_1.png)           |
+| Early Stop       | ![Early Stop](./Milestone-3/images/kfoldsb/SBKfold_Epoch_earlyend.png) |
+| Validation Graph | ![Graph](./Milestone-3/images/kfoldsb/SBKfold_graph_1.png)             |
+| Predicted Volume | ![Volume](./Milestone-3/images/kfoldsb/SBKfold_Volume_1.png)           |
 
 **Notebook:** [attention-btsb.ipynb](./Milestone-3/attention-btsb.ipynb)
 
