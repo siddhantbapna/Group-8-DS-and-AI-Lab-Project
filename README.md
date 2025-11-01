@@ -1,7 +1,6 @@
 # Project ORCA  
 ### Deep Learning for Automated Brain Tumor Segmentation  
 **Group-8-DS-and-AI-Lab-Project**  
-**Group-8-DS-and-AI-Lab-Project**  
 
 ---
 
@@ -224,52 +223,6 @@ Future plans include hyperparameter tuning, experimenting with transformer-based
             torchSummary.png
             trainingGraph.jpg
 ```
-## Repository Structure
-
-```bash
-│   README.md
-│
-├───Milestone-1
-│       milestone_1.md
-│       mriModalities.jpg
-│
-├───Milestone-2
-│       eda-brats2023.ipynb
-│       eda-brats2023_3D-patches.ipynb
-│       eda-brats2023_with_3d.ipynb
-│       milestone_2.md
-│
-├───Milestone-3
-│   │   attention-btsb.ipynb
-│   │   milestone_3.md
-│   │
-│   └───images
-│       │   model.png
-│       │
-│       ├───0foldsb
-│       │       SBAttentionUnet_BestTraining.png
-│       │       SBAttentionUnet_InitialTraining.png
-│       │       SBAttentionUnet_ResultOfBest_1.png
-│       │       SBAttentionUnet_ResultOfBest_1_Volume.png
-│       │       SBAttentionUnet_ResultOfBest_2.png
-│       │       SB_input_0.png
-│       │       SB_input_1.png
-│       │       SB_modelSum.png
-│       │
-│       └───kfoldsb
-│               SBKfold_Epoch_1.png
-│               SBKfold_Epoch_best.png
-│               SBKfold_Epoch_earlyend.png
-│               SBKfold_graph_1.png
-│               SBKfold_Volume_1.png
-│
-└───Milestone-4
-    │   milestone_4.md
-    │
-    └───images
-            torchSummary.png
-            trainingGraph.jpg
-```
 
 ## Quick Links
 
@@ -279,40 +232,6 @@ Future plans include hyperparameter tuning, experimenting with transformer-based
 | Milestone 2: EDA & Preprocessing | [Milestone-2/](./Milestone-2/) |
 | Milestone 3: Model Architecture | [Milestone-3/](./Milestone-3/) |
 | Milestone 4: Training & Evaluation | [Milestone-4/](./Milestone-4/) |
-
-## Dataset Citation and Credit
-
-This project uses the BraTS 2023 dataset and related benchmark resources for brain tumor segmentation research.
-
-- A. Karargyris, R. Umeton, M.J. Sheller, A. Aristizabal, J. George, A. Wuest, S. Pati, et al.  
-  "Federated benchmarking of medical artificial intelligence with MedPerf".  
-  *Nature Machine Intelligence*, 5:799–810 (2023).  
-  [DOI: 10.1038/s42256-023-00652-2](https://doi.org/10.1038/s42256-023-00652-2)  
-
-- U. Baid, et al.  
-  "The RSNA-ASNR-MICCAI BraTS 2021 Benchmark on Brain Tumor Segmentation and Radiogenomic Classification".  
-  arXiv:2107.02314 (2021).  
-  [arXiv link](https://arxiv.org/abs/2107.02314)  
-
-- B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al.  
-  "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)".  
-  *IEEE Transactions on Medical Imaging*, 34(10):1993–2024 (2015).  
-  [DOI: 10.1109/TMI.2014.2377694](https://doi.org/10.1109/TMI.2014.2377694)  
-
-- S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al.  
-  "Advancing The Cancer Genome Atlas glioma MRI collections with expert annotations".  
-
-- S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al.  
-  "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-GBM collection".  
-  *The Cancer Imaging Archive*, 2017.  
-  [DOI: 10.7937/K9/TCIA.2017.KLXWJJ1Q](https://doi.org/10.7937/K9/TCIA.2017.KLXWJJ1Q)  
-
-- S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al.  
-  "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-LGG collection".  
-  *The Cancer Imaging Archive*, 2017.  
-  [DOI: 10.7937/K9/TCIA.2017.GJQ7R0EF](https://doi.org/10.7937/K9/TCIA.2017.GJQ7R0EF)  
-
-Here is a suggested addition of the dataset citations with credit formatted for your markdown README under a new section "Dataset Citation and Credit":
 
 ## Dataset Citation and Credit
 
