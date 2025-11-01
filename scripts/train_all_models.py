@@ -36,8 +36,7 @@ def run_training(model_name: str, epochs: int, spatial_dims: int = 3) -> bool:
             sys.executable, "main.py",
             "--model", model_name,
             "--mode", "train",
-            "--epochs", str(epochs),
-            "--no-resume",
+            "--epochs", str(epochs)
         ]
         
         print(f"Running command: {' '.join(cmd)}")
@@ -70,7 +69,8 @@ def run_training(model_name: str, epochs: int, spatial_dims: int = 3) -> bool:
 
 def get_available_models() -> List[str]:
     """Get list of available models"""
-    return ["unet2d", "unet3d", "attenunet", "nnunet", "resunet", "vnet"]
+    # return ["unet2d", "unet3d", "attenunet", "nnunet", "resunet", "vnet"]
+    return ["unet3d", "resunet", "attenunet", "nnunet","vnet"]
 
 
 def check_model_completion(model_name: str) -> bool:

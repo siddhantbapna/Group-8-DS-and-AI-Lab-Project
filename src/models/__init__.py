@@ -11,16 +11,16 @@ def create_model(
 	feature_sizes_2d: list[int] | None = None,
 	feature_sizes_3d: list[int] | None = None,
 ):
-	if name == "unet2d":
-		return UNet(
-			spatial_dims=2,
-			in_channels=in_channels,
-			out_channels=out_channels,
-			channels=feature_sizes_2d or [32, 64, 128, 256],
-			strides=(2, 2, 2, 2),
-			num_res_units=2,
-		)
-	elif name == "unet3d":
+	# if name == "unet2d":
+	# 	return UNet(
+	# 		spatial_dims=2,
+	# 		in_channels=in_channels,
+	# 		out_channels=out_channels,
+	# 		channels=feature_sizes_2d or [32, 64, 128, 256],
+	# 		strides=(2, 2, 2, 2),
+	# 		num_res_units=2,
+	# 	)
+	if name == "unet3d":
 		return UNet(
 			spatial_dims=3,
 			in_channels=in_channels,
@@ -39,13 +39,20 @@ def create_model(
 		)
 	elif name == "nnunet":
 		# DynUNet with nnUNet-like config
+		# Standard configuration with proper encoder/decoder structure
+		filters = feature_sizes_3d or [16, 32, 64, 128]
+		num_layers = len(filters)
+		
 		return DynUNet(
 			spatial_dims=3,
 			in_channels=in_channels,
 			out_channels=out_channels,
-			kernel_size=[[3, 3, 3]] * 4,
-			strides=[[1, 1, 1], [2, 2, 2], [2, 2, 2], [2, 2, 2]],
-			filters=feature_sizes_3d or [16, 32, 64, 128],
+			kernel_size=[[3, 3, 3]] * num_layers,
+			strides=[[1, 1, 1]] + [[2, 2, 2]] * (num_layers - 1),  # First layer stride=1, rest stride=2
+			filters=filters,
+			deep_supervision=False,  # Disable deep supervision for simplicity
+			norm_name="instance",
+			act_name="leakyrelu",
 		)
 	elif name == "resunet":
 		return SegResNet(
