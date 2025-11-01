@@ -16,171 +16,189 @@ Our approach combines **3D patch-based preprocessing**, **attention-driven featu
 
 ## Problem Statement (Milestone 1)
 
-Brain tumors vary in size, shape, and location, making manual segmentation from MRI scans a **complex and inconsistent** process.  
-The **need for automation** arises from:
+Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment planning but is still performed manually — a process that’s **slow and subjective**.  
+**Project ORCA** aims to develop a **deep learning–based automated segmentation model** using the **BraTS dataset**, focusing on accurately identifying tumor sub-regions (enhancing tumor, core, edema) from multi-modal MRI (T1, T1ce, T2, FLAIR).
 
-- The **sheer volume** of MRI data radiologists must analyze.
-- The **inherent subjectivity** of manual tumor boundary delineation.
-- The **clinical importance** of tumor subregion identification for treatment planning.
+**Objectives**
+- Automate brain tumor segmentation with deep learning.  
+- Leverage multi-modal MRI for robust predictions.  
+- Generate quantitative tumor volume outputs.  
+- Prototype a report generator for clinical interpretation.
 
-**Goal:**  
-> Develop an automated deep learning model capable of accurately segmenting brain tumors across multiple MRI modalities, while maintaining high Dice and IoU scores comparable to expert annotations.
+<p align="center">
+  <img src="./Milestone-1/mriModalities.jpg" width="450"/><br>
+  <em>MRI modalities in BraTS dataset</em>
+</p>
 
-**Challenges Identified:**
-- Data imbalance between tumor subregions.
-- Need for 3D spatial context in segmentation.
-- Large dataset size and preprocessing complexity.
+**Chosen Approach**  
+After reviewing U-Net, DeepMedic, V-Net, and Transformer-based methods, we selected **Attention U-Net** for its ability to focus on relevant tumor regions through attention gating.
+
+**Evaluation Metrics:** Dice Similarity Coefficient (DSC).
 
 ---
 
 ## Dataset & Preprocessing (Milestone 2)
 
-### Dataset
-- **Dataset:** BraTS 2023 (RSNA-ASNR-MICCAI Challenge)
-- **Modalities Used:**
-  - T1-weighted
-  - T1Gd (post-contrast)
-  - T2-weighted
-  - FLAIR
-- **Ground Truth Labels:**  
-  - **ET (Enhancing Tumor)**
-  - **TC (Tumor Core)**
-  - **WT (Whole Tumor)**
+We use the **BraTS 2023 Dataset** — the global benchmark for brain tumor segmentation — containing 3D multi-modal MRI scans (T1, T1c, T2, FLAIR) and expert-annotated segmentation masks.
 
-### Preprocessing Pipeline
-1. **NIfTI File Handling** — Loaded `.nii.gz` MRI volumes.
-2. **Normalization:**
-   - Applied z-score normalization to each modality.
-   - Ensured consistent intensity distributions.
-3. **Resampling:**
-   - Resized all volumes to `(128, 128, 128)` for uniformity.
-4. **3D Patch Extraction:**
-   - Split volumes into overlapping **3D patches (64×64×64)**.
-   - Reduced memory load for training.
-5. **Augmentation:**
-   - Random flips, rotations, and brightness scaling to improve robustness.
+**Why BraTS?**  
+- Clinically relevant and multi-institutional  
+- High-quality expert annotations  
+- Publicly available (CC BY-NC 4.0) for academic use  
+- Standard benchmark for comparing medical AI models  
+
+> Data source: [Synapse ID – syn51156910](https://www.synapse.org/#!Synapse:syn51156910)  
+> Processed dataset hosted at: [Kaggle – sb23-2](https://www.kaggle.com/datasets/siddhantbapna/sb23-2/data)
+
+---
 
 ### Exploratory Data Analysis
-- Visualized intensity distributions per modality.
-- Compared tumor volume ratios across subregions.
-- Confirmed class balance and dataset integrity.
+EDA revealed:
+- Consistent 3D dimensions (`240×240×155`) and voxel spacing `(1.0, 1.0, 1.0)`  
+- Variable intensity ranges → required normalization  
+- Tumor sub-regions not always present in each case  
+- Correct mask–image alignment verified visually
 
-> *For detailed visualizations and code, refer to:*  
-> `Milestone-2/eda-brats2023_with_3d.ipynb`
+**Notebooks:**
+
+* [EDA – brats2023.ipynb](./Milestone-2/eda-brats2023.ipynb)
+* [EDA – 3D patches.ipynb](./Milestone-2/eda-brats2023_3D-patches.ipynb)
+* [EDA – with 3D view.ipynb](./Milestone-2/eda-brats2023_with_3d.ipynb)
+
+
+---
+
+### Preprocessing Pipeline
+Implemented using **MONAI** for robust medical image handling.
+
+Steps:
+1. Load `.nii.gz` MRI volumes (T1, T1c, T2, FLAIR, seg)  
+2. Normalize intensity to [0 – 1]  
+3. Crop non-brain background  
+4. Resize to `(128×128×128)`  
+5. Convert segmentation masks to multi-channel format  
+6. Save processed tensors as compressed `.npz` files  
+
+Parallelized CPU processing ensures fast execution and automatic cleanup of raw data.
+
+---
+
+### Data Integrity & Splitting
+- Verified each `.npz` file via load test to detect corruption  
+- Split data 80 % train / 20 % validation using `train_test_split` (`random_state = 42`)  
+- Ensures reproducibility and balanced tumor representation  
+
+---
+
+**Output:**  
+- `train_files` → list of training samples  
+- `val_files` → list of validation samples
 
 ---
 
 ## Model Architecture (Milestone 3)
 
-### Architecture: Attention U-Net
-Project ORCA builds upon **U-Net**, enhanced with **Attention Gates (AGs)** to focus on relevant spatial regions.
+This milestone focuses on designing and implementing the **3D Attention U-Net** model for brain tumor segmentation using multi-modal MRI data.
 
-#### Key Components:
-| Layer | Function |
-|--------|-----------|
-| **Encoder** | 3D convolutions + batch normalization + ReLU |
-| **Attention Gates** | Dynamically suppress irrelevant background features |
-| **Decoder** | Skip connections + upsampling for spatial reconstruction |
-| **Output Layer** | 1×1 convolution → sigmoid activation |
+---
+
+### **1. Model — 3D Attention U-Net**
+
+The **Attention U-Net** enhances the classical U-Net with attention gates that emphasize tumor-relevant regions while suppressing irrelevant background.
+
+```python
+model = AttentionUnet(
+    spatial_dims=3, in_channels=4, out_channels=3,
+    channels=(16, 32, 64, 128, 256), strides=(2, 2, 2, 2)
+)
+```
+
+**Architecture Overview:**
+
+* **Encoder:** 3D convolutions + down-sampling to extract hierarchical features.
+* **Decoder:** Transposed convolutions + skip connections with attention gates.
+* **Output:** 3-channel logits → `(3, 128, 128, 128)` (WT, TC, ET).
+
+**Loss:** `0.5 * DiceLoss + 0.5 * BCEWithLogitsLoss`
+**Metric:** Mean Dice Score (average of WT, TC, ET).
 
 <p align="center">
-  <img src="./Milestone-3/images/model.png" width="550"/>
+  <img src="./Milestone-3/images/model.png" width="600"/><br>
+  <em>3D Attention U-Net architecture (Milestone 3)</em>
 </p>
 
-#### Implementation:
-- Framework: **PyTorch**
-- Input size: **(4, 128, 128, 128)** (4 MRI modalities)
-- Loss Function: **Dice Loss + Cross Entropy**
-- Optimizer: **AdamW**
-- Learning Rate: **1e-4**
-- Scheduler: **ReduceLROnPlateau**
+---
 
-> **Why Attention U-Net?**  
-> Unlike vanilla U-Net, the Attention U-Net dynamically highlights tumor-relevant regions while suppressing background noise — improving segmentation precision on heterogeneous MRI volumes.
+### **2. Training Strategy**
+
+Two setups were tested:
+
+* **Single-Fold Training:** Baseline model performance evaluation.
+* **K-Fold Cross Validation (K=5):** Improves robustness and reliability.
+
+**Advantages of K-Fold:**
+
+* Uses all samples for training & validation.
+* Reduces overfitting & split bias.
+* Enables model ensembling.
+
+**Trade-offs:**
+Increased compute cost and complexity, but ensures more generalizable performance.
+
+---
+
+### **3. Key Visuals**
+
+| Stage            | Visualization                                                             |
+| :--------------- | :------------------------------------------------------------------------ |
+| Input Sample     | ![Input MRI](./images/0foldsb/SB_input_0.png)                             |
+| Initial Epoch    | ![Initial Training](./images/0foldsb/SBAttentionUnet_InitialTraining.png) |
+| Best Epoch       | ![Best Training](./images/0foldsb/SBAttentionUnet_BestTraining.png)       |
+| Predicted Output | ![Prediction](./images/0foldsb/SBAttentionUnet_ResultOfBest_1.png)        |
+| Volume View      | ![Volume](./images/0foldsb/SBAttentionUnet_ResultOfBest_1_Volume.png)     |
+
+**K-Fold Results:**
+
+| Example          | Visualization                                              |
+| :--------------- | :--------------------------------------------------------- |
+| Early Stop       | ![Early Stop](./images/kfoldsb/SBKfold_Epoch_earlyend.png) |
+| Validation Graph | ![Graph](./images/kfoldsb/SBKfold_graph_1.png)             |
+| Predicted Volume | ![Volume](./images/kfoldsb/SBKfold_Volume_1.png)           |
+
+**Notebook:** [attention-btsb.ipynb](./Milestone-3/attention-btsb.ipynb)
 
 ---
 
 ## Model Training (Milestone 4)
 
-### Training Setup
-| Parameter | Value |
-|------------|--------|
-| **Epochs** | 150 |
-| **Batch Size** | 4 |
-| **Optimizer** | AdamW |
-| **Loss Function** | Dice + CrossEntropy |
-| **Validation Split** | 20% |
-| **Cross-Validation** | 5-Fold (K-Fold SB configuration) |
+This milestone focused on training an **Attention U-Net** using the **BraTS 2023** dataset for brain tumor segmentation. Multi-modal MRI scans (T1, T2, FLAIR, T1ce) were preprocessed via normalization, resampling, and cropping to `(128×128×128)` for consistent input.
 
-### Training Procedure
-- Monitored loss and Dice score per epoch.
-- Saved best checkpoints (`val_loss`-based).
-- Used early stopping to prevent overfitting.
-- Employed **GPU acceleration** (Colab T4 GPU).
+### Model & Setup
 
-### Sample Outputs
-| Visualization | Description |
-|----------------|--------------|
-| ![](./Milestone-3/images/0foldsb/SBAttentionUnet_BestTraining.png) | Loss vs. Dice per epoch |
-| ![](./Milestone-4/images/trainingGraph.jpg) | Final Training Curve |
-| ![](./Milestone-3/images/0foldsb/SBAttentionUnet_ResultOfBest_1.png) | Sample Segmentation Results |
+* **Framework**: MONAI
+* **Input/Output**: 4-channel MRI → 3 tumor classes (WT, TC, ET)
+* **Loss**: Dice + BCE
+* **Optimizer**: AdamW (`lr=1e-4`) with polynomial LR decay
+* **Batch Size**: 2 **Epochs**: 40 **Early Stop**: Patience 7
+* **Precision**: AMP (mixed-precision)
+* **Environment**: Kaggle GPU (P100)
 
----
+### Regularization & Augmentation
 
-## Evaluation Metrics
+Used MONAI Rand transforms — `RandFlipd`, `RandRotate90d`, `RandScaleIntensityd`, `Rand3DElasticd` — with weight decay and intensity normalization to reduce overfitting and boost generalization.
 
-| Metric | Description | Formula |
-|---------|--------------|----------|
-| **Dice Score** | Overlap between prediction and ground truth | 2TP / (2TP + FP + FN) |
-| **IoU** | Intersection over Union | TP / (TP + FP + FN) |
-| **Sensitivity** | True positive rate | TP / (TP + FN) |
-| **Specificity** | True negative rate | TN / (TN + FP) |
+### Results
 
-### Quantitative Results
+Training achieved stable convergence with validation Dice ≈ **0.9** (after background correction). Early stopping helped prevent overfitting, and qualitative results showed clear segmentation of tumor regions.
 
-| Region | Dice | IoU |
-|---------|------|-----|
-| Whole Tumor | 0.89 | 0.80 |
-| Tumor Core | 0.84 | 0.76 |
-| Enhancing Tumor | 0.81 | 0.73 |
+**Best model saved as:**
+`best_model_fold_0_newsb1,2,3,4,5.pth`
 
-> *The Attention U-Net demonstrated strong generalization across K-Folds, achieving mean Dice > 0.85.*
+![Training vs Validation Curves](Milestone-4/images/trainingGraph.jpg)
 
----
+### Next Steps
 
-## Summary of Findings
-
-- The Attention U-Net achieved consistent segmentation performance with strong localization of tumor regions.  
-- Incorporating 3D patch extraction improved training stability and reduced GPU memory usage.  
-- Dice scores indicated reliable overlap with expert annotations.
-
----
-
-## Future Work
-
-- Extend to **multi-task learning** with survival prediction.  
-- Implement **Transformer-based U-Net variants (TransUNet)**.  
-- Optimize inference time for deployment in clinical settings.
-
----
-
-## Key Takeaways
-
-| Aspect | Approach | Outcome |
-|---------|-----------|----------|
-| **Data** | BraTS 2023 with 4 MRI modalities | Rich volumetric representation |
-| **Model** | Attention U-Net | Focused segmentation |
-| **Training** | K-Fold Cross-Validation | Stable generalization |
-| **Performance** | Dice ≈ 0.85–0.89 | High accuracy |
-| **Goal** | Automated clinical segmentation | Achieved |
-
----
-
-## References
-
-1. Baid, U. et al., *The RSNA-ASNR-MICCAI BraTS 2021 Benchmark*, arXiv:2107.02314 (2021)  
-2. Menze, B.H. et al., *The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)*, IEEE TMI, 2015  
-3. Oktay, O. et al., *Attention U-Net: Learning Where to Look for the Pancreas*, arXiv:1804.03999 (2018)
+Future plans include hyperparameter tuning, experimenting with transformer-based architectures (e.g., Swin UNETR), and exploring ensemble/post-processing techniques for further refinement.
 
 ---
 
