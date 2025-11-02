@@ -206,7 +206,7 @@ Training progress was monitored using TensorBoard, which logs metrics at each ep
 - **Metrics/Dice_ET**: Dice score for Enhancing Tumor
 - **Learning_Rate**: Current learning rate value
 
-![Training and Validation Loss Curves](imagesresunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
+![Training and Validation Loss Curves](images/resunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
 
 *Figure 1: Training and validation loss curves showing model convergence during training. The training loss decreases steadily while validation loss shows the model's generalization performance.*
 
@@ -235,7 +235,7 @@ Training progress was monitored using TensorBoard, which logs metrics at each ep
 
 The training process demonstrates stable convergence, with the training loss decreasing significantly and validation loss following a similar trend initially. The per-class Dice scores (WT, TC, ET) show the model's ability to segment different tumor subregions, with whole tumor typically achieving the highest scores due to its larger spatial extent.
 
-![Training and Validation Loss Curves](imagesresunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
+![Training and Validation Loss Curves](images/resunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
 
 ### Observed Behavior
 
