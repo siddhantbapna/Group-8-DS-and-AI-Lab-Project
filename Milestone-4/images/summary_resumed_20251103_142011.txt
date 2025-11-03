@@ -1,0 +1,220 @@
+ResUNet Hyperparameter Tuning Summary (Resumed)
+============================================================
+
+Best Configuration:
+  Run ID: resunet_hp_04_20251101_231416
+  Best Dice: 0.7807
+  Best Epoch: 18
+
+Configuration:
+  lr: 0.0001
+  weight_decay: 1e-05
+  init_filters: 32
+  blocks_down: [1, 2, 2, 4]
+  blocks_up: [1, 1, 1]
+  weight_dice: 0.5
+  weight_bce: 0.5
+
+
+All Results (sorted by Dice):
+------------------------------------------------------------
+Run: resunet_hp_04_20251101_231416 | Dice: 0.7807 | Epoch: 18
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 32,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_07_20251101_231416 | Dice: 0.7780 | Epoch: 18
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        3,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_08_20251101_231416 | Dice: 0.7727 | Epoch: 20
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        2,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_09_20251101_231416 | Dice: 0.7656 | Epoch: 20
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.7,
+    "weight_bce": 0.3
+}
+
+Run: resunet_hp_03_20251101_231416 | Dice: 0.7651 | Epoch: 19
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_10_20251102_233339 | Dice: 0.7621 | Epoch: 19
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.3,
+    "weight_bce": 0.7
+}
+
+Run: resunet_hp_01_20251101_231416 | Dice: 0.7609 | Epoch: 20
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_06_20251101_231416 | Dice: 0.7568 | Epoch: 17
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        1,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_02_20251101_231416 | Dice: 0.7386 | Epoch: 19
+  Config: {
+    "lr": 0.0005,
+    "weight_decay": 1e-05,
+    "init_filters": 16,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
+Run: resunet_hp_05_20251101_231416 | Dice: 0.7262 | Epoch: 18
+  Config: {
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "init_filters": 8,
+    "blocks_down": [
+        1,
+        2,
+        2,
+        4
+    ],
+    "blocks_up": [
+        1,
+        1,
+        1
+    ],
+    "weight_dice": 0.5,
+    "weight_bce": 0.5
+}
+
