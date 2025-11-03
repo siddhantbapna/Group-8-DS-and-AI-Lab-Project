@@ -34,7 +34,7 @@ The NIfTI files were preprocessed into .npz arrays using a MONAI pipeline. The f
 7. **Resized**: Resized the cropped volumes to a fixed shape of (128, 128, 128).
 8. **EnsureTyped**: Converted tensors to torch.float16 to reduce storage requirements.
 
-A detailed Pre Preprocessing details can be found here: ![Milestone 3](../Milestone-2/milestone_2.md)
+A detailed Pre Preprocessing details can be found here: [Milestone 2](../Milestone-2/milestone_2.md)
 
 ### Model Architecture
 
@@ -50,7 +50,7 @@ The model chosen for this milestone is an Attention U-Net built with the MONAI f
 
 ![3D Attention U-Net Architecture](../Milestone-3/images/model.png)
 
-A detailed layer-wise breakdown of the architecture can be found here: ![Milestone 3](../Milestone-3/milestone_3.md)
+A detailed layer-wise breakdown of the architecture can be found here: [Milestone 3](../Milestone-3/milestone_3.md)
 
 ### Training Setup
 
