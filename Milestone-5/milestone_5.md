@@ -106,14 +106,13 @@ Training progress was monitored using TensorBoard, which logs metrics at each ep
 *Figure 3: Learning rate schedule showing the cosine annealing decay pattern. The learning rate gradually decreases from the initial value to the minimum value over the training epochs.*
 
 
-![Overview](images/resunet_20251101_125527_overview.png,"Overview")
+![Overview](images/resunet_20251101_125527_overview.png "Learning Rate Decay")
 
 
 *Figure 4: Shows Overview.*
 
-![Hyperparameter Tuning Results](images/1_best_dice_comparison.png, "Hyperparameter Comparison")
-![Hyperparameter Tuning Results](images/5_convergence_comparison.png, "Hyperparameter Convergence")
-
+![Learning Rate Schedule](images/1_best_dice_comparison.png "Learning Rate Decay")
+![Learning Rate Schedule](images/v5_convergence_comparison.png "Learning Rate Decay")
 
 *Figure 4: Results from hyperparameter tuning experiments showing the impact of different configurations on model performance. Visualizes the relationship between hyperparameters and achieved Dice scores.*
 
