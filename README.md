@@ -71,7 +71,7 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
     │   milestone_4.md
     └───images/
             torchSummary.png
-            trainingGraph.jpg
+            trainingGraph.png
 ```
 
 ## 5. Reproducibility Setup
