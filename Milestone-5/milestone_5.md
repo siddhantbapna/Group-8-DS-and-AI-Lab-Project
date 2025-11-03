@@ -111,8 +111,8 @@ Training progress was monitored using TensorBoard, which logs metrics at each ep
 
 *Figure 4: Shows Overview.*
 
-![Hyperparameter Tuning Results](images/resunet_20251101_125527_overview.png, "Hyperparameter Comparison")
-![Hyperparameter Tuning Results](images/5_convergence_comparison.png, "Hyperparameter Convergence")
+![Hyperparameter Tuning Results](images/1_best_dice_comparison.png,"Hyperparameter Comparison")
+![Hyperparameter Tuning Results](images/5_convergence_comparison.png,"Hyperparameter Convergence")
 
 
 *Figure 4: Results from hyperparameter tuning experiments showing the impact of different configurations on model performance. Visualizes the relationship between hyperparameters and achieved Dice scores.*
