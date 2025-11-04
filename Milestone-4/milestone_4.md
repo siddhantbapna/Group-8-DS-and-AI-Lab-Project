@@ -225,6 +225,35 @@ The saved checkpoints reflect attempts to preserve the model’s best state duri
 | 93    ♣ | 0.0756        | 0.0957          | 0.7812         | 0.8033    | 0.8725    | 0.6679    |
 
 
+#### Visual Results
+
+<details open>
+  <summary>Epoch 22</summary>
+  <img src="./images/epochPerformace/22.png" width="500">
+</details>
+
+<details>
+  <summary>Epoch 33</summary>
+  <img src="./images/epochPerformace/33.png" width="500">
+</details>
+
+<details>
+  <summary>Epoch 55</summary>
+  <img src="./images/epochPerformace/55.png" width="500">
+</details>
+
+<details>
+  <summary>Epoch 67</summary>
+  <img src="./images/epochPerformace/67.png" width="500">
+</details>
+
+<details>
+  <summary>Epoch 93</summary>
+  <img src="./images/epochPerformace/93.png" width="500">
+</details>
+
+
+
 ### Observed Behavior
 
 Training proceeded as expected, with the model learning to segment tumor regions effectively. Data augmentation and a robust loss function helped minimize overfitting. 
