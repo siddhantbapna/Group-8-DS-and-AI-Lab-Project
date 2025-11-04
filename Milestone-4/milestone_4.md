@@ -103,15 +103,58 @@ AMP was used to speed up computation and allow larger batch sizes within GPU mem
 * **Class-wise performance monitoring** to identify bias and guide targeted adjustments.
 * **Weighted loss tuning and early stopping** to improve generalization for minority classes.
 
-After these refinements, the model achieved **overall Dice scores exceeding 0.9**, indicating strong convergence. However, closer analysis revealed that this high performance was **dominated by background accuracy (~99%)**, masking poor segmentation quality in tumor subregions.
+  After these refinements, the model achieved **overall Dice scores exceeding 0.9**, indicating strong convergence. However, closer analysis revealed that this high performance was **dominated by background accuracy (~99%)**, masking poor segmentation quality in tumor subregions.
 
-Detailed class-wise evaluation showed:
+  Detailed class-wise evaluation showed:
+  * **Peritumoral Edema:** 76.23% Dice — the best-performing tumor class, achieving near-clinical reliability for edema delineation.
+  * * **Enhancing Tumor:** 55.65% Dice — moderate detection performance, with fragmented predictions in heterogeneous regions.
+  * * **Necrotic Core:** 5.73% Dice — consistently under-segmented due to extreme scarcity of examples.
+  * * **Background:** ~99% Dice — excellent but disproportionally influences overall metrics.
 
-* **Peritumoral Edema:** 76.23% Dice — the best-performing tumor class, achieving near-clinical reliability for edema delineation.
-* **Enhancing Tumor:** 55.65% Dice — moderate detection performance, with fragmented predictions in heterogeneous regions.
-* **Necrotic Core:** 5.73% Dice — consistently under-segmented due to extreme scarcity of examples.
-* **Background:** ~99% Dice — excellent but disproportionally influences overall metrics.
+4. ### Hyperparameter Tuning (Attention U-Net)
 
+   To optimize model performance, a hyperparameter sweep was performed across several configurations.
+   The tuning aimed to improve Dice score by exploring different learning rates, regularization strengths, and architectural channel depths.
+
+   #### Parameters Explored
+
+   | Parameter                         | Values Tested                                             |
+   | --------------------------------- | --------------------------------------------------------- |
+   | **Learning Rate (lr)**            | 5e-05, 0.0001, 0.0005                                     |
+   | **Batch Size**                    | 1, 2                                                      |
+   | **Patience (Early Stop)**         | 7                                                         |
+   | **Gradient Clipping (clip_grad)** | 0.5, 1.0, 2.0                                             |
+   | **Weight Decay**                  | 1e-05, 1e-04                                              |
+   | **Encoder-Decoder Channels**      | (8,16,32,64,128), (16,32,64,128,256), (32,64,128,256,512) |
+   | **Dice–BCE Loss Weights**         | (0.5,0.5), (0.3,0.7), (0.7,0.3)                           |
+
+   #### Best Configuration
+
+   | Parameter             | Value                             |
+   | --------------------- | --------------------------------- |
+   | Run ID                | `attenunet_hp_03_20251103_222818` |
+   | **Dice Score**        | **0.4919**                        |
+   | **Epoch**             | 16                                |
+   | **Learning Rate**     | 0.0001                            |
+   | **Batch Size**        | 2                                 |
+   | **Gradient Clipping** | 1.0                               |
+   | **Weight Decay**      | 1e-05                             |
+   | **Channels**          | (16, 32, 64, 128, 256)            |
+   | **Loss Weights**      | Dice: 0.5, BCE: 0.5               |
+
+   #### Observations
+   * **Learning rate** had the most significant effect on performance — increasing from 0.0001 to **0.0005** yielded the best Dice improvement (+0.002–0.006).
+   * * **Batch size 2** consistently outperformed batch size 1, indicating better gradient stability.
+   * * **Gradient clipping of 1.0** provided the most stable convergence; both higher (2.0) and lower (0.5) values led to slightly reduced Dice.
+   * * **Balanced Dice–BCE loss (0.5,0.5)** worked best across runs, suggesting equal emphasis on region overlap and pixel-wise accuracy benefits training stability.
+   * * Changing the **number of channels** showed clear trends:
+     * * Too few channels (8–128) underfit (Dice ~0.27),
+     * * Too many (32–512) overfit (Dice ~0.26),
+     * * Mid-depth (16–256) yielded the best performance (~0.49).
+
+   #### Outcome
+   The best Attention U-Net model achieved a **Dice score of 0.4919**, demonstrating the benefit of fine-tuning optimization hyperparameters.
+   These insights informed subsequent refinements and training stability improvements.
 
 ### Regularization and Optimization Techniques
 
@@ -285,9 +328,6 @@ To ensure consistency, the dataset splitting was controlled using random_state=4
 ### Observations and Notes for Next Milestone
 
 #### Ideas for Further Tuning or Improvements
-
-- **Hyperparameter Tuning**: The current model uses a fixed learning rate and scheduler. A more systematic search for optimal learning rates (e.g., 1e-5 to 5e-4) and scheduler parameters will be conducted.
-    - Milestone 5 Plan: Test by running some epoch with different configuration of the parameter to see if we can improve the accuracy.
 
 - **Model Architecture**: Testing alternative architectures, such as ResUnet and then using them as an ensemble with our current model.
     - Milestone 5 Plan: Test the ResUnet Model and see if it works better.
