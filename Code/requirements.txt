@@ -1,0 +1,9 @@
+synapseclient
+monai[nibabel,tqdm]
+joblib
+scikit-image
+numpy
+tqdm
+torch
+matplotlib
+scikit-learn

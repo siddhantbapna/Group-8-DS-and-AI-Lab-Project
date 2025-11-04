@@ -78,6 +78,7 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
 
 To ensure reproducible experiments:
 
+
 | Component                | Details                                                                                       |
 | ------------------------ | --------------------------------------------------------------------------------------------- |
 | **Dataset Access**       | [BraTS 2023 Dataset – Synapse ID: syn51156910](https://www.synapse.org/#!Synapse:syn51156910) |
@@ -87,13 +88,88 @@ To ensure reproducible experiments:
 | **Sequential Notebooks** | Run EDA → Preprocessing → Model Training → Evaluation                                         |
 | **Hardware**             | NVIDIA GPU (tested on Kaggle P100)                                                            |
 
+Here’s an improved, professional, and more readable version of your **GitHub README section**, with consistent formatting, better grammar, and clearer step-by-step instructions:
+
+---
+
 ## 6. Code Files and Usage
 
-1. Downloading Raw Data and Preprocessing : 
-2. Initial Model Training : 
-3. Resume Model Training : 
-4. Making Predictions and Visualizing : 
+All source code is available in the [**Code Folder**](./Code).
 
+
+
+### Setup Instructions
+
+
+
+**Step 1:** Clone the repository
+
+```bash
+git clone https://github.com/siddhantbapna/Group-8-DS-and-AI-Lab-Project.git
+```
+
+**Step 2:** Navigate to the code directory
+
+```bash
+cd Group-8-DS-and-AI-Lab-Project/Code
+```
+
+**Step 3:** Install the required dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+
+### Downloading the Dataset
+
+To access the full raw dataset, visit [**Synapse.org**](https://www.synapse.org/#!Synapse:syn51156910) and **register** to obtain your **access token**.
+
+Once you have the token, run:
+
+```bash
+python download_data.py
+```
+
+You’ll be prompted to enter the token, and the script will automatically start downloading the dataset.
+
+
+
+### Data Preprocessing
+
+After downloading the raw data, preprocess it by running:
+
+```bash
+python preprocess.py
+```
+
+This will clean and prepare the dataset for training using the preprocessing pipeline.
+
+
+
+### Model Training
+
+To train or resume training of the model, execute:
+
+```bash
+python training.py
+```
+
+You can modify the **model file name or path** directly in the script to specify where to save or resume from.
+If resuming, simply update the model checkpoint path. The script will handle the rest automatically.
+
+
+
+### Visualization and Inference
+
+To visualize model performance or run inference on saved checkpoints, run:
+
+```bash
+python visual.py
+```
+
+Provide the model path and patient data as inputs.
+The script will generate volumetric analysis results and relevant visualizations.
 
 
 ## 7. Team Members
