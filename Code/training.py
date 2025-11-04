@@ -144,10 +144,7 @@ def validate_one_epoch(model, loader, criterion, device):
     avg_dice = torch.stack(all_dice_scores).mean(0)
     return running_loss / len(loader), avg_dice
 
-# ==============================================================================
-# Part 3: Data Loading
-# ==============================================================================
-
+# Data Loading
 # --- Find and Split Files ---
 VALID_FILES = sorted([os.path.join(PROCESSED_DIR, f) for f in os.listdir(PROCESSED_DIR) if f.endswith('.npz') and os.path.getsize(os.path.join(PROCESSED_DIR, f)) > 0])
 kf = KFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
@@ -163,10 +160,7 @@ val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_w
 
 print(f"Data loaders created for Fold {FOLD_TO_RUN}. Training set: {len(train_files)}, Validation set: {len(val_files)}")
 
-# ==============================================================================
-# Part 4: Load Checkpoint and Resume Training Loop
-# ==============================================================================
-
+# Load Checkpoint and Resume Training Loop
 # --- Initialize Model, Optimizer, and Scheduler ---
 model = AttentionUnet(
     spatial_dims=3, in_channels=4, out_channels=3,
