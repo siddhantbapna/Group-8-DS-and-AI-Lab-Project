@@ -96,7 +96,21 @@ AMP was used to speed up computation and allow larger batch sizes within GPU mem
 
 2. We also trained the Attention U-Net using the K-Fold strategy described in Milestone 3. However, the performance was only slightly better than the no-fold model (Dice = 0.6655 vs. 0.64) on 30 epocs, while requiring significantly more computational resources. Therefore, we continued with the no-fold configuration.
 
-3. Two team members tested a 3D patch-based training approach, which initially showed Dice scores above 0.9. Upon closer inspection, however, it became clear that the scores were biased by the background region rather than the actual tumor segmentation.
+3. A **3D patch-based training approach** was explored as a strategy to **mitigate the severe class imbalance** between tumor and background regions. Several refinements were introduced to improve minority class learning:
+
+* **Tumor-focused patch sampling** ensuring each patch contained at least 1% tumor content.
+* **Combined Dice and Cross-Entropy loss** to balance overlap sensitivity with training stability.
+* **Class-wise performance monitoring** to identify bias and guide targeted adjustments.
+* **Weighted loss tuning and early stopping** to improve generalization for minority classes.
+
+After these refinements, the model achieved **overall Dice scores exceeding 0.9**, indicating strong convergence. However, closer analysis revealed that this high performance was **dominated by background accuracy (~99%)**, masking poor segmentation quality in tumor subregions.
+
+Detailed class-wise evaluation showed:
+
+* **Peritumoral Edema:** 76.23% Dice — the best-performing tumor class, achieving near-clinical reliability for edema delineation.
+* **Enhancing Tumor:** 55.65% Dice — moderate detection performance, with fragmented predictions in heterogeneous regions.
+* **Necrotic Core:** 5.73% Dice — consistently under-segmented due to extreme scarcity of examples.
+* **Background:** ~99% Dice — excellent but disproportionally influences overall metrics.
 
 
 ### Regularization and Optimization Techniques
