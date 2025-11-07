@@ -178,122 +178,92 @@ These visualizations confirm that the model is capable of accurately identifying
 
 To further assess the model’s generalization capability, it was evaluated on three unseen samples from the held-out test set. These samples were not part of the training or validation data used during model development.
 
-##### **6.1 Test Sample 01**
+### **6.1 Test Sample 01**
 
---- Volumetric and Accuracy Analysis ---
--------------------------------------------------------------------------------------
-Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
--------------------------------------------------------------------------------------
-Tumor Core (TC)           | 27245.00             | 25853.00             | 0.9361              
-Whole Tumor (WT)          | 60003.00             | 59416.00             | 0.9195              
-Enhancing Tumor (ET)      | 23151.00             | 20034.00             | 0.8751              
--------------------------------------------------------------------------------------
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 27,245.00 | 25,853.00 | 0.9361 |
+| Whole Tumor (WT) | 60,003.00 | 59,416.00 | 0.9195 |
+| Enhancing Tumor (ET) | 23,151.00 | 20,034.00 | 0.8751 |
 
-```markdown
 <details open>
   <summary>Ground truth visual (Raw + Derived Masks)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Raw_Labels_&_Derived_Masks.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT</summary>
   <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>Pred PLOT (Without Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Pred_(without_lesions).png" width="500">
 </details>
-```
 
-##### **6.2 Test Sample 02**
+### **6.2 Test Sample 02**
 
---- Volumetric and Accuracy Analysis ---
--------------------------------------------------------------------------------------
-Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
--------------------------------------------------------------------------------------
-Tumor Core (TC)           | 19249.00             | 20049.00             | 0.9486              
-Whole Tumor (WT)          | 67520.00             | 68919.00             | 0.9426              
-Enhancing Tumor (ET)      | 16546.00             | 16735.00             | 0.9081              
--------------------------------------------------------------------------------------
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 19,249.00 | 20,049.00 | 0.9486 |
+| Whole Tumor (WT) | 67,520.00 | 68,919.00 | 0.9426 |
+| Enhancing Tumor (ET) | 16,546.00 | 16,735.00 | 0.9081 |
 
-```markdown
 <details open>
   <summary>Ground truth visual (Raw + Derived Masks)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Raw_Labels_&_Derived_Masks.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT</summary>
   <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>Pred PLOT (Without Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Pred_(without_lesions).png" width="500">
 </details>
-```
 
-##### **6.3 Test Sample 03**
+### **6.3 Test Sample 03**
 
---- Volumetric and Accuracy Analysis ---
--------------------------------------------------------------------------------------
-Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
--------------------------------------------------------------------------------------
-Tumor Core (TC)           | 19702.00             | 19136.00             | 0.9461              
-Whole Tumor (WT)          | 22359.00             | 22963.00             | 0.9222              
-Enhancing Tumor (ET)      | 14302.00             | 14520.00             | 0.8509              
--------------------------------------------------------------------------------------
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 19,702.00 | 19,136.00 | 0.9461 |
+| Whole Tumor (WT) | 22,359.00 | 22,963.00 | 0.9222 |
+| Enhancing Tumor (ET) | 14,302.00 | 14,520.00 | 0.8509 |
 
-```markdown
 <details open>
   <summary>Ground truth visual (Raw + Derived Masks)</summary>
-  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Raw Labels_&_Derived_Masks.png" width="500">
+  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Raw_Labels_&_Derived_Masks.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT</summary>
   <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth.png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>GROUND TRUTH PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
-```
 
-```markdown
 <details open>
   <summary>Pred PLOT (Without Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Pred_(without_lesions).png" width="500">
 </details>
-```
 
 #### **7. Error Analysis**
 
