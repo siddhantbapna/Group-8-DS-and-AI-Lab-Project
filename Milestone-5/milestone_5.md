@@ -174,21 +174,142 @@ Qualitative analysis was performed by visualizing the model's predictions on sam
 
 These visualizations confirm that the model is capable of accurately identifying and delineating the different tumor components. They also serve as a crucial tool for diagnosing specific failure modes, such as the over- or under-segmentation of certain tumor boundaries.
 
-#### **6. Error Analysis**
+#### **6. Test Set Evaluation on Unseen Data**
+
+To further assess the model’s generalization capability, it was evaluated on three unseen samples from the held-out test set. These samples were not part of the training or validation data used during model development.
+
+##### **6.1 Test Sample 01**
+
+--- Volumetric and Accuracy Analysis ---
+-------------------------------------------------------------------------------------
+Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
+-------------------------------------------------------------------------------------
+Tumor Core (TC)           | 27245.00             | 25853.00             | 0.9361              
+Whole Tumor (WT)          | 60003.00             | 59416.00             | 0.9195              
+Enhancing Tumor (ET)      | 23151.00             | 20034.00             | 0.8751              
+-------------------------------------------------------------------------------------
+
+```markdown
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Pred_(without_lesions).png" width="500">
+</details>
+```
+
+##### **6.2 Test Sample 02**
+
+--- Volumetric and Accuracy Analysis ---
+-------------------------------------------------------------------------------------
+Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
+-------------------------------------------------------------------------------------
+Tumor Core (TC)           | 19249.00             | 20049.00             | 0.9486              
+Whole Tumor (WT)          | 67520.00             | 68919.00             | 0.9426              
+Enhancing Tumor (ET)      | 16546.00             | 16735.00             | 0.9081              
+-------------------------------------------------------------------------------------
+
+```markdown
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Pred_(without_lesions).png" width="500">
+</details>
+```
+
+##### **6.3 Test Sample 03**
+
+--- Volumetric and Accuracy Analysis ---
+-------------------------------------------------------------------------------------
+Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
+-------------------------------------------------------------------------------------
+Tumor Core (TC)           | 19702.00             | 19136.00             | 0.9461              
+Whole Tumor (WT)          | 22359.00             | 22963.00             | 0.9222              
+Enhancing Tumor (ET)      | 14302.00             | 14520.00             | 0.8509              
+-------------------------------------------------------------------------------------
+
+```markdown
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Raw Labels_&_Derived_Masks.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth.png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+```
+
+```markdown
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Pred_(without_lesions).png" width="500">
+</details>
+```
+
+#### **7. Error Analysis**
 
 A detailed analysis of the model's outputs revealed several key trends and systematic errors:
 
 *   **Systematic Errors:** The raw model output occasionally included small, disconnected regions of prediction that were not anatomically plausible (false positives). To address this, a post-processing step was implemented to **remove small, spurious lesions**. This function filters out any predicted components below a predefined voxel size threshold for each tumor class, significantly cleaning the final output mask and improving its clinical relevance.
 *   **Per-Class Performance:** Consistent with findings in related literature, the model achieved the highest Dice scores on the Whole Tumor (WT) and the lowest on the Enhancing Tumor (ET). This is attributed to the fact that the ET is often the smallest and most variable of the sub-regions, making it inherently more challenging to segment accurately.
 
-#### **7. Limitations**
+#### **8. Limitations**
 
 The current evaluation, while thorough, has several limitations:
 
 *   **Computational Constraints:** The model's network capacity (i.e., the number of channels in convolutional layers) was intentionally limited to operate within the memory constraints of the evaluation environment. A model with higher capacity, trained on more powerful hardware, could potentially yield superior results.
 *   **Dataset Generalization:** The model was trained and evaluated exclusively on the BraTS dataset. Its performance on clinical data from different scanners, institutions, or with different acquisition parameters is yet to be determined.
 
-#### **8. Proposed Improvements & Next Steps**
+#### **9. Proposed Improvements & Next Steps**
 
 Based on this evaluation, the following steps are recommended for future work:
 
