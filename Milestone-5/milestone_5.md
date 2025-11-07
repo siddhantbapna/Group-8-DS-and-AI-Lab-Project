@@ -1,138 +1,197 @@
-### Model Architecture
+### **Evaluation Report: 3D Brain Tumor Segmentation using an Attention U-Net Architecture**
 
-The primary model chosen for this milestone is **ResUNet (SegResNet)** built with the MONAI framework. ResUNet combines residual connections with a U-Net architecture, providing improved gradient flow and feature representation for 3D medical image segmentation. The model accepts 4-channel MRI input volumes and generates 3-class segmentation masks that correspond to distinct tumor subregions: whole tumor (WT), tumor core (TC), and enhancing tumor (ET).
+#### **1. Overview & Objective**
 
-#### ResUNet (SegResNet) Architecture Specifications
+This report details the evaluation of a deep learning pipeline designed for 3D segmentation of brain tumors from multi-modal MRI scans. The implemented solution uses an **Attention U-Net**, a convolutional neural network architecture that leverages attention mechanisms to enhance segmentation accuracy by focusing on the most relevant image features.
 
-- **Framework**: MONAI SegResNet
-- **spatial_dims**: 3 (Handles 3D image data)
-- **in_channels**: 4 (Represents the four MRI modalities: T1, T1CE, T2, FLAIR)
-- **out_channels**: 3 (Segmentation masks for the three tumor subregions: WT, TC, ET)
-- **init_filters**: 16 (Initial number of filters in the first convolutional layer)
-- **blocks_down**: (1, 2, 2, 4) (Number of residual blocks in each downsampling level)
-- **blocks_up**: (1, 1, 1) (Number of residual blocks in each upsampling level)
-- **Input Shape**: (Batch Size, 4, 128, 128, 128)
-- **Output Shape**: (Batch Size, 3, 128, 128, 128)
+The primary objective of this evaluation is to analyze the performance of the trained model, identify its strengths and weaknesses, and outline a clear path for future improvements. The end-to-end process, from data acquisition and preprocessing to model training and inference, is built upon the PyTorch and MONAI frameworks, ensuring the use of industry-standard tools for medical imaging analysis.
 
-The architecture uses residual connections at each level to facilitate deeper learning and improve gradient flow during backpropagation. The encoder-decoder structure with skip connections enables precise localization of tumor regions across multiple scales.
+#### **2. Evaluation Setup**
 
-### Training Setup
+To ensure the reproducibility and integrity of the results, a well-defined evaluation protocol was established.
 
-#### Loss Functions and Evaluation Metrics
+*   **Dataset:** The evaluation was conducted on the publicly available BraTS (Brain Tumor Segmentation) dataset. Following a preprocessing and data integrity check.
+    The dataset was partitioned using Scikit-learn's KFold with N_SPLITS=5, producing five 80/20 train-validation splits. For this experiment, a single fold (FOLD_TO_RUN = 0) was used, yielding 1000 files for training and 251 for validation. The split was shuffled with a random state of 42 for reproducibility.
 
-The loss function used combines Dice Loss and Binary Cross-Entropy with Logits Loss (DiceBCELoss). This hybrid approach is effective for semantic segmentation, particularly when handling imbalanced classes. The loss weighting is balanced:
-- **Dice Loss Weight**: 0.5
-- **BCE Loss Weight**: 0.5
+*   **Validation Strategy:** The results presented in this report are from the complete training and validation cycle, where 80% of the data was used for training and the remaining 20% for validation.
 
-The main evaluation metric is the Dice Score, which quantifies the overlap between predicted and ground truth segmentation masks. Dice scores are calculated for each tumor subregion (WT, TC, ET) and then averaged to provide the mean Dice score.
+*   **Preprocessing Pipeline:** All data, for both training and validation, was subjected to a standardized preprocessing pipeline to ensure consistency. The key steps included:
+    The NIfTI files were preprocessed into .npz arrays using a MONAI pipeline. The following sequential transforms were applied:
+    1. **LoadImaged**: Loaded all 5 NIfTI files per patient.
+    2. **Label Remapping**: Before preprocessing, the segmentation label '3' was remapped to '4' to align with the BraTS labeling convention. (1: Necrotic Core, 2: Peritumoral Edema, 4: Enhancing Tumor).
+    3. **ConvertToMultiChannelBasedOnBratsClassesd**: Transformed the single-channel segmentation mask (labels 1, 2, 4) into a three-channel binary mask for the three tumor subregions: Whole Tumor (WT), Tumor Core (TC), and Enhancing Tumor (ET).
+    4. **Spacingd**: Resampled all volumes to a uniform voxel spacing of (1.0, 1.0, 1.0) mm.
+    5. **ScaleIntensityRanged**: Normalized the intensity of the MRI modalities from a range of [0, 1400] to [0, 1].
+    6. **CropForegroundd**: Cropped the volumes to the non-zero foreground region, determined from the T1c image, with a 10-voxel margin.
+    7. **Resized**: Resized the cropped volumes to a fixed shape of (128, 128, 128).
+    8. **EnsureTyped**: Converted tensors to torch.float16 to reduce storage requirements.
 
-#### Optimizer and Learning Rate Schedules
+#### **3. Performance Metrics**
 
-The **AdamW optimizer**, a variant of Adam with improved weight decay regularization, was employed:
-- **Learning Rate**: 1e-4 (default, with hyperparameter tuning exploring 1e-4, 5e-4, 1e-3)
-- **Weight Decay**: 1e-5 (default, with tuning exploring 1e-5, 1e-4, 1e-3)
+The model's performance was assessed using the following metrics:
 
-A **CosineAnnealingLR** learning rate schedule was used to gradually decrease the learning rate over epochs, with a minimum learning rate (eta_min) of 1e-6.
+*   **Primary Metric: Dice Similarity Coefficient (DSC):** The Dice score was selected as the primary metric for evaluating segmentation accuracy. It measures the spatial overlap between the predicted segmentation and the ground truth, making it highly suitable for tasks where class imbalance (e.g., small tumors in large brain volumes) is a significant factor. The DSC was calculated independently for each of the three tumor sub-regions:
+    *   **Whole Tumor (WT)**
+    *   **Tumor Core (TC)**
+    *   **Enhancing Tumor (ET)**
+    The average of these three scores was used to track overall model performance and for early stopping decisions.
+*   **Loss Function:** The model was optimized using a **DiceBCE Loss**, a composite function that combines the stability of Binary Cross-Entropy with the direct optimization of the Dice score.
 
-#### Training Parameters
+#### **4. Quantitative Results**
 
-- **Batch Size**: 1 (constrained by GPU memory for 3D volumes)
-- **Number of Epochs**: 20 (initial training), with hyperparameter tuning experiments
-- **Early Stopping**: Implemented with a patience of 20 epochs; training is halted if the validation Dice score fails to improve for 20 consecutive epochs
-- **Gradient Clipping**: Enabled with max_norm=1.0 to prevent gradient explosion
-- **Mixed Precision Training**: AMP (Automatic Mixed Precision) enabled to accelerate training and reduce memory usage
-- **Hardware**: Training performed on GPU (RTX 4070 or equivalent)
+The training process was closely monitored, yielding detailed quantitative insights into model performance. For each epoch, the training loss, validation loss, and the per-class validation Dice scores were logged.
 
-### Hyperparameter Experiments
-
-A systematic hyperparameter search was conducted for ResUNet, exploring key architectural and training parameters:
-
-| Hyperparameter      | Values Explored | Baseline/Default |
-|---------------------|-----------------|------------------|
-| Learning Rate       | 1e-4, 5e-4, 1e-3 | 1e-4             |
-| Weight Decay        | 1e-5, 1e-4, 1e-3 | 1e-5             |
-| Initial Filters     | 8, 16, 32       | 16               |
-| Blocks Down         | (1,1,2,4), (1,2,2,4), (1,2,3,4) | (1,2,2,4) |
-| Blocks Up           | (1,1,1), (1,2,1), (2,1,1) | (1,1,1) |
-| Dice/BCE Loss Weight | (0.3,0.7), (0.5,0.5), (0.7,0.3) | (0.5,0.5) |
-
-These hyperparameters provide stable training, with the baseline configuration (lr=1e-4, init_filters=16, blocks_down=(1,2,2,4), blocks_up=(1,1,1)) serving as the starting point for optimization. The batch size of 1 is a common choice for 3D medical image segmentation due to GPU memory limitations.
-
-### Regularization and Optimization Techniques
-
-#### Data Augmentation
-
-To mitigate overfitting and enhance generalization, the following MONAI Rand transforms were applied:
-
-- **RandFlipd**: Random flipping along spatial axes
-- **RandRotate90d**: Random 90-degree rotations
-- **RandScaleIntensityd**: Random intensity scaling
-- **Rand3DElasticd**: Random 3D elastic deformations
-
-#### Weight Decay and Gradient Clipping
-
-The AdamW optimizer introduces improved weight decay for regularization, set to 1e-5 by default. Gradient clipping (max_norm=1.0) prevents gradient explosion during training, especially important for deeper architectures.
-
-#### Normalization
-
-`ScaleIntensityRanged` normalization was applied to MRI scans, which is essential for maintaining stability and performance in neural networks.
-
-### Training Visualization and Monitoring
-
-Training progress was monitored using TensorBoard, which logs metrics at each epoch:
-
-#### Training Metrics Logged
-
-- **Loss/Train**: Training loss per epoch
-- **Loss/Validation**: Validation loss per epoch
-- **Metrics/Dice**: Mean Dice score
-- **Metrics/Best_Dice**: Best Dice score achieved so far
-- **Metrics/Dice_WT**: Dice score for Whole Tumor
-- **Metrics/Dice_TC**: Dice score for Tumor Core
-- **Metrics/Dice_ET**: Dice score for Enhancing Tumor
-- **Learning_Rate**: Current learning rate value
-
-![Training and Validation Loss Curves](images/resunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
-
-*Figure 1: Training and validation loss curves showing model convergence during training. The training loss decreases steadily while validation loss shows the model's generalization performance.*
-
-![Dice Score Progression](images/resunet_20251101_125527_Metrics_graphs.png "Dice Score Over Epochs")
-
-*Figure 2: Dice score progression across epochs for mean Dice score and per-class scores (WT, TC, ET). Shows the model's segmentation accuracy improvement over time.*
-
-![Learning Rate Schedule](images/resunet_20251101_125527_Other_graphs.png "Learning Rate Decay")
+![Validation curves](../Milestone-4/images/trainingGraph.png "Training vs Validation")
 
 
-*Figure 3: Learning rate schedule showing the cosine annealing decay pattern. The learning rate gradually decreases from the initial value to the minimum value over the training epochs.*
+|  Epoch  | Training Loss | Validation Loss | Val Dice (Avg) | Dice (TC) | Dice (WT) | Dice (ET) |
+|:-------:|:-------------:|:---------------:|:--------------:|:---------:|:---------:|:---------:|
+| 1     ♣ | 0.8234        | 0.8027          | 0.2400         | 0.3400    | 0.3686    | 0.0112    |
+| 2     ♣ | 0.7727        | 0.7493          | 0.2808         | 0.3826    | 0.4396    | 0.0202    |
+| 3     ♣ | 0.7151        | 0.6900          | 0.3969         | 0.3985    | 0.5784    | 0.2137    |
+| 4     ♣ | 0.6601        | 0.6410          | 0.4935         | 0.4852    | 0.6546    | 0.3408    |
+| 5     ♣ | 0.6152        | 0.5999          | 0.5334         | 0.5077    | 0.6945    | 0.3980    |
+| 6       | 0.5742        | 0.5595          | 0.5259         | 0.5149    | 0.6796    | 0.3832    |
+| 7       | 0.5353        | 0.5334          | 0.5123         | 0.4976    | 0.6375    | 0.4018    |
+| 8     ♣ | 0.4986        | 0.5371          | 0.5423         | 0.5360    | 0.6505    | 0.4403    |
+| 9     ♣ | 0.4630        | 0.4784          | 0.5714         | 0.5355    | 0.7067    | 0.4720    |
+| 10    ♣ | 0.4250        | 0.4542          | 0.5863         | 0.5524    | 0.7296    | 0.4770    |
+| 11      | 0.3847        | 0.4596          | 0.5788         | 0.5410    | 0.7103    | 0.4851    |
+| 12      | 0.3432        | 0.4485          | 0.5626         | 0.5457    | 0.6639    | 0.4782    |
+| 13      | 0.3013        | 0.4239          | 0.5703         | 0.5506    | 0.6879    | 0.4723    |
+| 14      | 0.2639        | 0.4056          | 0.5583         | 0.5440    | 0.7278    | 0.4029    |
+| 15      | 0.2304        | 0.3716          | 0.5863         | 0.5666    | 0.7462    | 0.4461    |
+| 16    ♣ | 0.2044        | 0.3473          | 0.6183         | 0.6095    | 0.7431    | 0.5024    |
+| 17      | 0.1834        | 0.3618          | 0.5711         | 0.5676    | 0.6876    | 0.4581    |
+| 18      | 0.1686        | 0.3481          | 0.5955         | 0.5990    | 0.6887    | 0.4986    |
+| 19      | 0.1567        | 0.3276          | 0.6051         | 0.6100    | 0.7107    | 0.4945    |
+| 20      | 0.1450        | 0.3604          | 0.5608         | 0.5622    | 0.7023    | 0.4180    |
+| 21      | 0.1363        | 0.3973          | 0.5857         | 0.5970    | 0.6821    | 0.4779    |
+| 22    ♣ | 0.1315        | 0.3393          | 0.6296         | 0.6250    | 0.7501    | 0.5138    |
+| 23    ♣ | 0.1320        | 0.3289          | 0.5641         | 0.5820    | 0.6497    | 0.4605    |
+| 24    ♣ | 0.1260        | 0.2887          | 0.6115         | 0.6196    | 0.7248    | 0.4902    |
+| 25      | 0.1191        | 0.3005          | 0.5786         | 0.5895    | 0.7321    | 0.4141    |
+| 26      | 0.1140        | 0.3064          | 0.5343         | 0.5341    | 0.6884    | 0.3803    |
+| 27      | 0.1131        | 0.2979          | 0.6028         | 0.5835    | 0.7357    | 0.4893    |
+| 28    ♣ | 0.1114        | 0.2361          | 0.6449         | 0.6606    | 0.7649    | 0.5093    |
+| 29      | 0.1103        | 0.2541          | 0.5919         | 0.5963    | 0.7194    | 0.4599    |
+| 30      | 0.1033        | 0.2331          | 0.6047         | 0.6146    | 0.7356    | 0.4639    |
+| 31      | 0.1036        | 0.2102          | 0.6211         | 0.6372    | 0.7398    | 0.4862    |
+| 32      | 0.1048        | 0.3089          | 0.5921         | 0.6034    | 0.6659    | 0.5071    |
+| 33    ♣ | 0.0993        | 0.1692          | 0.6608         | 0.6617    | 0.8032    | 0.5175    |
+| 34    ♣ | 0.1018        | 0.2514          | 0.6112         | 0.6271    | 0.6831    | 0.5233    |
+| 35      | 0.1002        | 0.2812          | 0.5780         | 0.5447    | 0.6954    | 0.4939    |
+| 36      | 0.1005        | 0.2489          | 0.5960         | 0.6010    | 0.6694    | 0.5176    |
+| 37      | 0.0995        | 0.2208          | 0.5997         | 0.6081    | 0.7247    | 0.4662    |
+| 38    ♣ | 0.0995        | 0.1889          | 0.6823         | 0.6971    | 0.7746    | 0.5753    |
+| 39      | 0.0966        | 0.2092          | 0.5981         | 0.6135    | 0.7053    | 0.4753    |
+| 40      | 0.0944        | 0.1711          | 0.6669         | 0.6822    | 0.7642    | 0.5542    |
+| 41      | 0.0964        | 0.2087          | 0.6486         | 0.6615    | 0.7447    | 0.5397    |
+| 42      | 0.0941        | 0.1980          | 0.6594         | 0.6826    | 0.7371    | 0.5585    |
+| 43      | 0.0938        | 0.2160          | 0.6176         | 0.6534    | 0.6823    | 0.5169    |
+| 44      | 0.0915        | 0.1722          | 0.6569         | 0.6595    | 0.7517    | 0.5595    |
+| 45      | 0.0912        | 0.1997          | 0.6345         | 0.6326    | 0.7265    | 0.5445    |
+| 46      | 0.0904        | 0.1876          | 0.6200         | 0.6447    | 0.7270    | 0.4883    |
+| 47      | 0.0906        | 0.2758          | 0.6002         | 0.6359    | 0.6360    | 0.5287    |
+| 48      | 0.0900        | 0.1536          | 0.6655         | 0.6653    | 0.7888    | 0.5425    |
+| 49      | 0.0915        | 0.1513          | 0.6601         | 0.6733    | 0.7876    | 0.5195    |
+| 50      | 0.0875        | 0.2287          | 0.6262         | 0.6415    | 0.6688    | 0.5683    |
+| 51      | 0.0875        | 0.1896          | 0.6499         | 0.6680    | 0.7372    | 0.5446    |
+| 52      | 0.0864        | 0.2231          | 0.5963         | 0.6250    | 0.6505    | 0.5132    |
+| 53      | 0.0892        | 0.1912          | 0.6423         | 0.6493    | 0.7132    | 0.5644    |
+| 54      | 0.0842        | 0.1830          | 0.6303         | 0.6631    | 0.7267    | 0.5011    |
+| 55    ♣ | 0.0847        | 0.1248          | 0.7023         | 0.7078    | 0.8384    | 0.5608    |
+| 56    ♣ | 0.0908        | 0.2104          | 0.6327         | 0.6512    | 0.6710    | 0.5759    |
+| 57    ♣ | 0.0887        | 0.1803          | 0.6468         | 0.6693    | 0.7474    | 0.5237    |
+| 58    ♣ | 0.0866        | 0.1977          | 0.6509         | 0.6720    | 0.7272    | 0.5536    |
+| 59      | 0.0872        | 0.1872          | 0.6350         | 0.6361    | 0.7333    | 0.5355    |
+| 60      | 0.0867        | 0.1989          | 0.6368         | 0.6545    | 0.6900    | 0.5660    |
+| 61      | 0.0837        | 0.1882          | 0.6391         | 0.6270    | 0.7252    | 0.5652    |
+| 62    ♣ | 0.0847        | 0.1310          | 0.7176         | 0.7293    | 0.8201    | 0.6034    |
+| 63      | 0.0845        | 0.1325          | 0.6945         | 0.6875    | 0.8229    | 0.5730    |
+| 64      | 0.0842        | 0.1716          | 0.6684         | 0.6884    | 0.7550    | 0.5619    |
+| 65      | 0.0829        | 0.2281          | 0.5943         | 0.5852    | 0.6335    | 0.5641    |
+| 66    ♣ | 0.0856        | 0.1482          | 0.7196         | 0.7425    | 0.7950    | 0.6212    |
+| 67    ♣ | 0.0807        | 0.1053          | 0.7590         | 0.7788    | 0.8554    | 0.6428    |
+| 68    ♣ | 0.0806        | 0.1924          | 0.6352         | 0.6336    | 0.7075    | 0.5644    |
+| 69    ♣ | 0.0829        | 0.1573          | 0.6761         | 0.6887    | 0.7716    | 0.5680    |
+| 70    ♣ | 0.0823        | 0.1483          | 0.6918         | 0.7037    | 0.7927    | 0.5790    |
+| 71      | 0.0815        | 0.2471          | 0.5753         | 0.6259    | 0.6088    | 0.4911    |
+| 72    ♣ | 0.0844        | 0.1294          | 0.7033         | 0.6910    | 0.8384    | 0.5806    |
+| 73      | 0.0820        | 0.1392          | 0.6991         | 0.7261    | 0.8047    | 0.5665    |
+| 74      | 0.0800        | 0.1490          | 0.6864         | 0.7100    | 0.7794    | 0.5699    |
+| 75      | 0.0821        | 0.1495          | 0.6834         | 0.7102    | 0.8129    | 0.5270    |
+| 76    ♣ | 0.0815        | 0.1241          | 0.7388         | 0.7566    | 0.8232    | 0.6366    |
+| 77      | 0.0789        | 0.1300          | 0.7149         | 0.7181    | 0.8240    | 0.6027    |
+| 78      | 0.0788        | 0.1476          | 0.7046         | 0.7351    | 0.7874    | 0.5913    |
+| 79      | 0.0796        | 0.1114          | 0.7360         | 0.7628    | 0.8524    | 0.5928    |
+| 80      | 0.0782        | 0.2144          | 0.6142         | 0.6337    | 0.6616    | 0.5472    |
+| 81      | 0.0776        | 0.1320          | 0.7091         | 0.7210    | 0.8204    | 0.5860    |
+| 82      | 0.0783        | 0.1528          | 0.6929         | 0.7233    | 0.7638    | 0.5916    |
+| 83      | 0.0787        | 0.1159          | 0.7370         | 0.7497    | 0.8391    | 0.6221    |
+| 84      | 0.0758        | 0.1656          | 0.6635         | 0.6641    | 0.7611    | 0.5653    |
+| 85      | 0.0763        | 0.1160          | 0.7370         | 0.7663    | 0.8405    | 0.6044    |
+| 86      | 0.0774        | 0.1486          | 0.6911         | 0.6944    | 0.7956    | 0.5832    |
+| 87      | 0.0776        | 0.2000          | 0.6247         | 0.6444    | 0.6808    | 0.5489    |
+| 88      | 0.0760        | 0.1475          | 0.6866         | 0.7040    | 0.7876    | 0.5684    |
+| 89      | 0.0757        | 0.1199          | 0.7291         | 0.7468    | 0.8285    | 0.6120    |
+| 90      | 0.0768        | 0.2231          | 0.6090         | 0.6381    | 0.6405    | 0.5484    |
+| 91      | 0.0742        | 0.2164          | 0.5909         | 0.6004    | 0.6818    | 0.4903    |
+| 92      | 0.0745        | 0.1809          | 0.6776         | 0.7152    | 0.7362    | 0.5815    |
+| 93    ♣ | 0.0756        | 0.0957          | 0.7812         | 0.8033    | 0.8725    | 0.6679    |
 
 
-![Overview](images/resunet_20251101_125527_overview.png "Learning Rate Decay")
+The model's performance progressively improved, with the average validation Dice score serving as the key indicator for saving the best model weights. An early stopping mechanism with a patience of 7 epochs was implemented, halting the training if the average Dice score on the validation set did not improve, thereby preventing overfitting. The final saved model represents the state with the highest achieved validation Dice score.
 
+#### **5. Qualitative Results**
 
-*Figure 4: Shows Overview.*
+Qualitative analysis was performed by visualizing the model's predictions on samples from the validation set. This involved generating side-by-side comparisons of the input MRI, the ground truth segmentation mask, and the model's predicted output for each tumor sub-region.
 
-![Learning Rate Schedule](images/1_best_dice_comparison.png "Learning Rate Decay")
-![Learning Rate Schedule](images/v5_convergence_comparison.png "Learning Rate Decay")
+<details open>
+  <summary>Epoch 22</summary>
+  <img src="../Milestone-4/images/epochPerformace/22.png" width="500">
+</details>
 
-*Figure 4: Results from hyperparameter tuning experiments showing the impact of different configurations on model performance. Visualizes the relationship between hyperparameters and achieved Dice scores.*
+<details>
+  <summary>Epoch 33</summary>
+  <img src="../Milestone-4/images/epochPerformace/33.png" width="500">
+</details>
 
-### Initial Training Results
+<details>
+  <summary>Epoch 55</summary>
+  <img src="../Milestone-4/images/epochPerformace/55.png" width="500">
+</details>
 
-#### Training and Validation Curves
+<details>
+  <summary>Epoch 67</summary>
+  <img src="../Milestone-4/images/epochPerformace/67.png" width="500">
+</details>
 
-The training process demonstrates stable convergence, with the training loss decreasing significantly and validation loss following a similar trend initially. The per-class Dice scores (WT, TC, ET) show the model's ability to segment different tumor subregions, with whole tumor typically achieving the highest scores due to its larger spatial extent.
+<details>
+  <summary>Epoch 93</summary>
+  <img src="../Milestone-4/images/epochPerformace/93.png" width="500">
+</details>
 
-![Training and Validation Loss Curves](images/resunet_20251101_125527_Loss_graphs.png "Training vs Validation Loss")
+These visualizations confirm that the model is capable of accurately identifying and delineating the different tumor components. They also serve as a crucial tool for diagnosing specific failure modes, such as the over- or under-segmentation of certain tumor boundaries.
 
+#### **6. Error Analysis**
 
-### Observed Behavior
+A detailed analysis of the model's outputs revealed several key trends and systematic errors:
 
-Training proceeded as expected, with the ResUNet model learning to segment tumor regions effectively. The residual connections helped maintain gradient flow throughout training, and the balanced DiceBCE loss function provided stable optimization. Data augmentation and regularization techniques helped minimize overfitting, while early stopping ensured efficient training by halting when validation performance plateaued.
+*   **Systematic Errors:** The raw model output occasionally included small, disconnected regions of prediction that were not anatomically plausible (false positives). To address this, a post-processing step was implemented to **remove small, spurious lesions**. This function filters out any predicted components below a predefined voxel size threshold for each tumor class, significantly cleaning the final output mask and improving its clinical relevance.
+*   **Per-Class Performance:** Consistent with findings in related literature, the model achieved the highest Dice scores on the Whole Tumor (WT) and the lowest on the Enhancing Tumor (ET). This is attributed to the fact that the ET is often the smallest and most variable of the sub-regions, making it inherently more challenging to segment accurately.
 
-### Model Artifacts
+#### **7. Limitations**
 
-The best-performing model, determined by the validation Dice score, was saved with checkpoints:
-- **Best Model**: `best_resunet.pth` - Model with highest validation Dice score
-- **Latest Model**: `latest_resunet.pth` - Most recent model checkpoint
-- **Training History**: `training_history_resunet.json` - Complete training metrics
-- **TensorBoard Logs**: Saved in `outputs/logs/tensorboard/resunet_*/` for visualization
+The current evaluation, while thorough, has several limitations:
+
+*   **Computational Constraints:** The model's network capacity (i.e., the number of channels in convolutional layers) was intentionally limited to operate within the memory constraints of the evaluation environment. A model with higher capacity, trained on more powerful hardware, could potentially yield superior results.
+*   **Dataset Generalization:** The model was trained and evaluated exclusively on the BraTS dataset. Its performance on clinical data from different scanners, institutions, or with different acquisition parameters is yet to be determined.
+
+#### **8. Proposed Improvements & Next Steps**
+
+Based on this evaluation, the following steps are recommended for future work:
+
+1.
+2.
+3.
