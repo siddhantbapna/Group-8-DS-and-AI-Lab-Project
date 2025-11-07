@@ -10,7 +10,7 @@ The primary objective of this evaluation is to analyze the performance of the tr
 
 To ensure the reproducibility and integrity of the results, a well-defined evaluation protocol was established.
 
-*   **Dataset:** The evaluation was conducted on the publicly available BraTS (Brain Tumor Segmentation) dataset. Following a preprocessing and data integrity check.
+*   **Dataset:** The evaluation was conducted on the publicly available BraTS (Brain Tumor Segmentation) dataset after preprocessing and data integrity checks.
     The dataset was partitioned using Scikit-learn's KFold with N_SPLITS=5, producing five 80/20 train-validation splits. For this experiment, a single fold (FOLD_TO_RUN = 0) was used, yielding 1000 files for training and 251 for validation. The split was shuffled with a random state of 42 for reproducibility.
 
 *   **Validation Strategy:** The results presented in this report are from the complete training and validation cycle, where 80% of the data was used for training and the remaining 20% for validation.
@@ -176,7 +176,14 @@ These visualizations confirm that the model is capable of accurately identifying
 
 #### **6. Test Set Evaluation on Unseen Data**
 
-To further assess the model’s generalization capability, it was evaluated on three unseen samples from the held-out test set. These samples were not part of the training or validation data used during model development.
+To further assess the model’s generalization capability, it was evaluated on three samples.
+
+Before presenting the results, here are the common terms used:
+1. Ground truth visuals show the MRI modalities and the corresponding segmentation of the brain tumor. 
+2. The raw ground truth shows the Non-Enhancing Tumor (NET), Edema, and Enhancing Tumor (ET).
+3. The derived masks visualize the three standard BraTS sub-regions: Whole Tumor (WT = Edema + NET + ET), Tumor Core (TC = NET + ET), and Enhancing Tumor (ET).
+4. Prediction plots show the segmentation outputs produced by the trained 3D Attention U-Net model.
+5. The raw model output sometimes contains small disconnected regions, known as lesions, which represent prediction noise. Therefore, we present two versions: one with these lesions and one after post-processing to remove them. After post-processing, the output mask is smoother than the raw prediction, with small spurious lesions removed.
 
 ### **6.1 Test Sample 01**
 
@@ -198,7 +205,7 @@ To further assess the model’s generalization capability, it was evaluated on t
 </details>
 
 <details open>
-  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <summary>Pred PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
 
@@ -227,7 +234,7 @@ To further assess the model’s generalization capability, it was evaluated on t
 </details>
 
 <details open>
-  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <summary>Pred PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
 
@@ -256,7 +263,7 @@ To further assess the model’s generalization capability, it was evaluated on t
 </details>
 
 <details open>
-  <summary>GROUND TRUTH PLOT (With Lesions)</summary>
+  <summary>Pred PLOT (With Lesions)</summary>
   <img src="./images/testPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
 
@@ -281,8 +288,23 @@ The current evaluation, while thorough, has several limitations:
 
 #### **9. Proposed Improvements & Next Steps**
 
-Based on this evaluation, the following steps are recommended for future work:
+Based on the current evaluation, the following enhancements are proposed:
 
-1.
-2.
-3.
+**Model Enhancement - Attention ResU-Net Ensemble**
+
+At present, we use an Attention U-Net model for prediction, which performs well in 3D segmentation and effectively delineates tumor regions by focusing on salient features.
+
+We plan to combine it with the ResU-Net model (currently under testing – [ResUNet](./resUnet.md)) to form an ensemble architecture, tentatively referred to as Attention ResU-Net.
+
+This hybrid model is expected to further improve segmentation accuracy by:
+- Capturing rich semantic information through residual connections (ResU-Net component).
+- Preserving fine-grained tumor details through attention gates (Attention U-Net component).
+
+**Deployment & Visualization Pipeline**
+The next step in this project is model deployment, where we aim to develop an user interface (UI) that allows clinicians or researchers to:
+
+- Upload raw patient MRI data (BRATS compatible format).
+- Automatically preprocess and feed it into the trained segmentation model.
+- Visualize the resulting tumor masks in an interactive 3D and 2D viewer for detailed analysis.
+
+This stage will make the model more accessible for practical use in clinical and research settings, enabling seamless end-to-end brain tumor segmentation and visualization.
