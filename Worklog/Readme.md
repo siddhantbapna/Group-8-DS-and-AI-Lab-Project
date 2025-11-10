@@ -87,6 +87,7 @@ Feedback: “Add model architecture diagram and other Recommendations ”
 * **Ravineel:** Conducted comparative analysis between different models (3D U-Net, ResU-Net, V-Net, Attention U-Net) and prepared **M4 v1 documentation**.
 * **Saurabh:** Performed **code commenting** based on feedback for better readability.
 * **Siddhant:** Organized the **GitHub repository** structure for consistency and clarity.
+* **Ajsal** and **Ravineel** prepared m4 doc.
 
 ### **Updates on Changes Made**
 
@@ -95,3 +96,17 @@ Feedback: “Add model architecture diagram and other Recommendations ”
 * Model comparison results were compiled.
 
 ---
+
+## **Milestone 5 (M4): Model Testing, Evaluation**
+
+### **Work Division**
+* **Saurabh** and **hardik** are working on final presentation file
+* **Ravineel** testing resUnet for future ensemble architecture. 
+* **Siddhant** prepared the code files and m5 evaluation 
+* **Siddhant** and **Ajsal** prepared the v1 and v2 of m5 doc.
+
+### **Updates on Changes Made**
+
+* Integrated all feedback from M3, including documentation clarity.
+* Repository cleaned, commented, and standardized for better maintainability.
+* Model comparison results were compiled.

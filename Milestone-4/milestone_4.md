@@ -310,6 +310,104 @@ The saved checkpoints reflect attempts to preserve the model’s best state duri
 </details>
 
 
+#### **6. Validation Test Set Evaluation**
+
+To further assess the model’s generalization capability, it was evaluated on three samples.
+
+Before presenting the results, here are the common terms used:
+1. Ground truth visuals show the MRI modalities and the corresponding segmentation of the brain tumor. 
+2. The raw ground truth shows the Non-Enhancing Tumor (NET), Edema, and Enhancing Tumor (ET).
+3. The derived masks visualize the three standard BraTS sub-regions: Whole Tumor (WT = Edema + NET + ET), Tumor Core (TC = NET + ET), and Enhancing Tumor (ET).
+4. Prediction plots show the segmentation outputs produced by the trained 3D Attention U-Net model.
+5. The raw model output sometimes contains small disconnected regions, known as lesions, which represent prediction noise. Therefore, we present two versions: one with these lesions and one after post-processing to remove them. After post-processing, the output mask is smoother than the raw prediction, with small spurious lesions removed.
+
+### **6.1 Test Sample 01**
+
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 27,245.00 | 25,853.00 | 0.9361 |
+| Whole Tumor (WT) | 60,003.00 | 59,416.00 | 0.9195 |
+| Enhancing Tumor (ET) | 23,151.00 | 20,034.00 | 0.8751 |
+
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (With Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Pred_(without_lesions).png" width="500">
+</details>
+
+### **6.2 Test Sample 02**
+
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 19,249.00 | 20,049.00 | 0.9486 |
+| Whole Tumor (WT) | 67,520.00 | 68,919.00 | 0.9426 |
+| Enhancing Tumor (ET) | 16,546.00 | 16,735.00 | 0.9081 |
+
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (With Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Pred_(without_lesions).png" width="500">
+</details>
+
+### **6.3 Test Sample 03**
+
+#### Volumetric and Accuracy Analysis
+| Tumor Component | Ground Truth Volume | Predicted Volume | Dice Score (Accuracy) |
+|-----------------|--------------------:|-----------------:|----------------------:|
+| Tumor Core (TC) | 19,702.00 | 19,136.00 | 0.9461 |
+| Whole Tumor (WT) | 22,359.00 | 22,963.00 | 0.9222 |
+| Enhancing Tumor (ET) | 14,302.00 | 14,520.00 | 0.8509 |
+
+<details open>
+  <summary>Ground truth visual (Raw + Derived Masks)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (With Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./images/ValidationPerformance/BraTS-GLI-01265-000/BraTS-GLI-01265-000-Pred_(without_lesions).png" width="500">
+</details>
+
 
 ### Observed Behavior
 
