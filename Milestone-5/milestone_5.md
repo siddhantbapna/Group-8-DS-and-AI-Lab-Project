@@ -10,12 +10,11 @@ The primary objective of this evaluation is to analyze the performance of the tr
 
 To ensure the reproducibility and integrity of the results, a well-defined evaluation protocol was established.
 
-*   **Dataset:** The evaluation was conducted on the publicly available BraTS (Brain Tumor Segmentation) dataset after preprocessing and data integrity checks.
-    The dataset was partitioned using Scikit-learn's KFold with N_SPLITS=5, producing five 80/20 train-validation splits. For this experiment, a single fold (FOLD_TO_RUN = 0) was used, yielding 1000 files for training and 251 for validation. The split was shuffled with a random state of 42 for reproducibility.
+*   **Dataset:** The evaluation was conducted on the publicly available BraTS 2024 Additional Patient Data file (Brain Tumor Segmentation) dataset after preprocessing and data integrity checks. We have used first 150 samples from that dataset to test our model.
 
-*   **Validation Strategy:** The results presented in this report are from the complete training and validation cycle, where 80% of the data was used for training and the remaining 20% for validation.
+*   **Testing Strategy:** The results presented in this report are from the complete testing cycle on the 150 samples.
 
-*   **Preprocessing Pipeline:** All data, for both training and validation, was subjected to a standardized preprocessing pipeline to ensure consistency. The key steps included:
+*   **Preprocessing Pipeline:** All data, used for testing was subjected to a standardized preprocessing pipeline used in training, validation and testing to ensure consistency. The key steps included:
     The NIfTI files were preprocessed into .npz arrays using a MONAI pipeline. The following sequential transforms were applied:
     1. **LoadImaged**: Loaded all 5 NIfTI files per patient.
     2. **Label Remapping**: Before preprocessing, the segmentation label '3' was remapped to '4' to align with the BraTS labeling convention. (1: Necrotic Core, 2: Peritumoral Edema, 4: Enhancing Tumor).
@@ -28,7 +27,7 @@ To ensure the reproducibility and integrity of the results, a well-defined evalu
 
 ### **3. Performance Metrics**
 
-The model's performance was assessed using the following metrics:
+The model's performance was assessed using the following metrics on the unseen 150 test samples of Patients:
 
 *   **Primary Metric: Dice Similarity Coefficient (DSC):** The Dice score was selected as the primary metric for evaluating segmentation accuracy. It measures the spatial overlap between the predicted segmentation and the ground truth, making it highly suitable for tasks where class imbalance (e.g., small tumors in large brain volumes) is a significant factor. The DSC was calculated independently for each of the three tumor sub-regions:
     *   **Whole Tumor (WT)**
@@ -37,7 +36,7 @@ The model's performance was assessed using the following metrics:
     The average of these three scores was used to track overall model performance and for early stopping decisions.
 *   **Loss Function:** The model was optimized using a **DiceBCE Loss**, a composite function that combines the stability of Binary Cross-Entropy with the direct optimization of the Dice score.
 
-### 4. Quantitative Results
+### 4. Quantitative Results from the model evaluation on 150 unseen samples
 
 #### 4.1 Dice Score Statistics
 
@@ -47,6 +46,9 @@ The model's performance was assessed using the following metrics:
 | WT (Whole Tumor)      | 0.6892 |           0.3140 | 0.8393 | 0.0000 | 0.9544 |
 | ET (Enhancing Tumor)  | 0.5079 |           0.3267 | 0.6373 | 0.0000 | 1.0000 |
 | Mean Dice per patient | 0.5973 |           0.3057 | 0.7183 | 0.0000 | 0.9243 |
+
+This summary table is the result of the test evaluation on the 150 patient data points.
+More detailed information and numbers can be infered from : [Test Evaluation](./model_evaluation_summary.xlsx)
 
 **Explanation:**
 The Dice score measures how much the predicted segmentation overlaps with the ground truth (1 = perfect overlap, 0 = no overlap).
@@ -159,11 +161,12 @@ All numeric values and calculations used in this section can be verified in the 
 To further assess the model’s generalization capability, it was evaluated on three samples.
 
 Before presenting the results, here are the common terms used:
-1. Ground truth visuals show the MRI modalities and the corresponding segmentation of the brain tumor. 
-2. The raw ground truth shows the Non-Enhancing Tumor (NET), Edema, and Enhancing Tumor (ET).
-3. The derived masks visualize the three standard BraTS sub-regions: Whole Tumor (WT = Edema + NET + ET), Tumor Core (TC = NET + ET), and Enhancing Tumor (ET).
-4. Prediction plots show the segmentation outputs produced by the trained 3D Attention U-Net model.
-5. The raw model output sometimes contains small disconnected regions, known as lesions, which represent prediction noise. Therefore, we present two versions: one with these lesions and one after post-processing to remove them. After post-processing, the output mask is smoother than the raw prediction, with small spurious lesions removed.
+1. Ground truth visuals show the corresponding segmentation of the brain tumor. 
+2. The derived masks visualize the three standard BraTS sub-regions: Whole Tumor (WT = Edema + NET + ET), Tumor Core (TC = NET + ET), and Enhancing Tumor (ET).
+3. Prediction plots show the segmentation outputs produced by the trained 3D Attention U-Net model.
+4. The raw model output sometimes contains small disconnected regions, known as lesions, which represent prediction noise. Therefore, we present two versions: one with these lesions and one after post-processing to remove them. After post-processing, the output mask is smoother than the raw prediction, with small spurious lesions removed.
+
+`Some Visuals of the prediction on the test data :-`
 
 #### 5.1 Test Sample "BraTS-GLI-02506-101"
 
