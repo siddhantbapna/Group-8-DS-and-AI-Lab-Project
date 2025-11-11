@@ -39,20 +39,31 @@ The model's performance was assessed using the following metrics:
 
 ### 4. Quantitative Results
 
-#### 4.1 Dice score statistics
+#### 4.1 Dice Score Statistics
 
-| Label             |   Mean  | Std (population) | Median  |   Min   |   Max   |
-|-------------------|--------:|-----------------:|--------:|--------:|--------:|
-| TC (Tumor Core)   | 0.5947  |          0.3489  | 0.7515  | 0.0000  | 0.9537  |
-| WT (Whole Tumor)  | 0.6892  |          0.3140  | 0.8393  | 0.0000  | 0.9544  |
-| ET (Enhancing Tumor) | 0.5079 |         0.3267  | 0.6413  | 0.0000  | 1.0000  |
-| Mean Dice per patient | 0.5973 |        0.3057  | 0.7183  | 0.0000  | 0.9243  |
+| Label                 |   Mean | Std (population) | Median |    Min |    Max |
+| --------------------- | -----: | ---------------: | -----: | -----: | -----: |
+| TC (Tumor Core)       | 0.5947 |           0.3489 | 0.7515 | 0.0000 | 0.9537 |
+| WT (Whole Tumor)      | 0.6892 |           0.3140 | 0.8393 | 0.0000 | 0.9544 |
+| ET (Enhancing Tumor)  | 0.5079 |           0.3267 | 0.6373 | 0.0000 | 1.0000 |
+| Mean Dice per patient | 0.5973 |           0.3057 | 0.7183 | 0.0000 | 0.9243 |
 
-**Note:** Minimum = 0.0 indicates some patient-label pairs are full misses (predicted 0 when GT > 0).
+**Explanation:**
+The Dice score measures how much the predicted segmentation overlaps with the ground truth (1 = perfect overlap, 0 = no overlap).
 
-#### 4.2 Ground-truth vs Predicted volume correlation (Pearson)
+* **Mean** shows the overall average overlap quality.
+* **Std** tells how much the Dice scores vary between patients.
+* **Median** shows the middle-performing case.
+* **Min/Max** show the extremes - 0.0 means total miss, 1.0 means perfect match.
+  Here, WT performs best on average, while ET is the most inconsistent.
 
-Computed on per-patient totals or per-label volumes:
+**Conclusion – Dice Score Statistics**
+
+The model performs reasonably well on Whole Tumor (WT) regions, showing the highest average Dice score.
+Tumor Core (TC) accuracy is moderate, while Enhancing Tumor (ET) is the weakest and most inconsistent.
+The wide range (0 to 1) and high standard deviation suggest varying performance across patients - some very accurate, others complete misses.
+
+#### 4.2 Ground-Truth vs Predicted Volume Correlation (Pearson)
 
 | Metric       | Pearson correlation (GT vs Pred) |
 | ------------ | -------------------------------: |
@@ -61,20 +72,40 @@ Computed on per-patient totals or per-label volumes:
 | `ET_corr`    |                     **0.803350** |
 | `total_corr` |                     **0.892378** |
 
-#### 4.3 Linear regression: predicted = slope * GT + intercept (GT → Pred)
+**Explanation:**
+Correlation measures how well predicted volumes follow the same trend as ground-truth volumes (1 = perfect alignment, 0 = no relation).
+High values (>0.8) mean the model predicts larger tumors when ground truth tumors are larger it tracks the relative size trend well, even if exact volumes differ.
 
-(Computed with least-squares fit across the 150 patients.)
+**Conclusion – Ground-Truth vs Predicted Volume Correlation**
 
-| Label |        Slope |        Intercept |           R² |
-| ----- | -----------: | ---------------: | -----------: |
-| TC    | **0.931400** |  **-812.336265** | **0.823896** |
-| WT    | **0.867768** | **-1883.732017** | **0.772024** |
-| ET    | **0.667674** |  **-522.340795** | **0.645371** |
-| Total | **0.889222** | **-5724.065155** | **0.796338** |
+The strong correlations (>0.8) indicate that the model generally predicts larger tumors when ground-truth tumors are larger, maintaining consistent size trends.
+However, slightly lower correlation for ET implies that the model struggles to track enhancing tumor sizes as reliably as other regions.
 
-**Interpretation:** slopes < 1 indicate a tendency to *under-predict volumes* across labels, especially for ET (slope ≈ 0.6677). High R² for TC & total show reasonable linear relationship but still systematic bias.
+#### 4.3 Linear Regression: predicted = slope × GT + intercept
 
-#### 4.4 Missed detections (Predicted volume = 0 while GT > 0)
+| Label |      Slope |    Intercept |         R² |
+| ----- | ---------: | -----------: | ---------: |
+| TC    | **0.9314** |  **-812.34** | **0.8239** |
+| WT    | **0.8678** | **-1883.73** | **0.7720** |
+| ET    | **0.6677** |  **-522.34** | **0.6454** |
+| Total | **0.8892** | **-5724.07** | **0.7963** |
+
+**Explanation:**
+Regression shows how predicted and actual tumor volumes relate.
+
+* **Slope < 1:** model tends to under-predict volume.
+* **Intercept < 0:** model outputs smaller base values even for small tumors.
+* **R²:** how tightly the points fit the regression line (closer to 1 = better consistency).
+  ET again shows the weakest relationship, confirming less reliable size estimation.
+
+
+**Conclusion – Linear Regression**
+
+Regression slopes below 1 across all labels show a clear tendency to under-predict tumor volumes.
+Despite this, relatively high R² values (0.64–0.82) suggest the model’s predictions scale consistently with actual values meaning it captures trends well but outputs smaller volumes overall.
+ET again stands out as the least reliable label.
+
+#### 4.4 Missed Detections (Predicted Volume = 0 while GT > 0)
 
 | Label | Missed count (patients) |
 | ----- | ----------------------: |
@@ -82,19 +113,46 @@ Computed on per-patient totals or per-label volumes:
 | WT    |                   **3** |
 | ET    |                  **22** |
 
-**Note:** ET has the most full misses - consistent with low ET Dice and low slope/R².
+**Explanation:**
+A “miss” means the model predicted *no tumor* for a region that actually exists.
+More misses for ET indicate difficulty detecting smaller or less distinct enhancing regions.
 
-#### 4.5 Volume error (relative absolute error = |pred_total - gt_total| / gt_total)
+**Conclusion – Missed Detections**
 
-Key statistics (per-patient relative absolute error):
+The model misses several tumors completely, especially for ET (22 cases).
+This confirms difficulty in identifying small or low-contrast enhancing regions.
+WT has very few misses, reflecting better sensitivity to larger, more visible tumor areas.
 
-* **Mean relative absolute error:** **0.296379**
-* **Median:** **0.164180**
-* **75th percentile:** **0.461332**
-* **Max:** **1.000000**
+#### 4.5 Volume Error (Relative Absolute Error = |pred_total – gt_total| / gt_total)
 
-**Interpretation:** while many patients have low relative error (median ≈ 16%), a sizable tail exists - 25% of patients have relative errors ≥ ~46%, and the worst case is a 100% relative error.
+| Statistic           |      Value |
+| :------------------ | ---------: |
+| **Mean**            | **0.2964** |
+| **Median**          | **0.1642** |
+| **75th percentile** | **0.4613** |
+| **Max**             | **1.0000** |
 
+**Explanation:**
+This measures how far the predicted tumor size is from the real size, normalized by the ground-truth volume.
+
+* **Mean = 0.30:** on average, predictions differ by about 30%.
+* **Median = 0.16:** half of the patients have <16% size error.
+* **75th percentile = 0.46:** one-quarter have >46% error.
+* **Max = 1.0:** worst-case predictions differ by 100% (complete miss or double the actual size).
+
+**Conclusion – Volume Error**
+
+Overall size prediction errors are moderate.
+Half of the patients show less than 16% difference between predicted and true tumor size, but one in four patients has more than 46% error.
+A few extreme cases (100% error) indicate occasional total mismatches.
+This pattern suggests that while the model is fairly consistent for typical cases, it fails significantly for certain outliers.
+
+#### Supporting Data
+
+All numeric values and calculations used in this section can be verified in the accompanying Excel sheet:
+[**model_evaluation_summary.xlsx**](./model_evaluation_summary.xlsx)
+
+*(The sheet contains per-patient Dice scores, volumes, and derived metrics used to generate these summaries.)*
 
 ### 5. Test Set Evaluation on Unseen Data
 
