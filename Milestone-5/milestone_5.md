@@ -200,10 +200,10 @@ Number of ET voxels in that slice: 353
 
 | Metric | Our Model (Validation) | BraTS 2023 Average | Top Method (nnUNet) | Gap  |
 |--------|------------------------|--------------------|---------------------|--------|
-| **Whole Tumor (WT) Dice** | 0.8725 | 0.860 | 0.929 | **+1.5%** |
-| **Tumor Core (TC) Dice** | 0.8033 | 0.810 | 0.881 | **-0.8%** |
-| **Enhancing Tumor (ET) Dice** | 0.6679 | 0.780 | 0.859 | **-14.4%**  |
-| **Overall Mean Dice** | 0.7812 | 0.817 | 0.890 | **-4.4%** |
+| **Whole Tumor (WT) Dice** | 0.8725 | 0.860 | 0.910 | **+1.5%** |
+| **Tumor Core (TC) Dice** | 0.8033 | 0.810 | 0.867 | **-0.8%** |
+| **Enhancing Tumor (ET) Dice** | 0.6679 | 0.780 | 0.850 | **-14.4%**  |
+| **Overall Mean Dice** | 0.7812 | 0.817 | 0.876 | **-4.4%** |
 
 ### 6. Error Analysis
 
