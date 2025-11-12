@@ -47,6 +47,9 @@ The model's performance was assessed using the following metrics on the unseen 1
 | ET (Enhancing Tumor)  | 0.5079 |           0.3267 | 0.6373 | 0.0000 | 1.0000 |
 | Mean Dice per patient | 0.5973 |           0.3057 | 0.7183 | 0.0000 | 0.9243 |
 
+![Dice Score Distribution](./images/errorAnalysis/dice_boxplot.png)  
+_Figure 4.1: Distribution of Dice scores across tumor regions._
+
 This summary table is the result of the test evaluation on the 150 patient data points.
 More detailed information and numbers can be infered from : [Test Evaluation](./model_evaluation_summary.xlsx)
 
@@ -92,6 +95,18 @@ However, slightly lower correlation for ET implies that the model struggles to t
 | ET    | **0.6677** |  **-522.34** | **0.6454** |
 | Total | **0.8892** | **-5724.07** | **0.7963** |
 
+<div align="center">
+
+<img src="./images/errorAnalysis/gt_pred_TC_scatter.png" alt="GT vs Pred TC" width="45%"/> 
+<img src="./images/errorAnalysis/gt_pred_WT_scatter.png" alt="GT vs Pred WT" width="45%"/>  
+
+<img src="./images/errorAnalysis/gt_pred_ET_scatter.png" alt="GT vs Pred ET" width="45%"/> 
+<img src="./images/errorAnalysis/gt_pred_total_scatter.png" alt="GT vs Pred Total" width="45%"/>  
+
+</div>
+
+_Figure 4.3: Predicted vs ground-truth tumor volumes for Tumor Core (TC), Whole Tumor (WT), Enhancing Tumor (ET), and Total volume._
+
 **Explanation:**
 Regression shows how predicted and actual tumor volumes relate.
 
@@ -115,6 +130,9 @@ ET again stands out as the least reliable label.
 | WT    |                   **3** |
 | ET    |                  **22** |
 
+![Missed Detections by Label](./images/errorAnalysis/missed_counts.png)  
+_Figure 4.4: Count of missed detections (predicted 0 while ground truth > 0) for each label._
+
 **Explanation:**
 A “miss” means the model predicted *no tumor* for a region that actually exists.
 More misses for ET indicate difficulty detecting smaller or less distinct enhancing regions.
@@ -133,6 +151,9 @@ WT has very few misses, reflecting better sensitivity to larger, more visible tu
 | **Median**          | **0.1642** |
 | **75th percentile** | **0.4613** |
 | **Max**             | **1.0000** |
+
+![Mean Dice Histogram](./images/errorAnalysis/dice_mean_hist.png)  
+_Figure 4.5: Distribution of mean Dice scores across patients._
 
 **Explanation:**
 This measures how far the predicted tumor size is from the real size, normalized by the ground-truth volume.
