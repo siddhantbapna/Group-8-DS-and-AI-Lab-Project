@@ -1,0 +1,3452 @@
+{
+    "BraTS-GLI-02405-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 8419.0,
+                "predicted_volume": 8868.0,
+                "dice_score": 0.9242783594652468
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 12529.0,
+                "predicted_volume": 16936.0,
+                "dice_score": 0.8295265569377388
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 6093.0,
+                "predicted_volume": 6480.0,
+                "dice_score": 0.8220790583136818
+            }
+        ],
+        "patient_id": "BraTS-GLI-02405-100"
+    },
+    "BraTS-GLI-02405-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2986.0,
+                "predicted_volume": 2931.0,
+                "dice_score": 0.8943721480658489
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 17646.0,
+                "predicted_volume": 15563.0,
+                "dice_score": 0.8249570899507677
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2783.0,
+                "predicted_volume": 2633.0,
+                "dice_score": 0.8563515509866412
+            }
+        ],
+        "patient_id": "BraTS-GLI-02405-101"
+    },
+    "BraTS-GLI-02406-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 14598.0,
+                "predicted_volume": 14786.0,
+                "dice_score": 0.9494963245320754
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 24042.0,
+                "predicted_volume": 30877.0,
+                "dice_score": 0.8626522697087956
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9221.0,
+                "predicted_volume": 9092.0,
+                "dice_score": 0.8150494184560122
+            }
+        ],
+        "patient_id": "BraTS-GLI-02406-100"
+    },
+    "BraTS-GLI-02407-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 34269.0,
+                "predicted_volume": 16694.0,
+                "dice_score": 0.5847379471462681
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 59447.0,
+                "predicted_volume": 40678.0,
+                "dice_score": 0.7257927590539246
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 31444.0,
+                "predicted_volume": 11297.0,
+                "dice_score": 0.504106127617414
+            }
+        ],
+        "patient_id": "BraTS-GLI-02407-100"
+    },
+    "BraTS-GLI-02408-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 13171.0,
+                "predicted_volume": 13275.0,
+                "dice_score": 0.915072222645577
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 56822.0,
+                "predicted_volume": 62645.0,
+                "dice_score": 0.9125365163608985
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12729.0,
+                "predicted_volume": 11972.0,
+                "dice_score": 0.9046597303791483
+            }
+        ],
+        "patient_id": "BraTS-GLI-02408-100"
+    },
+    "BraTS-GLI-02409-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 17545.0,
+                "predicted_volume": 16870.0,
+                "dice_score": 0.842365247716334
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 80344.0,
+                "predicted_volume": 89020.0,
+                "dice_score": 0.9049266668246798
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 13627.0,
+                "predicted_volume": 9741.0,
+                "dice_score": 0.7206436152122285
+            }
+        ],
+        "patient_id": "BraTS-GLI-02409-100"
+    },
+    "BraTS-GLI-02410-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10668.0,
+                "predicted_volume": 11491.0,
+                "dice_score": 0.8577101854841053
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 28989.0,
+                "predicted_volume": 32273.0,
+                "dice_score": 0.9149880839686104
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10420.0,
+                "predicted_volume": 5797.0,
+                "dice_score": 0.6128137140276985
+            }
+        ],
+        "patient_id": "BraTS-GLI-02410-100"
+    },
+    "BraTS-GLI-02410-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9618.0,
+                "predicted_volume": 6893.0,
+                "dice_score": 0.7534371025526354
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 23167.0,
+                "predicted_volume": 23643.0,
+                "dice_score": 0.8419141209177117
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 8244.0,
+                "predicted_volume": 4252.0,
+                "dice_score": 0.5846670935031476
+            }
+        ],
+        "patient_id": "BraTS-GLI-02410-101"
+    },
+    "BraTS-GLI-02411-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 12116.0,
+                "predicted_volume": 302.0,
+                "dice_score": 8.052826541467802e-11
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 39194.0,
+                "predicted_volume": 21330.0,
+                "dice_score": 0.5098142885547913
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12116.0,
+                "predicted_volume": 0.0,
+                "dice_score": 8.253549025400004e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02411-100"
+    },
+    "BraTS-GLI-02412-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 12909.0,
+                "predicted_volume": 15303.0,
+                "dice_score": 0.8615482773337038
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 74242.0,
+                "predicted_volume": 81051.0,
+                "dice_score": 0.9267384878911044
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10944.0,
+                "predicted_volume": 10505.0,
+                "dice_score": 0.8666138281567153
+            }
+        ],
+        "patient_id": "BraTS-GLI-02412-100"
+    },
+    "BraTS-GLI-02413-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 12954.0,
+                "predicted_volume": 14153.0,
+                "dice_score": 0.8992511159516269
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 39624.0,
+                "predicted_volume": 48728.0,
+                "dice_score": 0.8363138355686762
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10862.0,
+                "predicted_volume": 11267.0,
+                "dice_score": 0.8597767635293155
+            }
+        ],
+        "patient_id": "BraTS-GLI-02413-100"
+    },
+    "BraTS-GLI-02414-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9317.0,
+                "predicted_volume": 20987.0,
+                "dice_score": 0.5986668426742784
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 54761.0,
+                "predicted_volume": 59262.0,
+                "dice_score": 0.9384773247508092
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 7217.0,
+                "predicted_volume": 6103.0,
+                "dice_score": 0.7836336336498774
+            }
+        ],
+        "patient_id": "BraTS-GLI-02414-100"
+    },
+    "BraTS-GLI-02415-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 13808.0,
+                "predicted_volume": 12472.0,
+                "dice_score": 0.8684931506899356
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 40265.0,
+                "predicted_volume": 49834.0,
+                "dice_score": 0.8506864671100601
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12879.0,
+                "predicted_volume": 10485.0,
+                "dice_score": 0.8353021742922744
+            }
+        ],
+        "patient_id": "BraTS-GLI-02415-100"
+    },
+    "BraTS-GLI-02416-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3908.0,
+                "predicted_volume": 4048.0,
+                "dice_score": 0.7730015083241577
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 17108.0,
+                "predicted_volume": 18123.0,
+                "dice_score": 0.8569157843984867
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3662.0,
+                "predicted_volume": 2614.0,
+                "dice_score": 0.7667304015668053
+            }
+        ],
+        "patient_id": "BraTS-GLI-02416-100"
+    },
+    "BraTS-GLI-02417-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5523.0,
+                "predicted_volume": 5288.0,
+                "dice_score": 0.8981592822219814
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15271.0,
+                "predicted_volume": 17985.0,
+                "dice_score": 0.857709886941974
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4551.0,
+                "predicted_volume": 4276.0,
+                "dice_score": 0.8383369208294622
+            }
+        ],
+        "patient_id": "BraTS-GLI-02417-100"
+    },
+    "BraTS-GLI-02417-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9948.0,
+                "predicted_volume": 9062.0,
+                "dice_score": 0.8237769595042727
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15985.0,
+                "predicted_volume": 21096.0,
+                "dice_score": 0.77193171705801
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9948.0,
+                "predicted_volume": 5657.0,
+                "dice_score": 0.6755527074863471
+            }
+        ],
+        "patient_id": "BraTS-GLI-02417-101"
+    },
+    "BraTS-GLI-02418-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5555.0,
+                "predicted_volume": 5254.0,
+                "dice_score": 0.8544731242617751
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 6746.0,
+                "predicted_volume": 11407.0,
+                "dice_score": 0.6705227786222375
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5555.0,
+                "predicted_volume": 2602.0,
+                "dice_score": 0.548240774850038
+            }
+        ],
+        "patient_id": "BraTS-GLI-02418-100"
+    },
+    "BraTS-GLI-02418-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2425.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.123711338505686e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 3743.0,
+                "predicted_volume": 322.0,
+                "dice_score": 2.46002459964083e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2425.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.123711338505686e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02418-101"
+    },
+    "BraTS-GLI-02418-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1727.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.790387952640192e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 6871.0,
+                "predicted_volume": 557.0,
+                "dice_score": 0.1408185246175527
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1727.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.790387952640192e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02418-102"
+    },
+    "BraTS-GLI-02419-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10739.0,
+                "predicted_volume": 10684.0,
+                "dice_score": 0.8607571301936817
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15476.0,
+                "predicted_volume": 16546.0,
+                "dice_score": 0.8562863031710609
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10739.0,
+                "predicted_volume": 3460.0,
+                "dice_score": 0.43256567367895166
+            }
+        ],
+        "patient_id": "BraTS-GLI-02419-100"
+    },
+    "BraTS-GLI-02420-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5968.0,
+                "predicted_volume": 152.0,
+                "dice_score": 0.04444444460058097
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 7583.0,
+                "predicted_volume": 2561.0,
+                "dice_score": 0.05993690861002199
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5968.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.675603216877412e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02420-100"
+    },
+    "BraTS-GLI-02420-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 8855.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.1293054770040309e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 11382.0,
+                "predicted_volume": 688.0,
+                "dice_score": 8.285004141815657e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 8855.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.1293054770040309e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02420-101"
+    },
+    "BraTS-GLI-02421-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 61825.0,
+                "predicted_volume": 58564.0,
+                "dice_score": 0.9189876151482362
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 83133.0,
+                "predicted_volume": 90048.0,
+                "dice_score": 0.9104347474612663
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 40695.0,
+                "predicted_volume": 29346.0,
+                "dice_score": 0.7581273825365411
+            }
+        ],
+        "patient_id": "BraTS-GLI-02421-100"
+    },
+    "BraTS-GLI-02422-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2670.0,
+                "predicted_volume": 142.0,
+                "dice_score": 3.556187765449435e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 19403.0,
+                "predicted_volume": 15700.0,
+                "dice_score": 0.7965700937299783
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2670.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.745318350657184e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02422-100"
+    },
+    "BraTS-GLI-02422-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3608.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.771618624508975e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 16282.0,
+                "predicted_volume": 7443.0,
+                "dice_score": 0.5572181243600751
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3608.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.771618624508975e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02422-101"
+    },
+    "BraTS-GLI-02423-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 12260.0,
+                "predicted_volume": 12838.0,
+                "dice_score": 0.8616622838528304
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 33354.0,
+                "predicted_volume": 34363.0,
+                "dice_score": 0.862648965549823
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10926.0,
+                "predicted_volume": 8339.0,
+                "dice_score": 0.7596158837394438
+            }
+        ],
+        "patient_id": "BraTS-GLI-02423-100"
+    },
+    "BraTS-GLI-02424-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 7119.0,
+                "predicted_volume": 8140.0,
+                "dice_score": 0.8994036306508025
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 59572.0,
+                "predicted_volume": 55845.0,
+                "dice_score": 0.826117469698345
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5589.0,
+                "predicted_volume": 6629.0,
+                "dice_score": 0.8310689147298193
+            }
+        ],
+        "patient_id": "BraTS-GLI-02424-100"
+    },
+    "BraTS-GLI-02425-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2674.0,
+                "predicted_volume": 3271.0,
+                "dice_score": 0.7350714886904842
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 25383.0,
+                "predicted_volume": 22848.0,
+                "dice_score": 0.8096867160164689
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2200.0,
+                "predicted_volume": 2312.0,
+                "dice_score": 0.6906028369480046
+            }
+        ],
+        "patient_id": "BraTS-GLI-02425-100"
+    },
+    "BraTS-GLI-02426-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 7011.0,
+                "predicted_volume": 8236.0,
+                "dice_score": 0.5430576507153501
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 37846.0,
+                "predicted_volume": 27556.0,
+                "dice_score": 0.7491514021016307
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5151.0,
+                "predicted_volume": 2755.0,
+                "dice_score": 0.5841133316994545
+            }
+        ],
+        "patient_id": "BraTS-GLI-02426-100"
+    },
+    "BraTS-GLI-02427-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 20308.0,
+                "predicted_volume": 4335.0,
+                "dice_score": 0.29493162361340214
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 37463.0,
+                "predicted_volume": 19605.0,
+                "dice_score": 0.6229410527857479
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 20308.0,
+                "predicted_volume": 123.0,
+                "dice_score": 0.009691155645357977
+            }
+        ],
+        "patient_id": "BraTS-GLI-02427-100"
+    },
+    "BraTS-GLI-02427-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 18211.0,
+                "predicted_volume": 2639.0,
+                "dice_score": 0.1036930456065375
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 45955.0,
+                "predicted_volume": 24042.0,
+                "dice_score": 0.5889109533324441
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 18211.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.4911866451325464e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02427-101"
+    },
+    "BraTS-GLI-02428-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 7865.0,
+                "predicted_volume": 577.0,
+                "dice_score": 0.00023691080309915768
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 31520.0,
+                "predicted_volume": 8479.0,
+                "dice_score": 0.3871096777572662
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 7865.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.2714558167487021e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02428-100"
+    },
+    "BraTS-GLI-02429-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3982.0,
+                "predicted_volume": 4879.0,
+                "dice_score": 0.711657826462966
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 35257.0,
+                "predicted_volume": 38741.0,
+                "dice_score": 0.9003216303156798
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3715.0,
+                "predicted_volume": 2750.0,
+                "dice_score": 0.7387470998083918
+            }
+        ],
+        "patient_id": "BraTS-GLI-02429-100"
+    },
+    "BraTS-GLI-02429-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3161.0,
+                "predicted_volume": 12312.0,
+                "dice_score": 0.2888903251283597
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 36431.0,
+                "predicted_volume": 42162.0,
+                "dice_score": 0.81312585090513
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2989.0,
+                "predicted_volume": 1172.0,
+                "dice_score": 0.4893054555421039
+            }
+        ],
+        "patient_id": "BraTS-GLI-02429-101"
+    },
+    "BraTS-GLI-02430-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1626.0,
+                "predicted_volume": 1907.0,
+                "dice_score": 0.6623266346837456
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 4146.0,
+                "predicted_volume": 6306.0,
+                "dice_score": 0.716417910474893
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1596.0,
+                "predicted_volume": 1233.0,
+                "dice_score": 0.7133262637987536
+            }
+        ],
+        "patient_id": "BraTS-GLI-02430-100"
+    },
+    "BraTS-GLI-02431-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2677.0,
+                "predicted_volume": 4392.0,
+                "dice_score": 0.5678313764934458
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 14505.0,
+                "predicted_volume": 13890.0,
+                "dice_score": 0.7612607853579412
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2673.0,
+                "predicted_volume": 1213.0,
+                "dice_score": 0.5352547607989565
+            }
+        ],
+        "patient_id": "BraTS-GLI-02431-100"
+    },
+    "BraTS-GLI-02431-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3114.0,
+                "predicted_volume": 4381.0,
+                "dice_score": 0.7252835223848855
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 27855.0,
+                "predicted_volume": 31229.0,
+                "dice_score": 0.8708956739579091
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3096.0,
+                "predicted_volume": 2428.0,
+                "dice_score": 0.8066618392819221
+            }
+        ],
+        "patient_id": "BraTS-GLI-02431-101"
+    },
+    "BraTS-GLI-02432-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 15555.0,
+                "predicted_volume": 15561.0,
+                "dice_score": 0.9040365085517407
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 51904.0,
+                "predicted_volume": 57550.0,
+                "dice_score": 0.9014745920669736
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9934.0,
+                "predicted_volume": 9858.0,
+                "dice_score": 0.7986054971807495
+            }
+        ],
+        "patient_id": "BraTS-GLI-02432-100"
+    },
+    "BraTS-GLI-02433-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 17671.0,
+                "predicted_volume": 19583.0,
+                "dice_score": 0.8401245503881429
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 21388.0,
+                "predicted_volume": 39587.0,
+                "dice_score": 0.6511849118548391
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 17671.0,
+                "predicted_volume": 3949.0,
+                "dice_score": 0.2606845513755465
+            }
+        ],
+        "patient_id": "BraTS-GLI-02433-100"
+    },
+    "BraTS-GLI-02433-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 13231.0,
+                "predicted_volume": 1540.0,
+                "dice_score": 0.10236273785780498
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 30620.0,
+                "predicted_volume": 24484.0,
+                "dice_score": 0.6086672473938612
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 13231.0,
+                "predicted_volume": 618.0,
+                "dice_score": 0.07278503869789985
+            }
+        ],
+        "patient_id": "BraTS-GLI-02433-101"
+    },
+    "BraTS-GLI-02478-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 15612.0,
+                "predicted_volume": 21603.0,
+                "dice_score": 0.8125755743702116
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 58133.0,
+                "predicted_volume": 64870.0,
+                "dice_score": 0.9235059307502784
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 15612.0,
+                "predicted_volume": 3634.0,
+                "dice_score": 0.19775537778251295
+            }
+        ],
+        "patient_id": "BraTS-GLI-02478-100"
+    },
+    "BraTS-GLI-02478-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10517.0,
+                "predicted_volume": 6316.0,
+                "dice_score": 0.6957761540013203
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 30147.0,
+                "predicted_volume": 28233.0,
+                "dice_score": 0.8742377526571731
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10333.0,
+                "predicted_volume": 5607.0,
+                "dice_score": 0.6559598494569662
+            }
+        ],
+        "patient_id": "BraTS-GLI-02478-101"
+    },
+    "BraTS-GLI-02479-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4963.0,
+                "predicted_volume": 4912.0,
+                "dice_score": 0.775898734199909
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 25519.0,
+                "predicted_volume": 23003.0,
+                "dice_score": 0.8074275586371661
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4963.0,
+                "predicted_volume": 2685.0,
+                "dice_score": 0.5907426778777795
+            }
+        ],
+        "patient_id": "BraTS-GLI-02479-100"
+    },
+    "BraTS-GLI-02479-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2792.0,
+                "predicted_volume": 333.0,
+                "dice_score": 3.199999998976e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 80249.0,
+                "predicted_volume": 61134.0,
+                "dice_score": 0.7888359986717721
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2792.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.581661889834648e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02479-101"
+    },
+    "BraTS-GLI-02479-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1972.0,
+                "predicted_volume": 19176.0,
+                "dice_score": 0.02657461703108688
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 93235.0,
+                "predicted_volume": 97547.0,
+                "dice_score": 0.9044459120886433
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1972.0,
+                "predicted_volume": 261.0,
+                "dice_score": 0.03224361888390344
+            }
+        ],
+        "patient_id": "BraTS-GLI-02479-102"
+    },
+    "BraTS-GLI-02479-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 15560.0,
+                "predicted_volume": 6966.0,
+                "dice_score": 0.38577643614553064
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 58208.0,
+                "predicted_volume": 62317.0,
+                "dice_score": 0.5729433727477872
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 15560.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.426735218095968e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02479-103"
+    },
+    "BraTS-GLI-02479-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 19328.0,
+                "predicted_volume": 6427.0,
+                "dice_score": 0.3548825471032855
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 72997.0,
+                "predicted_volume": 66513.0,
+                "dice_score": 0.7519747688355531
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 19307.0,
+                "predicted_volume": 142.0,
+                "dice_score": 0.014499460177155666
+            }
+        ],
+        "patient_id": "BraTS-GLI-02479-104"
+    },
+    "BraTS-GLI-02480-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 29123.0,
+                "predicted_volume": 27460.0,
+                "dice_score": 0.9283353657471619
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 56119.0,
+                "predicted_volume": 39211.0,
+                "dice_score": 0.8142032938234113
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 27816.0,
+                "predicted_volume": 10233.0,
+                "dice_score": 0.49436253253713996
+            }
+        ],
+        "patient_id": "BraTS-GLI-02480-100"
+    },
+    "BraTS-GLI-02480-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 24598.0,
+                "predicted_volume": 24235.0,
+                "dice_score": 0.945221469089648
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 36082.0,
+                "predicted_volume": 39555.0,
+                "dice_score": 0.9092111003885769
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 11479.0,
+                "predicted_volume": 9546.0,
+                "dice_score": 0.787728894183699
+            }
+        ],
+        "patient_id": "BraTS-GLI-02480-101"
+    },
+    "BraTS-GLI-02481-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 18074.0,
+                "predicted_volume": 16442.0,
+                "dice_score": 0.7942403523063437
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 62863.0,
+                "predicted_volume": 65879.0,
+                "dice_score": 0.9324695903440022
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 16153.0,
+                "predicted_volume": 9748.0,
+                "dice_score": 0.6651480637942493
+            }
+        ],
+        "patient_id": "BraTS-GLI-02481-100"
+    },
+    "BraTS-GLI-02481-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 8076.0,
+                "predicted_volume": 13482.0,
+                "dice_score": 0.7072084609097686
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 24003.0,
+                "predicted_volume": 30034.0,
+                "dice_score": 0.8499361548596344
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 7734.0,
+                "predicted_volume": 3248.0,
+                "dice_score": 0.49444545624709113
+            }
+        ],
+        "patient_id": "BraTS-GLI-02481-102"
+    },
+    "BraTS-GLI-02481-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9505.0,
+                "predicted_volume": 10051.0,
+                "dice_score": 0.8786050317100325
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 28308.0,
+                "predicted_volume": 23462.0,
+                "dice_score": 0.819741162839101
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9080.0,
+                "predicted_volume": 5511.0,
+                "dice_score": 0.663148516231708
+            }
+        ],
+        "patient_id": "BraTS-GLI-02481-103"
+    },
+    "BraTS-GLI-02481-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 11809.0,
+                "predicted_volume": 12320.0,
+                "dice_score": 0.8963487919144453
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 31483.0,
+                "predicted_volume": 25613.0,
+                "dice_score": 0.8266778758612393
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9870.0,
+                "predicted_volume": 7816.0,
+                "dice_score": 0.8078706321492779
+            }
+        ],
+        "patient_id": "BraTS-GLI-02481-104"
+    },
+    "BraTS-GLI-02482-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3585.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.7894002781619526e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15001.0,
+                "predicted_volume": 111.0,
+                "dice_score": 6.617257807926332e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3585.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.7894002781619526e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02482-100"
+    },
+    "BraTS-GLI-02483-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 36962.0,
+                "predicted_volume": 38191.0,
+                "dice_score": 0.891647705349199
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 89956.0,
+                "predicted_volume": 93682.0,
+                "dice_score": 0.9300144850198215
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 33010.0,
+                "predicted_volume": 17401.0,
+                "dice_score": 0.596972882910536
+            }
+        ],
+        "patient_id": "BraTS-GLI-02483-100"
+    },
+    "BraTS-GLI-02484-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3644.0,
+                "predicted_volume": 5998.0,
+                "dice_score": 0.7299315494990737
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 16169.0,
+                "predicted_volume": 26218.0,
+                "dice_score": 0.7544294241216781
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3576.0,
+                "predicted_volume": 2858.0,
+                "dice_score": 0.6254274169062126
+            }
+        ],
+        "patient_id": "BraTS-GLI-02484-100"
+    },
+    "BraTS-GLI-02485-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5998.0,
+                "predicted_volume": 10079.0,
+                "dice_score": 0.6801020091011941
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 29919.0,
+                "predicted_volume": 35354.0,
+                "dice_score": 0.8808848988114398
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5933.0,
+                "predicted_volume": 4681.0,
+                "dice_score": 0.583568871341288
+            }
+        ],
+        "patient_id": "BraTS-GLI-02485-100"
+    },
+    "BraTS-GLI-02485-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1602.0,
+                "predicted_volume": 1631.0,
+                "dice_score": 0.801732137395072
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 10756.0,
+                "predicted_volume": 12229.0,
+                "dice_score": 0.8657820317656828
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1602.0,
+                "predicted_volume": 722.0,
+                "dice_score": 0.5774526679959326
+            }
+        ],
+        "patient_id": "BraTS-GLI-02485-101"
+    },
+    "BraTS-GLI-02485-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6787.0,
+                "predicted_volume": 3497.0,
+                "dice_score": 0.6081291326713215
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15326.0,
+                "predicted_volume": 4850.0,
+                "dice_score": 0.46015067409495686
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5763.0,
+                "predicted_volume": 2093.0,
+                "dice_score": 0.46410386972198264
+            }
+        ],
+        "patient_id": "BraTS-GLI-02485-102"
+    },
+    "BraTS-GLI-02486-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 14746.0,
+                "predicted_volume": 18745.0,
+                "dice_score": 0.828222507544468
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 51252.0,
+                "predicted_volume": 59647.0,
+                "dice_score": 0.9017574549824456
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12600.0,
+                "predicted_volume": 10709.0,
+                "dice_score": 0.8054399588225389
+            }
+        ],
+        "patient_id": "BraTS-GLI-02486-100"
+    },
+    "BraTS-GLI-02486-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 49245.0,
+                "predicted_volume": 46748.0,
+                "dice_score": 0.9220255643648805
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 79038.0,
+                "predicted_volume": 85226.0,
+                "dice_score": 0.93699167194311
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 34603.0,
+                "predicted_volume": 27460.0,
+                "dice_score": 0.8194254225574106
+            }
+        ],
+        "patient_id": "BraTS-GLI-02486-101"
+    },
+    "BraTS-GLI-02487-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4171.0,
+                "predicted_volume": 9986.0,
+                "dice_score": 0.5778060323813092
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 52566.0,
+                "predicted_volume": 60824.0,
+                "dice_score": 0.9183878648918036
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2619.0,
+                "predicted_volume": 4664.0,
+                "dice_score": 0.5876699162999217
+            }
+        ],
+        "patient_id": "BraTS-GLI-02487-100"
+    },
+    "BraTS-GLI-02488-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 14746.0,
+                "predicted_volume": 18745.0,
+                "dice_score": 0.828222507544468
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 51252.0,
+                "predicted_volume": 59647.0,
+                "dice_score": 0.9017574549824456
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12159.0,
+                "predicted_volume": 10709.0,
+                "dice_score": 0.8059296834088714
+            }
+        ],
+        "patient_id": "BraTS-GLI-02488-100"
+    },
+    "BraTS-GLI-02488-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 49245.0,
+                "predicted_volume": 46748.0,
+                "dice_score": 0.9220255643648805
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 79038.0,
+                "predicted_volume": 85226.0,
+                "dice_score": 0.93699167194311
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 34603.0,
+                "predicted_volume": 27460.0,
+                "dice_score": 0.8194254225574106
+            }
+        ],
+        "patient_id": "BraTS-GLI-02488-101"
+    },
+    "BraTS-GLI-02489-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 27575.0,
+                "predicted_volume": 26673.0,
+                "dice_score": 0.9080150420308949
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 87530.0,
+                "predicted_volume": 86170.0,
+                "dice_score": 0.9350834772600168
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 20442.0,
+                "predicted_volume": 18096.0,
+                "dice_score": 0.8167522964394428
+            }
+        ],
+        "patient_id": "BraTS-GLI-02489-100"
+    },
+    "BraTS-GLI-02490-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 19355.0,
+                "predicted_volume": 23836.0,
+                "dice_score": 0.8556875274974951
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 44706.0,
+                "predicted_volume": 59952.0,
+                "dice_score": 0.8415601291841851
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 17333.0,
+                "predicted_volume": 15839.0,
+                "dice_score": 0.8571686964953223
+            }
+        ],
+        "patient_id": "BraTS-GLI-02490-100"
+    },
+    "BraTS-GLI-02490-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 13946.0,
+                "predicted_volume": 0.0,
+                "dice_score": 7.170514842451561e-11
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 19805.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.0492299921712074e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12777.0,
+                "predicted_volume": 0.0,
+                "dice_score": 7.826563355417815e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02490-101"
+    },
+    "BraTS-GLI-02491-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2774.0,
+                "predicted_volume": 6241.0,
+                "dice_score": 0.5550748752573406
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 49755.0,
+                "predicted_volume": 50892.0,
+                "dice_score": 0.9442506979845972
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2774.0,
+                "predicted_volume": 1397.0,
+                "dice_score": 0.4425797172278639
+            }
+        ],
+        "patient_id": "BraTS-GLI-02491-100"
+    },
+    "BraTS-GLI-02491-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 14445.0,
+                "predicted_volume": 13693.0,
+                "dice_score": 0.9089487525798227
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 73914.0,
+                "predicted_volume": 71030.0,
+                "dice_score": 0.9422535599959829
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 12352.0,
+                "predicted_volume": 10206.0,
+                "dice_score": 0.8308360670347178
+            }
+        ],
+        "patient_id": "BraTS-GLI-02491-101"
+    },
+    "BraTS-GLI-02491-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 11500.0,
+                "predicted_volume": 11763.0,
+                "dice_score": 0.9354769376290472
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 47960.0,
+                "predicted_volume": 47569.0,
+                "dice_score": 0.9261899527899781
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9255.0,
+                "predicted_volume": 8370.0,
+                "dice_score": 0.8405106383069214
+            }
+        ],
+        "patient_id": "BraTS-GLI-02491-102"
+    },
+    "BraTS-GLI-02491-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 24220.0,
+                "predicted_volume": 26114.0,
+                "dice_score": 0.8803592005427672
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 95469.0,
+                "predicted_volume": 45266.0,
+                "dice_score": 0.6312004831802237
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 19547.0,
+                "predicted_volume": 14651.0,
+                "dice_score": 0.817767120889591
+            }
+        ],
+        "patient_id": "BraTS-GLI-02491-103"
+    },
+    "BraTS-GLI-02491-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 20087.0,
+                "predicted_volume": 19234.0,
+                "dice_score": 0.8988581165306361
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 107906.0,
+                "predicted_volume": 110884.0,
+                "dice_score": 0.9309657662601994
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 14532.0,
+                "predicted_volume": 12111.0,
+                "dice_score": 0.8048643170887338
+            }
+        ],
+        "patient_id": "BraTS-GLI-02491-104"
+    },
+    "BraTS-GLI-02492-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 151.0,
+                "predicted_volume": 205.0,
+                "dice_score": 2.808988756154526e-09
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 26816.0,
+                "predicted_volume": 21831.0,
+                "dice_score": 0.6959524739512004
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 151.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.622516512433665e-09
+            }
+        ],
+        "patient_id": "BraTS-GLI-02492-100"
+    },
+    "BraTS-GLI-02492-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 39.0,
+                "predicted_volume": 221.0,
+                "dice_score": 3.846153831360947e-09
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 27745.0,
+                "predicted_volume": 18868.0,
+                "dice_score": 0.6402076673966446
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 39.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.5641024983563464e-08
+            }
+        ],
+        "patient_id": "BraTS-GLI-02492-101"
+    },
+    "BraTS-GLI-02492-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 66.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.5151514921946744e-08
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 5201.0,
+                "predicted_volume": 237.0,
+                "dice_score": 1.8389113641340727e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 66.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.5151514921946744e-08
+            }
+        ],
+        "patient_id": "BraTS-GLI-02492-102"
+    },
+    "BraTS-GLI-02492-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 0.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.0
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 20968.0,
+                "predicted_volume": 16183.0,
+                "dice_score": 0.7857661974163342
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 0.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.0
+            }
+        ],
+        "patient_id": "BraTS-GLI-02492-103"
+    },
+    "BraTS-GLI-02492-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 0.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.0
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 30159.0,
+                "predicted_volume": 35811.0,
+                "dice_score": 0.849931787178264
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 0.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.0
+            }
+        ],
+        "patient_id": "BraTS-GLI-02492-104"
+    },
+    "BraTS-GLI-02493-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6119.0,
+                "predicted_volume": 14395.0,
+                "dice_score": 0.5148678951196808
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 33638.0,
+                "predicted_volume": 37692.0,
+                "dice_score": 0.857086779758067
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 6119.0,
+                "predicted_volume": 1147.0,
+                "dice_score": 0.20644095799526
+            }
+        ],
+        "patient_id": "BraTS-GLI-02493-100"
+    },
+    "BraTS-GLI-02493-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3677.0,
+                "predicted_volume": 2075.0,
+                "dice_score": 0.5865785814348785
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 18066.0,
+                "predicted_volume": 20076.0,
+                "dice_score": 0.534371558923644
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3635.0,
+                "predicted_volume": 1768.0,
+                "dice_score": 0.55635757920482
+            }
+        ],
+        "patient_id": "BraTS-GLI-02493-101"
+    },
+    "BraTS-GLI-02494-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1276.0,
+                "predicted_volume": 1285.0,
+                "dice_score": 0.9019914096438925
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 6004.0,
+                "predicted_volume": 6360.0,
+                "dice_score": 0.9315755419013607
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1273.0,
+                "predicted_volume": 1237.0,
+                "dice_score": 0.9067729084036761
+            }
+        ],
+        "patient_id": "BraTS-GLI-02494-100"
+    },
+    "BraTS-GLI-02494-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4066.0,
+                "predicted_volume": 9773.0,
+                "dice_score": 0.5750415492755949
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 16252.0,
+                "predicted_volume": 18841.0,
+                "dice_score": 0.9116917903880634
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4066.0,
+                "predicted_volume": 1520.0,
+                "dice_score": 0.26530612258050373
+            }
+        ],
+        "patient_id": "BraTS-GLI-02494-101"
+    },
+    "BraTS-GLI-02494-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2577.0,
+                "predicted_volume": 7174.0,
+                "dice_score": 0.4329812327522325
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 19961.0,
+                "predicted_volume": 27195.0,
+                "dice_score": 0.824709474937978
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2247.0,
+                "predicted_volume": 1732.0,
+                "dice_score": 0.7670268912372388
+            }
+        ],
+        "patient_id": "BraTS-GLI-02494-102"
+    },
+    "BraTS-GLI-02494-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2103.0,
+                "predicted_volume": 1880.0,
+                "dice_score": 0.8471001757853125
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 27012.0,
+                "predicted_volume": 26689.0,
+                "dice_score": 0.9243775721136593
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1873.0,
+                "predicted_volume": 1559.0,
+                "dice_score": 0.7773892774541407
+            }
+        ],
+        "patient_id": "BraTS-GLI-02494-103"
+    },
+    "BraTS-GLI-02494-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4960.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.0161290318515866e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 59301.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.6863122038129827e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3790.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.638522426744453e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02494-104"
+    },
+    "BraTS-GLI-02501-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 8678.0,
+                "predicted_volume": 12621.0,
+                "dice_score": 0.7433212827013793
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 37731.0,
+                "predicted_volume": 47082.0,
+                "dice_score": 0.8584533031509503
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 8677.0,
+                "predicted_volume": 2652.0,
+                "dice_score": 0.3912084032667307
+            }
+        ],
+        "patient_id": "BraTS-GLI-02501-100"
+    },
+    "BraTS-GLI-02501-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 38485.0,
+                "predicted_volume": 37247.0,
+                "dice_score": 0.9483705699050815
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 104040.0,
+                "predicted_volume": 109022.0,
+                "dice_score": 0.9495264289270282
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 24413.0,
+                "predicted_volume": 20621.0,
+                "dice_score": 0.8386552382680051
+            }
+        ],
+        "patient_id": "BraTS-GLI-02501-101"
+    },
+    "BraTS-GLI-02502-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 19608.0,
+                "predicted_volume": 23070.0,
+                "dice_score": 0.8116594029754989
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 78776.0,
+                "predicted_volume": 84735.0,
+                "dice_score": 0.9222376476205134
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 19608.0,
+                "predicted_volume": 1701.0,
+                "dice_score": 0.11103289693974222
+            }
+        ],
+        "patient_id": "BraTS-GLI-02502-100"
+    },
+    "BraTS-GLI-02503-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4710.0,
+                "predicted_volume": 8469.0,
+                "dice_score": 0.710979588761592
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 42630.0,
+                "predicted_volume": 47504.0,
+                "dice_score": 0.9214059067619166
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4710.0,
+                "predicted_volume": 2485.0,
+                "dice_score": 0.37859624748038967
+            }
+        ],
+        "patient_id": "BraTS-GLI-02503-100"
+    },
+    "BraTS-GLI-02503-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9125.0,
+                "predicted_volume": 9470.0,
+                "dice_score": 0.8959397687606379
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 69369.0,
+                "predicted_volume": 71570.0,
+                "dice_score": 0.9516315569150368
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9101.0,
+                "predicted_volume": 6436.0,
+                "dice_score": 0.775696723963719
+            }
+        ],
+        "patient_id": "BraTS-GLI-02503-101"
+    },
+    "BraTS-GLI-02503-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2735.0,
+                "predicted_volume": 8709.0,
+                "dice_score": 0.46592100668770353
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 90220.0,
+                "predicted_volume": 89437.0,
+                "dice_score": 0.9362952737720418
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2735.0,
+                "predicted_volume": 3164.0,
+                "dice_score": 0.6980844211395009
+            }
+        ],
+        "patient_id": "BraTS-GLI-02503-102"
+    },
+    "BraTS-GLI-02504-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 15957.0,
+                "predicted_volume": 17365.0,
+                "dice_score": 0.9371586339374239
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 92603.0,
+                "predicted_volume": 99269.0,
+                "dice_score": 0.9309539693132352
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 11507.0,
+                "predicted_volume": 12252.0,
+                "dice_score": 0.8797508312690033
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-100"
+    },
+    "BraTS-GLI-02504-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5985.0,
+                "predicted_volume": 7390.0,
+                "dice_score": 0.8580186915994005
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 77114.0,
+                "predicted_volume": 86615.0,
+                "dice_score": 0.9215105448642482
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5985.0,
+                "predicted_volume": 4954.0,
+                "dice_score": 0.7848980711413385
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-101"
+    },
+    "BraTS-GLI-02504-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 11023.0,
+                "predicted_volume": 11339.0,
+                "dice_score": 0.9200429299740612
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 77395.0,
+                "predicted_volume": 79987.0,
+                "dice_score": 0.9445298699981921
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10965.0,
+                "predicted_volume": 8458.0,
+                "dice_score": 0.8121299490391737
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-102"
+    },
+    "BraTS-GLI-02504-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5314.0,
+                "predicted_volume": 400.0,
+                "dice_score": 0.13790689549564106
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 36936.0,
+                "predicted_volume": 1071.0,
+                "dice_score": 0.05025390062224712
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5314.0,
+                "predicted_volume": 99.0,
+                "dice_score": 0.03657860723506769
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-103"
+    },
+    "BraTS-GLI-02504-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10256.0,
+                "predicted_volume": 11469.0,
+                "dice_score": 0.8731875719275863
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 93715.0,
+                "predicted_volume": 98376.0,
+                "dice_score": 0.9215215705060543
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10226.0,
+                "predicted_volume": 9004.0,
+                "dice_score": 0.8529381175323485
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-104"
+    },
+    "BraTS-GLI-02504-105": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 35502.0,
+                "predicted_volume": 35059.0,
+                "dice_score": 0.9449129122327502
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 101362.0,
+                "predicted_volume": 101435.0,
+                "dice_score": 0.9396785948513061
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 29212.0,
+                "predicted_volume": 25365.0,
+                "dice_score": 0.8735181486730029
+            }
+        ],
+        "patient_id": "BraTS-GLI-02504-105"
+    },
+    "BraTS-GLI-02505-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 7161.0,
+                "predicted_volume": 8244.0,
+                "dice_score": 0.7561181434757469
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 18135.0,
+                "predicted_volume": 22518.0,
+                "dice_score": 0.8504169434026907
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 7159.0,
+                "predicted_volume": 3842.0,
+                "dice_score": 0.5479501863877875
+            }
+        ],
+        "patient_id": "BraTS-GLI-02505-100"
+    },
+    "BraTS-GLI-02505-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 20941.0,
+                "predicted_volume": 18238.0,
+                "dice_score": 0.908598994361556
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 61079.0,
+                "predicted_volume": 58692.0,
+                "dice_score": 0.9218091190695427
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 20931.0,
+                "predicted_volume": 12226.0,
+                "dice_score": 0.7218988448978527
+            }
+        ],
+        "patient_id": "BraTS-GLI-02505-101"
+    },
+    "BraTS-GLI-02506-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5919.0,
+                "predicted_volume": 7593.0,
+                "dice_score": 0.8355535820133545
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 24116.0,
+                "predicted_volume": 26117.0,
+                "dice_score": 0.9247307546846748
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5918.0,
+                "predicted_volume": 3252.0,
+                "dice_score": 0.6045801527148768
+            }
+        ],
+        "patient_id": "BraTS-GLI-02506-100"
+    },
+    "BraTS-GLI-02506-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 26805.0,
+                "predicted_volume": 26587.0,
+                "dice_score": 0.9349715313167708
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 49522.0,
+                "predicted_volume": 51027.0,
+                "dice_score": 0.9506608718142332
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 22927.0,
+                "predicted_volume": 20110.0,
+                "dice_score": 0.8739456746549725
+            }
+        ],
+        "patient_id": "BraTS-GLI-02506-101"
+    },
+    "BraTS-GLI-02507-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5254.0,
+                "predicted_volume": 6326.0,
+                "dice_score": 0.7917098445775725
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 59293.0,
+                "predicted_volume": 65704.0,
+                "dice_score": 0.9252862068695625
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4453.0,
+                "predicted_volume": 4648.0,
+                "dice_score": 0.755960883446219
+            }
+        ],
+        "patient_id": "BraTS-GLI-02507-100"
+    },
+    "BraTS-GLI-02507-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4907.0,
+                "predicted_volume": 5866.0,
+                "dice_score": 0.8107305300463445
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 25311.0,
+                "predicted_volume": 25470.0,
+                "dice_score": 0.802307949827646
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4884.0,
+                "predicted_volume": 2196.0,
+                "dice_score": 0.5663841808522055
+            }
+        ],
+        "patient_id": "BraTS-GLI-02507-101"
+    },
+    "BraTS-GLI-02508-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 7664.0,
+                "predicted_volume": 10967.0,
+                "dice_score": 0.6258386560235178
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 66490.0,
+                "predicted_volume": 77853.0,
+                "dice_score": 0.8430890309897736
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 7659.0,
+                "predicted_volume": 5211.0,
+                "dice_score": 0.4946386946779613
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-100"
+    },
+    "BraTS-GLI-02508-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 15489.0,
+                "predicted_volume": 11951.0,
+                "dice_score": 0.8063411078787777
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 53427.0,
+                "predicted_volume": 54251.0,
+                "dice_score": 0.8714314901848899
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 15465.0,
+                "predicted_volume": 9200.0,
+                "dice_score": 0.7137239002751379
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-101"
+    },
+    "BraTS-GLI-02508-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 13838.0,
+                "predicted_volume": 12872.0,
+                "dice_score": 0.8927742418609969
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 63117.0,
+                "predicted_volume": 65488.0,
+                "dice_score": 0.8684732319904477
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 13834.0,
+                "predicted_volume": 10597.0,
+                "dice_score": 0.8269002496898653
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-102"
+    },
+    "BraTS-GLI-02508-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 18395.0,
+                "predicted_volume": 13617.0,
+                "dice_score": 0.8180682244215273
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 92212.0,
+                "predicted_volume": 84753.0,
+                "dice_score": 0.8977368406187792
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 17928.0,
+                "predicted_volume": 11958.0,
+                "dice_score": 0.7790938901231649
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-103"
+    },
+    "BraTS-GLI-02508-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6558.0,
+                "predicted_volume": 4834.0,
+                "dice_score": 0.7654494382228363
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 71187.0,
+                "predicted_volume": 63026.0,
+                "dice_score": 0.8452385387418115
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5861.0,
+                "predicted_volume": 3459.0,
+                "dice_score": 0.673175965700303
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-104"
+    },
+    "BraTS-GLI-02508-105": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4895.0,
+                "predicted_volume": 5505.0,
+                "dice_score": 0.5626923077343565
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 68989.0,
+                "predicted_volume": 70299.0,
+                "dice_score": 0.8143271495045206
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4351.0,
+                "predicted_volume": 1915.0,
+                "dice_score": 0.5659112672253572
+            }
+        ],
+        "patient_id": "BraTS-GLI-02508-105"
+    },
+    "BraTS-GLI-02509-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 11684.0,
+                "predicted_volume": 10213.0,
+                "dice_score": 0.8920856738415269
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 36754.0,
+                "predicted_volume": 39124.0,
+                "dice_score": 0.9370568544250368
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 11480.0,
+                "predicted_volume": 9351.0,
+                "dice_score": 0.862560606794558
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-100"
+    },
+    "BraTS-GLI-02509-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 19155.0,
+                "predicted_volume": 21671.0,
+                "dice_score": 0.9147602018342537
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 55093.0,
+                "predicted_volume": 59627.0,
+                "dice_score": 0.9357391910744792
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 13045.0,
+                "predicted_volume": 13802.0,
+                "dice_score": 0.8611017990888702
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-101"
+    },
+    "BraTS-GLI-02509-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9713.0,
+                "predicted_volume": 17502.0,
+                "dice_score": 0.6616939188072132
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 48078.0,
+                "predicted_volume": 54347.0,
+                "dice_score": 0.913507444472409
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9316.0,
+                "predicted_volume": 3686.0,
+                "dice_score": 0.35840639906488186
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-102"
+    },
+    "BraTS-GLI-02509-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 18062.0,
+                "predicted_volume": 18203.0,
+                "dice_score": 0.8922101199533377
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 57354.0,
+                "predicted_volume": 63077.0,
+                "dice_score": 0.9222874509061431
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 17683.0,
+                "predicted_volume": 9577.0,
+                "dice_score": 0.6385913426398169
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-103"
+    },
+    "BraTS-GLI-02509-104": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3148.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.1766200752297904e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 21831.0,
+                "predicted_volume": 109.0,
+                "dice_score": 4.557885141086696e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3148.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.1766200752297904e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-104"
+    },
+    "BraTS-GLI-02509-105": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1323.0,
+                "predicted_volume": 2953.0,
+                "dice_score": 0.48596819469458175
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 24793.0,
+                "predicted_volume": 26837.0,
+                "dice_score": 0.8032539221421023
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1323.0,
+                "predicted_volume": 1243.0,
+                "dice_score": 0.38269680460534033
+            }
+        ],
+        "patient_id": "BraTS-GLI-02509-105"
+    },
+    "BraTS-GLI-02510-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2132.0,
+                "predicted_volume": 6947.0,
+                "dice_score": 0.4564379337530083
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 14016.0,
+                "predicted_volume": 21528.0,
+                "dice_score": 0.7444294395750498
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2132.0,
+                "predicted_volume": 1710.0,
+                "dice_score": 0.3602290475376812
+            }
+        ],
+        "patient_id": "BraTS-GLI-02510-100"
+    },
+    "BraTS-GLI-02510-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2138.0,
+                "predicted_volume": 2746.0,
+                "dice_score": 0.7223587224155694
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 7310.0,
+                "predicted_volume": 15141.0,
+                "dice_score": 0.44969043697609506
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2132.0,
+                "predicted_volume": 1191.0,
+                "dice_score": 0.473668372111445
+            }
+        ],
+        "patient_id": "BraTS-GLI-02510-101"
+    },
+    "BraTS-GLI-02510-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1706.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.861664709342517e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 1807.0,
+                "predicted_volume": 217.0,
+                "dice_score": 4.940711460009529e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1706.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.861664709342517e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02510-102"
+    },
+    "BraTS-GLI-02510-103": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2181.0,
+                "predicted_volume": 452.0,
+                "dice_score": 0.2271173569209581
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 2886.0,
+                "predicted_volume": 15818.0,
+                "dice_score": 0.07410179645668832
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2181.0,
+                "predicted_volume": 303.0,
+                "dice_score": 0.21819645764162784
+            }
+        ],
+        "patient_id": "BraTS-GLI-02510-103"
+    },
+    "BraTS-GLI-02511-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9113.0,
+                "predicted_volume": 10376.0,
+                "dice_score": 0.8640771717448777
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 31136.0,
+                "predicted_volume": 36016.0,
+                "dice_score": 0.9055277579237324
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9113.0,
+                "predicted_volume": 3114.0,
+                "dice_score": 0.437556228065956
+            }
+        ],
+        "patient_id": "BraTS-GLI-02511-100"
+    },
+    "BraTS-GLI-02512-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2559.0,
+                "predicted_volume": 2167.0,
+                "dice_score": 0.18070249699942814
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 12185.0,
+                "predicted_volume": 18263.0,
+                "dice_score": 0.5535338938664761
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2559.0,
+                "predicted_volume": 1407.0,
+                "dice_score": 0.03681290997558928
+            }
+        ],
+        "patient_id": "BraTS-GLI-02512-100"
+    },
+    "BraTS-GLI-02512-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5362.0,
+                "predicted_volume": 4099.0,
+                "dice_score": 0.7635556495335001
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 29254.0,
+                "predicted_volume": 27831.0,
+                "dice_score": 0.9076990452849663
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5309.0,
+                "predicted_volume": 3646.0,
+                "dice_score": 0.7627024009198545
+            }
+        ],
+        "patient_id": "BraTS-GLI-02512-101"
+    },
+    "BraTS-GLI-02512-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6536.0,
+                "predicted_volume": 14812.0,
+                "dice_score": 0.6024920367433722
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 33825.0,
+                "predicted_volume": 45053.0,
+                "dice_score": 0.8483734374623041
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 6536.0,
+                "predicted_volume": 2213.0,
+                "dice_score": 0.11589895998218093
+            }
+        ],
+        "patient_id": "BraTS-GLI-02512-102"
+    },
+    "BraTS-GLI-02513-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 3956.0,
+                "predicted_volume": 3261.0,
+                "dice_score": 0.42898711383830024
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 11255.0,
+                "predicted_volume": 10136.0,
+                "dice_score": 0.603244355121161
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 3956.0,
+                "predicted_volume": 1251.0,
+                "dice_score": 0.4728250433123055
+            }
+        ],
+        "patient_id": "BraTS-GLI-02513-100"
+    },
+    "BraTS-GLI-02513-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 4890.0,
+                "predicted_volume": 3995.0,
+                "dice_score": 0.3032076534267633
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 20470.0,
+                "predicted_volume": 9062.0,
+                "dice_score": 0.47622917514979585
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4890.0,
+                "predicted_volume": 1006.0,
+                "dice_score": 0.34124830404659967
+            }
+        ],
+        "patient_id": "BraTS-GLI-02513-101"
+    },
+    "BraTS-GLI-02534-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5788.0,
+                "predicted_volume": 8758.0,
+                "dice_score": 0.7633713735897586
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 49246.0,
+                "predicted_volume": 43726.0,
+                "dice_score": 0.8412425246327793
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5788.0,
+                "predicted_volume": 4948.0,
+                "dice_score": 0.6302160954144732
+            }
+        ],
+        "patient_id": "BraTS-GLI-02534-100"
+    },
+    "BraTS-GLI-02535-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9196.0,
+                "predicted_volume": 13260.0,
+                "dice_score": 0.7553437834095411
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 29110.0,
+                "predicted_volume": 31762.0,
+                "dice_score": 0.8356880010540858
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9196.0,
+                "predicted_volume": 2149.0,
+                "dice_score": 0.18951079777968172
+            }
+        ],
+        "patient_id": "BraTS-GLI-02535-100"
+    },
+    "BraTS-GLI-02535-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 9608.0,
+                "predicted_volume": 8519.0,
+                "dice_score": 0.3944392343247951
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 41550.0,
+                "predicted_volume": 28182.0,
+                "dice_score": 0.5674009063332847
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 9545.0,
+                "predicted_volume": 3489.0,
+                "dice_score": 0.49240448062817216
+            }
+        ],
+        "patient_id": "BraTS-GLI-02535-101"
+    },
+    "BraTS-GLI-02536-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 22920.0,
+                "predicted_volume": 32169.0,
+                "dice_score": 0.7659605365904997
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 69385.0,
+                "predicted_volume": 70343.0,
+                "dice_score": 0.892476812092834
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 22920.0,
+                "predicted_volume": 4689.0,
+                "dice_score": 0.18914122209463793
+            }
+        ],
+        "patient_id": "BraTS-GLI-02536-100"
+    },
+    "BraTS-GLI-02536-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10312.0,
+                "predicted_volume": 0.0,
+                "dice_score": 9.697439874932365e-11
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 25141.0,
+                "predicted_volume": 147.0,
+                "dice_score": 3.954444795794272e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10312.0,
+                "predicted_volume": 0.0,
+                "dice_score": 9.697439874932365e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02536-101"
+    },
+    "BraTS-GLI-02536-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6471.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.5453562043663488e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 26795.0,
+                "predicted_volume": 121.0,
+                "dice_score": 3.715262297380173e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 6456.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.548946715993038e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02536-102"
+    },
+    "BraTS-GLI-02537-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 11010.0,
+                "predicted_volume": 16722.0,
+                "dice_score": 0.6427232078594143
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 47787.0,
+                "predicted_volume": 29907.0,
+                "dice_score": 0.718691276035232
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 11009.0,
+                "predicted_volume": 1942.0,
+                "dice_score": 0.23287777011559896
+            }
+        ],
+        "patient_id": "BraTS-GLI-02537-100"
+    },
+    "BraTS-GLI-02537-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 6676.0,
+                "predicted_volume": 5977.0,
+                "dice_score": 0.7018098474905706
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 16041.0,
+                "predicted_volume": 8087.0,
+                "dice_score": 0.5936671087701564
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 6662.0,
+                "predicted_volume": 3027.0,
+                "dice_score": 0.5839611931485229
+            }
+        ],
+        "patient_id": "BraTS-GLI-02537-101"
+    },
+    "BraTS-GLI-02537-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1978.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.055611726463289e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 22091.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.5267303424685735e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1978.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.055611726463289e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02537-102"
+    },
+    "BraTS-GLI-02538-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5209.0,
+                "predicted_volume": 9768.0,
+                "dice_score": 0.6703612205601682
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 37733.0,
+                "predicted_volume": 44999.0,
+                "dice_score": 0.8750423052763738
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5008.0,
+                "predicted_volume": 5389.0,
+                "dice_score": 0.6942387227378822
+            }
+        ],
+        "patient_id": "BraTS-GLI-02538-100"
+    },
+    "BraTS-GLI-02539-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 2245.0,
+                "predicted_volume": 454.0,
+                "dice_score": 3.705075952684299e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 6419.0,
+                "predicted_volume": 1284.0,
+                "dice_score": 1.29819550807501e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 2245.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.4543429824256825e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02539-100"
+    },
+    "BraTS-GLI-02539-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1561.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.406149899803875e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 7023.0,
+                "predicted_volume": 306.0,
+                "dice_score": 1.3644426250014404e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1561.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.406149899803875e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02539-101"
+    },
+    "BraTS-GLI-02539-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1111.0,
+                "predicted_volume": 0.0,
+                "dice_score": 9.000900081907379e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 15088.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.627783668701763e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1109.0,
+                "predicted_volume": 0.0,
+                "dice_score": 9.017132543717643e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02539-102"
+    },
+    "BraTS-GLI-02540-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10920.0,
+                "predicted_volume": 15549.0,
+                "dice_score": 0.8045638293927022
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 41153.0,
+                "predicted_volume": 43694.0,
+                "dice_score": 0.8890827018057317
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10764.0,
+                "predicted_volume": 9514.0,
+                "dice_score": 0.8020514843770563
+            }
+        ],
+        "patient_id": "BraTS-GLI-02540-100"
+    },
+    "BraTS-GLI-02540-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 22176.0,
+                "predicted_volume": 25175.0,
+                "dice_score": 0.7479461891037582
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 133201.0,
+                "predicted_volume": 43344.0,
+                "dice_score": 0.48457900252352326
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 21668.0,
+                "predicted_volume": 15735.0,
+                "dice_score": 0.8259230543051113
+            }
+        ],
+        "patient_id": "BraTS-GLI-02540-101"
+    },
+    "BraTS-GLI-02541-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 14586.0,
+                "predicted_volume": 16894.0,
+                "dice_score": 0.7534942820916933
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 63475.0,
+                "predicted_volume": 26552.0,
+                "dice_score": 0.570962044724683
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 14277.0,
+                "predicted_volume": 10634.0,
+                "dice_score": 0.8307976396037575
+            }
+        ],
+        "patient_id": "BraTS-GLI-02541-100"
+    },
+    "BraTS-GLI-02542-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 16209.0,
+                "predicted_volume": 5770.0,
+                "dice_score": 0.4868283361623901
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 27574.0,
+                "predicted_volume": 6757.0,
+                "dice_score": 0.35664559729234085
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 16209.0,
+                "predicted_volume": 378.0,
+                "dice_score": 0.04316633513937624
+            }
+        ],
+        "patient_id": "BraTS-GLI-02542-100"
+    },
+    "BraTS-GLI-02542-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 35568.0,
+                "predicted_volume": 37218.0,
+                "dice_score": 0.9038826147898787
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 106859.0,
+                "predicted_volume": 92730.0,
+                "dice_score": 0.8909509041084882
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 35535.0,
+                "predicted_volume": 20597.0,
+                "dice_score": 0.6568445806374823
+            }
+        ],
+        "patient_id": "BraTS-GLI-02542-101"
+    },
+    "BraTS-GLI-02543-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5870.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.7035775124866134e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 26332.0,
+                "predicted_volume": 352.0,
+                "dice_score": 0.026382851183241535
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 5237.0,
+                "predicted_volume": 0.0,
+                "dice_score": 1.9094901657610289e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02543-100"
+    },
+    "BraTS-GLI-02544-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 20520.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.873294346741067e-11
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 21731.0,
+                "predicted_volume": 0.0,
+                "dice_score": 4.601721043458574e-11
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 16963.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.895183634622697e-11
+            }
+        ],
+        "patient_id": "BraTS-GLI-02544-100"
+    },
+    "BraTS-GLI-02562-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1368.0,
+                "predicted_volume": 0.0,
+                "dice_score": 7.30994151512431e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 2770.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.610108301945809e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1368.0,
+                "predicted_volume": 0.0,
+                "dice_score": 7.30994151512431e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02562-100"
+    },
+    "BraTS-GLI-02562-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1474.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.784260511001179e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 3037.0,
+                "predicted_volume": 744.0,
+                "dice_score": 2.6448029614798196e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1474.0,
+                "predicted_volume": 0.0,
+                "dice_score": 6.784260511001179e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02562-101"
+    },
+    "BraTS-GLI-02562-102": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 10288.0,
+                "predicted_volume": 10856.0,
+                "dice_score": 0.9299091941009313
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 25027.0,
+                "predicted_volume": 25615.0,
+                "dice_score": 0.8714110817133721
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 10288.0,
+                "predicted_volume": 3218.0,
+                "dice_score": 0.4063379239296359
+            }
+        ],
+        "patient_id": "BraTS-GLI-02562-102"
+    },
+    "BraTS-GLI-02563-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 5145.0,
+                "predicted_volume": 138.0,
+                "dice_score": 0.05148589834346282
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 24016.0,
+                "predicted_volume": 861.0,
+                "dice_score": 0.06922056521810425
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 4438.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.2532672369866452e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02563-100"
+    },
+    "BraTS-GLI-02564-100": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 1940.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.154639172600701e-10
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 9316.0,
+                "predicted_volume": 133.0,
+                "dice_score": 1.0583130488878914e-10
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 1940.0,
+                "predicted_volume": 0.0,
+                "dice_score": 5.154639172600701e-10
+            }
+        ],
+        "patient_id": "BraTS-GLI-02564-100"
+    },
+    "BraTS-GLI-02564-101": {
+        "volumetry": [
+            {
+                "label": "Tumor Core (TC)",
+                "ground_truth_volume": 329.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.0395136685729066e-09
+            },
+            {
+                "label": "Whole Tumor (WT)",
+                "ground_truth_volume": 425.0,
+                "predicted_volume": 0.0,
+                "dice_score": 2.352941170934256e-09
+            },
+            {
+                "label": "Enhancing Tumor (ET)",
+                "ground_truth_volume": 329.0,
+                "predicted_volume": 0.0,
+                "dice_score": 3.0395136685729066e-09
+            }
+        ],
+        "patient_id": "BraTS-GLI-02564-101"
+    }
+}

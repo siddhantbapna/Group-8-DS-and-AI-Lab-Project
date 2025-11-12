@@ -53,6 +53,18 @@ _Figure 4.1: Distribution of Dice scores across tumor regions._
 This summary table is the result of the test evaluation on the 150 patient data points.
 More detailed information and numbers can be infered from : [Test Evaluation](./model_evaluation_summary.xlsx)
 
+<details>
+  <summary>Test Results on top 3 model checkpoints</summary>
+
+  | Epoch | WT     | TC     | ET     | Total  |
+  | ----- | -----: | ------ | -----: | -----: |
+  |  [55](./checkpointResults/55/)   | 0.6626 | 0.5627 | 0.4234 | 0.5496 |
+  |  [67](./checkpointResults/67/)  | 0.6807 | 0.5845 | 0.4794 | 0.5815 |
+  |  [93](./checkpointResults/93_latest/)   | 0.6892 | 0.5947 | 0.5079 | 0.5973 |
+
+
+</details>
+
 **Explanation:**
 The Dice score measures how much the predicted segmentation overlaps with the ground truth (1 = perfect overlap, 0 = no overlap).
 
