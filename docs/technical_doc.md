@@ -90,59 +90,6 @@ Install via:
 pip install -r requirements.txt
 ```
 
----
-
-### **Option 2: Using `environment.yml` (Conda)**
-
-```yaml
-name: brain-tumor-seg
-channels:
-  - defaults
-  - conda-forge
-  - pytorch
-dependencies:
-  - python=3.10
-  - pytorch
-  - torchvision
-  - cudatoolkit
-  - monai
-  - nibabel
-  - simpleitk
-  - numpy
-  - pandas
-  - scikit-learn
-  - tqdm
-  - matplotlib
-  - pip
-  - pip:
-      - fastapi
-      - uvicorn
-      - gradio
-```
-
-Create the environment:
-
-```bash
-conda env create -f environment.yml
-conda activate brain-tumor-seg
-```
-
-### **Option 3: GPU-Specific PyTorch Install**
-
-Check your CUDA version:
-
-```bash
-nvidia-smi
-```
-
-Then install matching PyTorch:
-
-```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-```
-
-(Replace `cu118` with your CUDA version.)
-
 # **B2. Data Pipeline**
 
 ### **2.1 Dataset Source**
@@ -151,7 +98,21 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 * **Year:** **2023**
 * **Type:** Multi-modal 3D MRI with expert-annotated tumor segmentation masks
 * **Modalities Included:** T1, T1c, T2, T2-FLAIR
-* **Ground Truth:** Segmentation mask with tumor sub-regions
+* **What the Dataset Contains:**
+    Each patient folder includes:
+    1. **T1-weighted MRI (T1)** – anatomical clarity
+    2. **T1-weighted with contrast (T1c)** – highlights active tumor
+    3. **T2-weighted MRI (T2)** – good for edema
+    4. **FLAIR MRI (T2-FLAIR)** – suppresses CSF; great lesion visibility
+    5. **Expert Segmentation Mask (`seg`)**
+        * Labels tumor subregions
+        * Used during model training as ground truth
+
+<p align="center">
+  <img src="./visuals/mriModalities.jpg" width="300">
+</p>
+*Figure: Multi-Modal MRI Inputs*
+
 * **Official Source:** Synapse (Synapse ID: **syn51156910**)
 * **Public Mirrors Used:** Kaggle (processed + test sets)
 
@@ -165,7 +126,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 * **Required Attribution:**
   “Data used in this publication were obtained as part of the Brain Tumor Segmentation (BraTS) Challenge project through Synapse ID: syn51156910.”
 
-### **2.3 Preprocessing Pipeline (Summary)**
+### **2.3 Preprocessing Pipeline**
 
 Each patient's raw MRI data undergoes a standardized MONAI-based preprocessing workflow:
 
@@ -194,50 +155,22 @@ After preprocessing, each sample contains:
 | **MRI Image**         | `(4, 128, 128, 128)`                               | 4-channel 3D tensor (T1, T1c, T2, FLAIR) |
 | **Segmentation Mask** | `(3, 128, 128, 128)`                               | Multi-class tumor subregion encoding     |
 
-No additional hand-crafted features were used—model learns directly from voxel intensities.
+No additional hand-crafted features were used, model learns directly from voxel intensities.
 
 # **B3. Model Architecture**
 
 ### **3.1 Overview**
 
-The final model used for brain tumor segmentation is a **3D Attention U-Net**, chosen for its strong performance in medical volumetric segmentation and its ability to focus on relevant regions through attention gating.
+The model used for brain tumor segmentation is a **3D Attention U-Net**, chosen for its strong performance in medical volumetric segmentation and its ability to focus on relevant regions through attention gating.
 
 The network takes a **4-channel 3D MRI volume** as input and outputs a **multi-class tumor segmentation mask**.
 
-### **3.2 Architecture Diagram (Simplified)**
+### **3.2 Architecture Diagram**
 
-```
-                     ┌──────────────────────────────┐
-                     │        Input Volume           │
-                     │     (4 × 128 × 128 × 128)    │
-                     └───────────────┬──────────────┘
-                                     │
-                         [Encoding Path – Downsampling]
-                                     │
-         ┌─────────────────────────────────────────────────────────┐
-         │                                                         │
-         ▼                                                         ▼
-   Conv Block 1 → Attention Gate → Downsample              Conv Block 2 → Downsample
-         │                                                         │
-         ▼                                                         ▼
-   Conv Block 3 → Attention Gate → Downsample              Conv Block 4 (Bottleneck)
-         │
-         ▼
-                     [Decoding Path – Upsampling + Skip Connections]
-                                     │
-         ┌─────────────────────────────────────────────────────────┐
-         │                     Attention Gates                     │
-         └─────────────────────────────────────────────────────────┘
-                                     │
-                                     ▼
-                           Upsample → Concatenate
-                                     │
-                                     ▼
-                             Final Conv Layer
-                                     │
-                                     ▼
-                     Output Mask (C × 128 × 128 × 128)
-```
+<p align="center">
+  <img src="./visuals/model.png" width="300">
+</p>
+*Figure: 3D Attention U-Net*
 
 ### **3.3 Summary of Components**
 
@@ -268,9 +201,7 @@ The network takes a **4-channel 3D MRI volume** as input and outputs a **multi-c
   `1×1×1` Conv3D → Softmax
 
 * **Output Shape:**
-  `C × 128 × 128 × 128` where
-  `C = 3` (edema, enhancing tumor, necrotic core)
-  or `C = 1` for combined tumor class (depending on training configuration)
+  `3 × 128 × 128 × 128` (edema, enhancing tumor, necrotic core)
 
 ### **3.4 Final Model Hyperparameters**
 
@@ -282,13 +213,13 @@ The network takes a **4-channel 3D MRI volume** as input and outputs a **multi-c
 | Activation       | ReLU                                      |
 | Normalization    | BatchNorm3D                               |
 | Attention Gates  | Enabled on all skip connections           |
-| Loss Function    | DiceLoss (multi-class)                    |
+| Loss Function    | DiceBCELoss (0.5 Dice + 0.5 BCE)          |
 | Optimizer        | AdamW                                     |
 | Learning Rate    | 1e-4                                      |
 | Weight Decay     | 1e-5                                      |
-| Scheduler        | ReduceLROnPlateau                         |
-| Batch Size       | 1 (GPU memory constraint)                 |
-| Epochs           | 150                                       |
+| Scheduler        | Polynomial Decay (LambdaLR)               |
+| Batch Size       | 2 (GPU memory constraint)                 |
+| Epochs           | 93                                        |
 | Mixed Precision  | Enabled (AMP)                             |
 | Checkpointing    | Best model based on validation Dice score |
 
