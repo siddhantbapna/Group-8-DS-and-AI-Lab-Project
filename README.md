@@ -27,7 +27,7 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
 * Prototype a report generator for clinical interpretation.
 
 <p align="center">
-  <img src="./Milestone-1/mriModalities.jpg" width="450"/><br>
+  <img src="./Docs/Milestone-1/mriModalities.jpg" width="450"/><br>
   <em>MRI modalities in BraTS dataset</em>
 </p>
 
@@ -38,10 +38,10 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
 
 | Milestone       | Description                           | Folder Link                    |
 | --------------- | ------------------------------------- | ------------------------------ |
-| **Milestone 1** | Problem Statement & Literature Review | [Milestone-1/](./Milestone-1/) |
-| **Milestone 2** | Dataset Analysis & Preprocessing      | [Milestone-2/](./Milestone-2/) |
-| **Milestone 3** | Model Architecture & Implementation   | [Milestone-3/](./Milestone-3/) |
-| **Milestone 4** | Model Training, Evaluation & Results  | [Milestone-4/](./Milestone-4/) |
+| **Milestone 1** | Problem Statement & Literature Review | [Milestone-1/](./Docs/Milestone-1/) |
+| **Milestone 2** | Dataset Analysis & Preprocessing      | [Milestone-2/](./Docs/Milestone-2/) |
+| **Milestone 3** | Model Architecture & Implementation   | [Milestone-3/](./Docs/Milestone-3/) |
+| **Milestone 4** | Model Training, Evaluation & Results  | [Milestone-4/](./Docs/Milestone-4/) |
 
 ## 4. Repository Structure
 

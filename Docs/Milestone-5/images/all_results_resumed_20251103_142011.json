@@ -1,0 +1,272 @@
+[
+  {
+    "run_id": "resunet_hp_01_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7608934044837952,
+    "best_epoch": 20,
+    "final_dice": 0.7608934044837952,
+    "final_train_loss": 0.11294165411619814,
+    "final_val_loss": 0.09107487121969461,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_02_20251101_231416",
+    "config": {
+      "lr": 0.0005,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7385767102241516,
+    "best_epoch": 19,
+    "final_dice": 0.7374257445335388,
+    "final_train_loss": 0.11853700311860065,
+    "final_val_loss": 0.09260913355648517,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_03_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 0.0001,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7651010155677795,
+    "best_epoch": 19,
+    "final_dice": 0.7613021731376648,
+    "final_train_loss": 0.11137432697602175,
+    "final_val_loss": 0.0902450462281704,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_04_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 32,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7807478308677673,
+    "best_epoch": 18,
+    "final_dice": 0.7778006196022034,
+    "final_train_loss": 0.10684584976675418,
+    "final_val_loss": 0.08402514797076582,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_05_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 8,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7262425422668457,
+    "best_epoch": 18,
+    "final_dice": 0.7256954312324524,
+    "final_train_loss": 0.14115293213090935,
+    "final_val_loss": 0.11972244410216808,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_06_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7567905783653259,
+    "best_epoch": 17,
+    "final_dice": 0.7557093501091003,
+    "final_train_loss": 0.11539820419042023,
+    "final_val_loss": 0.0924960101917386,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_07_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.777988851070404,
+    "best_epoch": 18,
+    "final_dice": 0.770841121673584,
+    "final_train_loss": 0.11273602944622924,
+    "final_val_loss": 0.08769575652480126,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_08_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        2,
+        1
+      ],
+      "weight_dice": 0.5,
+      "weight_bce": 0.5
+    },
+    "best_dice": 0.7727446556091309,
+    "best_epoch": 20,
+    "final_dice": 0.7727446556091309,
+    "final_train_loss": 0.1118909107627241,
+    "final_val_loss": 0.08833294797688723,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_09_20251101_231416",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.7,
+      "weight_bce": 0.3
+    },
+    "best_dice": 0.7655983567237854,
+    "best_epoch": 20,
+    "final_dice": 0.7655983567237854,
+    "final_train_loss": 0.14085008093359677,
+    "final_val_loss": 0.12048862059414386,
+    "num_epochs_trained": 20
+  },
+  {
+    "run_id": "resunet_hp_10_20251102_233339",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "init_filters": 16,
+      "blocks_down": [
+        1,
+        2,
+        2,
+        4
+      ],
+      "blocks_up": [
+        1,
+        1,
+        1
+      ],
+      "weight_dice": 0.3,
+      "weight_bce": 0.7
+    },
+    "best_dice": 0.7621098160743713,
+    "best_epoch": 19,
+    "final_dice": 0.7608532905578613,
+    "final_train_loss": 0.07877028906917001,
+    "final_val_loss": 0.06051508809626102,
+    "num_epochs_trained": 20
+  }
+]
