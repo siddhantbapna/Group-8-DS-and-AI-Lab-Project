@@ -36,12 +36,14 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
 
 ## 3. Milestone Documents
 
-| Milestone       | Description                           | Folder Link                    |
-| --------------- | ------------------------------------- | ------------------------------ |
+| Milestone       | Description                           | Folder Link                         |
+| --------------- | ------------------------------------- | ------------------------------      |
 | **Milestone 1** | Problem Statement & Literature Review | [Milestone-1/](./Docs/Milestone-1/) |
 | **Milestone 2** | Dataset Analysis & Preprocessing      | [Milestone-2/](./Docs/Milestone-2/) |
 | **Milestone 3** | Model Architecture & Implementation   | [Milestone-3/](./Docs/Milestone-3/) |
-| **Milestone 4** | Model Training, Evaluation & Results  | [Milestone-4/](./Docs/Milestone-4/) |
+| **Milestone 4** | Model Training, Validation            | [Milestone-4/](./Docs/Milestone-4/) |
+| **Milestone 5** | Evaluation & Results                  | [Milestone-5/](./Docs/Milestone-5/) |
+| **Milestone 6** | Model Deplyment                       | [Milestone-6/](./Docs/Milestone-6/) |
 
 ## 4. Repository Structure
 
