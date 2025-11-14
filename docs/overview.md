@@ -63,8 +63,6 @@ Tumor Mask Output
   * (Optional) 5-fold model ensemble
   * Training logs and metrics
 
----
-
 ## **4. Visual Overview of the System**
 
 > **[Insert 1–2 screenshots here]**
