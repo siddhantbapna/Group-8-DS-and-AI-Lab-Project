@@ -64,7 +64,7 @@ This section describes the exact environment needed to reproduce the preprocessi
 
 ## **4. Installation Instructions**
 
-### **Option 1: Using `requirements.txt` (recommended)**
+### Using `requirements.txt` (recommended)**
 
 Create a file:
 
@@ -412,7 +412,7 @@ High-Dice samples show excellent spatial alignment; low-Dice ones typically suff
 * under-segmentation of diffuse WT regions
 * failure on very small ET clusters
 
-(*Figures referenced but not embedded here – your repo already contains them under `/images/testPerformance/`.*)
+
 
 ## **5.7 Comparison with BraTS 2023 Leaderboard**
 
