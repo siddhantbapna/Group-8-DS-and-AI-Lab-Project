@@ -109,9 +109,10 @@ pip install -r requirements.txt
         * Used during model training as ground truth
 
 <p align="center">
-  <img src="./visuals/mriModalities.jpg" width="300">
+  <img src="./visuals/mriModalities.jpg">
+  <br>
+  <em>Figure: Multi-Modal MRI Inputs</em>
 </p>
-*Figure: Multi-Modal MRI Inputs*
 
 * **Official Source:** Synapse (Synapse ID: **syn51156910**)
 * **Public Mirrors Used:** Kaggle (processed + test sets)
@@ -168,9 +169,10 @@ The network takes a **4-channel 3D MRI volume** as input and outputs a **multi-c
 ### **3.2 Architecture Diagram**
 
 <p align="center">
-  <img src="./visuals/model.png" width="300">
+  <img src="./visuals/model.png">
+  <br>
+  <em>Figure: 3D Attention U-Net</em>
 </p>
-*Figure: 3D Attention U-Net*
 
 ### **3.3 Summary of Components**
 
@@ -239,11 +241,8 @@ The training phase focused on optimizing the 3D Attention U-Net model for multi-
 * **Platform:** Kaggle Notebook environment
 * **GPU:** NVIDIA Tesla **P100** (16GB VRAM)
 * **Precision:** **Mixed Precision (AMP)** enabled
-* **Batch Size:** **1** (due to 3D volumetric data and large memory footprint)
+* **Batch Size:** **2** (due to 3D volumetric data and large memory footprint)
 * **Frameworks Used:** PyTorch, MONAI, NumPy, scikit-learn
-
-> *GPU usage and throughput plots can be added here.*
-> *(Placeholder for Figure: GPU Utilization & Training Throughput)*
 
 ## **4.2 Training Configuration**
 
@@ -256,7 +255,7 @@ The model was trained over multiple runs with incremental epoch sizes to identif
 | **Learning Rate**       | 1e-4                                           |
 | **Weight Decay**        | 1e-5                                           |
 | **Loss Function**       | DiceLoss + BCEWithLogitsLoss (0.5 each)        |
-| **Scheduler**           | ReduceLROnPlateau (monitoring validation Dice) |
+| **Scheduler**           | Polynomial Decay (LambdaLR)                    |
 | **Early Stopping**      | Patience = 7                                   |
 | **Model Checkpointing** | Best validation Dice score                     |
 
@@ -274,8 +273,6 @@ Training time varied depending on:
 * validation frequency
 * whether checkpointing was triggered
 
-> *(Placeholder for Figure: Training Time per Epoch)*
-
 ## **4.4 Convergence Behavior**
 
 Across runs, the model showed:
@@ -286,8 +283,11 @@ Across runs, the model showed:
 
 The learning rate scheduler played a crucial role in squeezing out the last 3–5% Dice improvement.
 
-> *(Placeholder for Figure: Training vs Validation Loss Curves)*
-> *(Placeholder for Figure: Dice Score Progression per Class)*
+<p align="center">
+  <img src="./visuals/trainingGraph.png">
+  <br>
+  <em>Figure: Training vs Validation Loss Curve</em>
+</p>
 
 ## **4.5 Key Performance Metrics**
 
@@ -312,9 +312,6 @@ These results are consistent with mid-tier performance for 3D U-Net variants on 
 * **Larger patches** (e.g., 160³) could likely improve ET segmentation but were not feasible on the provided GPU
 * **Mixed precision** significantly reduced VRAM usage (~35–40%) and shortened training time (~20–25%)
 
-> *(Placeholder for qualitative samples overlay predictions vs ground truth)*
-> *(Placeholder for Table: Class-wise Dice across different runs)*
-
 ## **4.7 Summary**
 
 Milestone 4 established a strong baseline model configuration by:
@@ -330,7 +327,7 @@ These foundations enabled the next phases: evaluation, hyperparameter tuning, an
 
 This section summarizes the model’s performance on unseen data using standardized segmentation metrics and statistical analyses. All evaluations were performed on **150 held-out test cases** from the **BraTS 2024 Additional Patient Data** (multi-modal MRI).
 
-## **1. Overall Quantitative Performance**
+## **5.1 Overall Quantitative Performance**
 
 | Region                      | Mean Dice | Median | Std    | Min  | Max    |
 | --------------------------- | --------- | ------ | ------ | ---- | ------ |
@@ -342,7 +339,7 @@ This section summarizes the model’s performance on unseen data using standardi
 **Key insight:**
 WT performs the strongest and most consistently; ET remains the most challenging region with high variance and several complete misses.
 
-## **2. Correlation with Ground Truth Volumes**
+## **5.2 Correlation with Ground Truth Volumes**
 
 | Region      | Pearson Correlation |
 | ----------- | ------------------- |
@@ -354,7 +351,7 @@ WT performs the strongest and most consistently; ET remains the most challenging
 **Insight:**
 Strong correlations (> 0.8) indicate that the model reliably tracks *relative* tumor size even when absolute volumes differ.
 
-## **3. Linear Regression (Predicted vs GT Volume)**
+## **5.3 Linear Regression (Predicted vs GT Volume)**
 
 | Region    | Slope  | Intercept | R²     |
 | --------- | ------ | --------- | ------ |
@@ -367,7 +364,20 @@ Strong correlations (> 0.8) indicate that the model reliably tracks *relative* t
 All slopes < 1 → consistent **under-prediction bias**, strongest for ET.
 Despite the bias, R² remains high across labels, indicating stable scaling behavior.
 
-## **4. Missed Detections (Pred = 0, GT > 0)**
+<div align="center">
+
+<img src="./visuals/errorAnalysis/gt_pred_TC_scatter.png" alt="GT vs Pred TC" width="45%"/> 
+<img src="./visuals/errorAnalysis/gt_pred_WT_scatter.png" alt="GT vs Pred WT" width="45%"/>  
+
+<img src="./visuals/errorAnalysis/gt_pred_ET_scatter.png" alt="GT vs Pred ET" width="45%"/> 
+<img src="./visuals/errorAnalysis/gt_pred_total_scatter.png" alt="GT vs Pred Total" width="45%"/>  
+
+<br>
+<em>Figure: Predicted vs Ground Truth Volume</em>
+
+</div>
+
+## **5.4 Missed Detections (Pred = 0, GT > 0)**
 
 | Region | Missed Cases |
 | ------ | ------------ |
@@ -378,7 +388,7 @@ Despite the bias, R² remains high across labels, indicating stable scaling beha
 **Insight:**
 ET has the highest full-miss ratio, reflecting difficulty detecting small/enhancing regions.
 
-## **5. Relative Absolute Volume Error**
+## **5.5 Relative Absolute Volume Error**
 
 * **Mean:** 0.2964
 * **Median:** 0.1642
@@ -388,7 +398,7 @@ ET has the highest full-miss ratio, reflecting difficulty detecting small/enhanc
 **Insight:**
 Half of patients have <16% volume error, but ~25% show heavy deviation (>46%), indicating inconsistent performance on difficult outliers.
 
-## **6. Visual Evaluation (Qualitative Samples)**
+## **5.6 Visual Evaluation (Qualitative Samples)**
 
 Three representative test cases were inspected, comparing:
 
@@ -404,7 +414,7 @@ High-Dice samples show excellent spatial alignment; low-Dice ones typically suff
 
 (*Figures referenced but not embedded here – your repo already contains them under `/images/testPerformance/`.*)
 
-## **7. Comparison with BraTS 2023 Leaderboard**
+## **5.7 Comparison with BraTS 2023 Leaderboard**
 
 | Metric    | Our Model  | BraTS Avg | Top (nnUNet) | Gap    |
 | --------- | ---------- | --------- | ------------ | ------ |
@@ -416,7 +426,7 @@ High-Dice samples show excellent spatial alignment; low-Dice ones typically suff
 **Insight:**
 The model is competitive on WT and TC but significantly behind on ET—a known weak spot in the architecture + training setup.
 
-## **8. Error Trends and Root Causes**
+## **5.8 Error Trends and Root Causes**
 
 ### **Major Trends**
 
@@ -432,7 +442,7 @@ The model is competitive on WT and TC but significantly behind on ET—a known w
 * **Model capacity limits** due to GPU constraints
 * Potential **scanner/contrast variation** affecting small enhancing regions
 
-## **9. Limitations**
+## **5.9 Limitations**
 
 * Results tested only on BraTS 2024; generalization to real clinical MRI is unverified.
 * Architecture depth and channels reduced for Kaggle GPU constraints.
