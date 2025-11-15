@@ -231,10 +231,14 @@ Special thanks to:
 
 ### Dataset Citations
 
-> A. Karargyris et al., “Federated benchmarking of medical artificial intelligence with MedPerf”, *Nature Machine Intelligence*, 2023. [DOI:10.1038/s42256-023-00652-2](https://doi.org/10.1038/s42256-023-00652-2)
-> U. Baid et al., “The RSNA-ASNR-MICCAI BraTS 2021 Benchmark”, *arXiv:2107.02314*, 2021.
-> B. H. Menze et al., “The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)”, *IEEE TMI*, 2015.
-> S. Bakas et al., “Segmentation Labels and Radiomic Features for the TCGA Collections”, *The Cancer Imaging Archive*, 2017.
+**A. Karargyris et al.**, *Federated benchmarking of medical artificial intelligence with MedPerf*, **Nature Machine Intelligence**, 2023.  
+DOI: [10.1038/s42256-023-00652-2](https://doi.org/10.1038/s42256-023-00652-2)
+
+**U. Baid et al.**, *The RSNA-ASNR-MICCAI BraTS 2021 Benchmark*, **arXiv:2107.02314**, 2021.
+
+**B. H. Menze et al.**, *The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)*, **IEEE Transactions on Medical Imaging**, 2015.
+
+**S. Bakas et al.**, *Segmentation Labels and Radiomic Features for the TCGA Collections*, **The Cancer Imaging Archive (TCIA)**, 2017.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
