@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Standard meta tags for character set and viewport settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Segmentation Viewer</title>
+
+    <!-- Google Fonts for typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS variables for consistent theming (colors, etc.) */
+        :root {
+            --bg-color: #f9f9f9;
+            --surface-color: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e5e5e5;
+            --accent-color: #333333;
+        }
+
+        /* Universal box-sizing for predictable layout */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Base body styles */
+        body {
+            font-family: 'Sora', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header styles */
+        header {
+            padding: 1.5rem 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* Main content area padding */
+        main {
+            padding: 2.5rem;
+        }
+
+        /* Styling for each major section */
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Grid layout for file input controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            background: var(--surface-color);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        /* Card style for each file input */
+        .file-input-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .file-input-card label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input-card span {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Styling for the native file input element */
+        input[type="file"] {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: 1px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Sora', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--surface-color);
+            color: var(--accent-color);
+        }
+
+        /* Container for primary action buttons like 'Run Prediction' */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            background: var(--accent-color);
+            color: white;
+            border: 1px solid var(--accent-color);
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:disabled {
+            background-color: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .action-button:hover:not(:disabled) {
+            background-color: #111;
+            border-color: #111;
+        }
+
+        /* Simple CSS spinner for loading states */
+        .loader {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--text-secondary);
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* Keyframes for the loader's rotation animation */
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Container for the progress bar */
+        #progress-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem auto;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            display: none;
+        }
+
+        /* The actual progress bar element */
+        #progress-bar {
+            width: 0%;
+            height: 8px;
+            background-color: var(--accent-color);
+            transition: width 0.2s ease-out;
+        }
+
+        /* Styling for tab navigation */
+        .tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 0;
+            margin-right: 2rem;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            position: relative;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s ease;
+        }
+
+        .tab-button.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--text-primary);
+        }
+
+        /* Hides inactive tab content by default */
+        .tab-content {
+            display: none;
+        }
+
+        /* Shows the active tab content */
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Grid layout for the 2D slice viewers */
+        .viewer-2d-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Container for each canvas to position labels */
+        .canvas-container {
+            position: relative;
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+        }
+
+        /* Label overlay on top of each canvas */
+        .canvas-container .label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+        /* Base styles for all canvas elements */
+        canvas,
+        .view-3d canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Container for the slice navigation slider */
+        .slider-container {
+            padding: 2rem 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #slice-slider {
+            width: 100%;
+            accent-color: var(--accent-color);
+        }
+
+        #slice-info {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Grid layout for the 3D viewers */
+        .viewer-3d-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Container for the 3D view */
+        .view-3d {
+            min-height: 50vh;
+            background-color: #000;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Base styles for the input tabs (Upload/Examples) */
+        .input-tab-content {
+            display: none;
+        }
+
+        .input-tab-content.active {
+            display: block;
+        }
+    </style>
+
+    <!-- External scripts for 3D rendering (Three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+</head>
+
+<body>
+    <!-- Page Header -->
+    <header>
+        <h1>Orca Segmentation</h1>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- Section 1: Data Loading -->
+        <section class="section">
+            <h2 class="section-title">1. Load Data</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="openInputTab(event, 'Upload')">Upload Files</button>
+                <button class="tab-button" onclick="openInputTab(event, 'Examples')">Use Examples</button>
+            </div>
+
+            <!-- Tab Content for Uploading Files -->
+            <div id="Upload" class="input-tab-content active">
+                <div class="controls-grid">
+                    <!-- File inputs for each required modality -->
+                    <div class="file-input-card"><label for="flair-file">FLAIR</label><span>FLAIR scan (.nii.gz)</span><input type="file" id="flair-file" data-modality="flair" accept=".nii,.nii.gz"></div>
+                    <div class="file-input-card"><label for="t1-file">T1</label><span>T1-weighted scan (.nii.gz)</span><input type="file" id="t1-file" data-modality="t1" accept=".nii,.nii.gz"></div>
+                    <div class="file-input-card"><label for="t1ce-file">T1ce</label><span>T1-contrast scan (.nii.gz)</span><input type="file" id="t1ce-file" data-modality="t1ce" accept=".nii,.nii.gz"></div>
+                    <div class="file-input-card"><label for="t2-file">T2</label><span>T2-weighted scan (.nii.gz)</span><input type="file" id="t2-file" data-modality="t2" accept=".nii,.nii.gz"></div>
+                    <div class="file-input-card"><label for="ground-truth">Ground Truth</label><span>Optional GT for comparison</span><input type="file" id="gt-file" data-modality="gt" accept=".nii,.nii.gz"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content for Using Examples -->
+            <div id="Examples" class="input-tab-content">
+                <div id="examples-container" style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem;">
+                    <!-- Example buttons will be dynamically inserted here by JavaScript -->
+                    <p id="examples-loading-msg">Loading examples...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section for Prediction Control -->
+        <section class="section">
+            <div class="action-buttons">
+                <button id="predict-button" class="action-button" disabled>Run Prediction</button>
+            </div>
+            <!-- UI elements for showing loading status and progress -->
+            <div id="loading-status" style="margin-top:1.5rem; text-align:center; min-height: 24px;"></div>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+        </section>
+
+        <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 3rem 0;">
+
+        <!-- Section 2: 2D Slice Viewer -->
+        <section class="section">
+            <h2 class="section-title">2D Slice Viewer</h2>
+            <div class="tabs">
+                <!-- Tabs to switch between different 2D views -->
+                <button class="tab-button active" onclick="openTab(event, 'Modalities')">Modalities</button>
+                <button class="tab-button" onclick="openTab(event, 'Prediction')">Prediction</button>
+                <button class="tab-button" onclick="openTab(event, 'Ground_Truth')">Ground Truth</button>
+            </div>
+
+            <!-- Tab content for input modalities -->
+            <div id="Modalities" class="tab-content active">
+                <div class="viewer-2d-grid">
+                    <div class="canvas-container"><canvas id="flair-canvas"></canvas><div class="label">FLAIR</div></div>
+                    <div class="canvas-container"><canvas id="t1-canvas"></canvas><div class="label">T1</div></div>
+                    <div class="canvas-container"><canvas id="t1ce-canvas"></canvas><div class="label">T1ce</div></div>
+                    <div class="canvas-container"><canvas id="t2-canvas"></canvas><div class="label">T2</div></div>
+                </div>
+            </div>
+
+            <!-- Tab content for prediction results -->
+            <div id="Prediction" class="tab-content">
+                <div class="viewer-2d-grid">
+                    <div class="canvas-container"><canvas id="pred-bg-canvas"></canvas><div class="label">Background</div></div>
+                    <div class="canvas-container"><canvas id="pred-tc-canvas"></canvas><div class="label">Tumor Core</div></div>
+                    <div class="canvas-container"><canvas id="pred-wt-canvas"></canvas><div class="label">Whole Tumor</div></div>
+                    <div class="canvas-container"><canvas id="pred-et-canvas"></canvas><div class="label">Enhancing Tumor</div></div>
+                </div>
+            </div>
+            
+            <!-- Tab content for ground truth comparison -->
+            <div id="Ground_Truth" class="tab-content">
+                <div class="viewer-2d-grid">
+                    <div class="canvas-container"><canvas id="gt-gt_bg-canvas"></canvas><div class="label">Background</div></div>
+                    <div class="canvas-container"><canvas id="gt-gt_tc-canvas"></canvas><div class="label">Tumor Core</div></div>
+                    <div class="canvas-container"><canvas id="gt-gt_wt-canvas"></canvas><div class="label">Whole Tumor</div></div>
+                    <div class="canvas-container"><canvas id="gt-gt_et-canvas"></canvas><div class="label">Enhancing Tumor</div></div>
+                </div>
+                <br>
+                <div class="viewer-2d-grid">
+                    <div class="canvas-container"><canvas id="raw-gt_bg-canvas"></canvas><div class="label">Background</div></div>
+                    <div class="canvas-container"><canvas id="raw-gt_net-canvas"></canvas><div class="label">NET</div></div>
+                    <div class="canvas-container"><canvas id="raw-gt_edema-canvas"></canvas><div class="label">Edema</div></div>
+                    <div class="canvas-container"><canvas id="raw-gt_et-canvas"></canvas><div class="label">Enhancing Tumor</div></div>
+                </div>
+            </div>
+            
+            <!-- Slider to navigate through slices -->
+            <div class="slider-container">
+                <input type="range" id="slice-slider" min="0" max="154" value="77" disabled>
+                <div id="slice-info">Slice: 77 / 154</div>
+            </div>
+        </section>
+
+        <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 3rem 0;">
+
+        <!-- Section 3: 3D Viewer -->
+        <div style="display: grid; grid-template-columns: 250px 1fr; gap: 1.5rem;">
+            <!-- Controls for toggling 3D layers -->
+            <div id="3d-controls" style="background: var(--surface-color); padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h4 style="margin-top: 0; font-weight: 500;">3D Layers</h4>
+                <label style="display: block; margin: 1rem 0; cursor: pointer;"><input type="checkbox" id="Brain_toggle" checked> Brain (Gray)</label>
+                <hr style="border-color: #eee;">
+                <label style="display: block; margin: 1rem 0; cursor: pointer;"><input type="checkbox" id="WT_toggle" checked> Whole Tumor (Red)</label>
+                <label style="display: block; margin: 1rem 0; cursor: pointer;"><input type="checkbox" id="TC_toggle" checked> Tumor Core (Green)</label>
+                <label style="display: block; margin: 1rem 0; cursor: pointer;"><input type="checkbox" id="ET_toggle" checked> Enhancing Tumor (Blue)</label>
+            </div>
+            <!-- Container for the combined 3D rendering -->
+            <div class="view-3d" id="view3d-combined" style="min-height: 70vh;">
+                <div class="label">Combined 3D View</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- GLOBAL STATE AND UI ELEMENTS ---
+        const slider = document.getElementById('slice-slider');
+        const sliceInfo = document.getElementById('slice-info');
+        const loadingStatus = document.getElementById('loading-status');
+        const predictButton = document.getElementById('predict-button');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const sliceCache = {}; // Client-side cache for fetched slice images (base64 strings).
+        const viewerState = { num_slices: 0, uploaded_modalities: new Set() }; // Tracks the state of the viewer.
+        let scene, camera, renderer, controls; // Three.js variables for the 3D scene.
+        const meshes = {}; // Holds references to 3D mesh objects.
+
+        let sessionId = null; // Unique ID for the current user session.
+        // Generates a simple universally unique identifier (UUID).
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        // --- CORE UI FUNCTIONS ---
+
+        // Draws a base64 encoded image onto a specified canvas.
+        function drawImageOnCanvas(canvasId, base64Image) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return; // Exit if canvas doesn't exist.
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = base64Image;
+        }
+
+        // Configures the slice slider's properties (max, value) and enables it.
+        function setupSlider(numSlices, currentSlice) {
+            slider.max = numSlices - 1;
+            slider.value = currentSlice;
+            slider.disabled = false;
+            viewerState.num_slices = numSlices;
+            updateSliceInfo();
+        }
+        
+        // Handles switching between the "Upload" and "Examples" input tabs.
+        function openInputTab(evt, tabName) {
+            document.querySelectorAll(".input-tab-content").forEach(tc => tc.style.display = "none");
+            document.querySelectorAll(".tabs .tab-button").forEach(tb => tb.classList.remove("active"));
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Updates all visible 2D canvases with images from the cache for the current slice index.
+        function updateAllSlices() {
+            const sliceIndex = slider.value;
+            // Update modality canvases.
+            ['flair', 't1', 't1ce', 't2'].forEach(modality => {
+                if (sliceCache[modality] && sliceCache[modality][sliceIndex]) {
+                    drawImageOnCanvas(`${modality}-canvas`, sliceCache[modality][sliceIndex]);
+                }
+            });
+            // Update prediction canvases.
+            ['bg', 'wt', 'tc', 'et'].forEach(label => {
+                if (sliceCache[label] && sliceCache[label][sliceIndex]) {
+                    drawImageOnCanvas(`pred-${label}-canvas`, sliceCache[label][sliceIndex]);
+                }
+            });
+            // Update ground truth canvases.
+            ['gt_bg', 'gt_wt', 'gt_tc', 'gt_et'].forEach(label => {
+                if (sliceCache[label] && sliceCache[label][sliceIndex]) {
+                    drawImageOnCanvas(`gt-${label}-canvas`, sliceCache[label][sliceIndex]);
+                }
+            });
+            // Update raw ground truth canvases.
+             ['gt_bg', 'gt_net', 'gt_edema', 'gt_et'].forEach(label => {
+                if (sliceCache[label] && sliceCache[label][sliceIndex]) {
+                    drawImageOnCanvas(`raw-${label}-canvas`, sliceCache[label][sliceIndex]);
+                }
+            });
+            updateSliceInfo(); // Refresh the "Slice: X / Y" text.
+        }
+
+        // --- BACKEND COMMUNICATION ---
+
+        // Handles the file upload process when a user selects a file.
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const modality = event.target.dataset.modality;
+            if (!file || !modality) return;
+
+            loadingStatus.innerHTML = `<div class="loader"></div> Uploading ${modality}...`;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('modality', modality);
+            formData.append('session_id', sessionId);
+
+            try {
+                // Send file to the backend '/upload' endpoint.
+                const response = await fetch('/upload', { method: 'POST', body: formData });
+                if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
+                const data = await response.json();
+                viewerState.uploaded_modalities.add(modality);
+
+                // Setup slider if this is the first file uploaded.
+                if (viewerState.num_slices === 0) {
+                    setupSlider(data.num_slices, data.slice_index);
+                }
+
+                // Fetch all slices for this modality and cache them.
+                await fetchAllSlicesForModality(modality);
+
+                // If t1ce is uploaded, render its 3D brain mesh.
+                if (modality === 't1ce') {
+                    await fetchAndRender3DMeshes('t1ce');
+                }
+            } catch (error) {
+                console.error(`Error uploading ${modality}:`, error);
+                loadingStatus.textContent = `Error loading ${modality}.`;
+            }
+        }
+
+        // Fetches all 2D slices for a given modality from the server and stores them in the cache.
+        async function fetchAllSlicesForModality(modality) {
+            loadingStatus.textContent = `Downloading all slices for ${modality.toUpperCase()}...`;
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            try {
+                // Request all slices from the backend.
+                const response = await fetch(`/get_all_slices?modality=${modality}&session_id=${sessionId}`);
+                if (!response.ok) throw new Error(`Failed to fetch slices: ${response.statusText}`);
+
+                // Process the streaming response to show download progress.
+                const reader = response.body.getReader();
+                const contentLength = +response.headers.get('Content-Length');
+                let receivedLength = 0;
+                let chunks = [];
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    receivedLength += value.length;
+                    progressBar.style.width = `${(receivedLength / contentLength) * 100}%`;
+                }
+
+                // Combine and decode the downloaded chunks.
+                const chunksAll = new Uint8Array(receivedLength);
+                let position = 0;
+                for (let chunk of chunks) {
+                    chunksAll.set(chunk, position);
+                    position += chunk.length;
+                }
+                const result = new TextDecoder("utf-8").decode(chunksAll);
+                const data = JSON.parse(result);
+
+                // Store the received slice data in the global cache.
+                Object.assign(sliceCache, data);
+                viewerState.uploaded_modalities.add(modality.split('_')[0]);
+
+                loadingStatus.textContent = `${modality.toUpperCase()} slices cached!`;
+                updateAllSlices(); // Redraw canvases with the new data.
+
+            } catch (error) {
+                console.error(`Failed to fetch slices for ${modality}:`, error);
+                loadingStatus.textContent = `Error fetching slices for ${modality}.`;
+            } finally {
+                progressContainer.style.display = 'none'; // Hide progress bar.
+                checkPredictButtonState(); // Check if the predict button can be enabled.
+            }
+        }
+        
+        // Sends a request to the server to run the prediction model.
+        async function runPrediction() {
+            loadingStatus.innerHTML = `<div class="loader"></div> Running model inference... This can take over a minute.`;
+            predictButton.disabled = true;
+            try {
+                // Call the '/predict' endpoint.
+                const response = await fetch('/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sessionId }) },);
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || `Server error: ${response.statusText}`);
+                }
+                const data = await response.json();
+                
+                // Fetch slices for the new prediction.
+                await fetchAllSlicesForModality(data.modality);
+                // Render the 3D meshes for the prediction result.
+                await fetchAndRender3DMeshes('pred');
+
+                loadingStatus.textContent = `Prediction complete!`;
+            } catch (error) {
+                console.error('Prediction failed:', error);
+                loadingStatus.textContent = `Prediction failed: ${error.message}`;
+            } finally {
+                predictButton.disabled = false; // Re-enable button after prediction attempt.
+            }
+        }
+
+        // --- EXAMPLE DATA HANDLING ---
+
+        // Fetches the list of available example cases from the server.
+        async function loadExamplesList() {
+            try {
+                const response = await fetch('/list_examples');
+                const examples = await response.json();
+                const container = document.getElementById('examples-container');
+                const loadingMsg = document.getElementById('examples-loading-msg');
+
+                if (examples.length === 0) {
+                    loadingMsg.textContent = 'No examples found on the server.';
+                    return;
+                }
+                loadingMsg.style.display = 'none'; // Hide loading message.
+
+                // Create a button for each available example.
+                examples.forEach(exampleId => {
+                    const button = document.createElement('button');
+                    button.className = 'action-button';
+                    button.textContent = exampleId;
+                    button.style.backgroundColor = '#555';
+                    button.onclick = () => handleExampleClick(exampleId);
+                    container.appendChild(button);
+                });
+
+            } catch (error) {
+                console.error('Failed to load examples list:', error);
+                document.getElementById('examples-loading-msg').textContent = 'Error loading examples.';
+            }
+        }
+        
+        // Handles the click event for an example button, loading the corresponding data.
+        async function handleExampleClick(exampleId) {
+            loadingStatus.innerHTML = `<div class="loader"></div> Loading example: ${exampleId}...`;
+            predictButton.disabled = true;
+            viewerState.uploaded_modalities.clear();
+
+            try {
+                // Request the server to load the selected example data.
+                const response = await fetch('/load_example', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: exampleId, session_id: sessionId })
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Failed to load example');
+                }
+                const data = await response.json();
+                setupSlider(data.num_slices, data.slice_index);
+
+                // Load all 2D slices and 3D visuals for the example.
+                await loadAllVisuals(data.loaded_modalities || []);
+
+            } catch (error) {
+                console.error('Error loading example:', error);
+                loadingStatus.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Helper function to fetch all required 2D and 3D data for an example.
+        async function loadAllVisuals(availableModalities) {
+            loadingStatus.innerHTML = `<div class="loader"></div> Caching all slice data...`;
+
+            const fetchPromises = [];
+
+            // Fetch required input modalities.
+            ['flair', 't1', 't1ce', 't2'].forEach(mod => {
+                if (availableModalities.includes(mod)) {
+                    fetchPromises.push(fetchAllSlicesForModality(mod));
+                }
+            });
+
+            // Conditionally fetch ground truth if it exists for the example.
+            if (availableModalities.includes('gt')) {
+                fetchPromises.push(fetchAllSlicesForModality('gt'));
+            } else {
+                // Clear any old ground truth images if the new example doesn't have them.
+                ['gt_bg', 'gt_wt', 'gt_tc', 'gt_et', 'gt_net', 'gt_edema'].forEach(label => {
+                    delete sliceCache[label];
+                });
+            }
+
+            await Promise.all(fetchPromises); // Run all fetch requests in parallel.
+
+            // Render the 3D brain mesh.
+            if (availableModalities.includes('t1ce')) {
+                await fetchAndRender3DMeshes('t1ce');
+            }
+
+            loadingStatus.textContent = 'All data loaded and ready for prediction.';
+            updateAllSlices();
+        }
+
+        // --- 3D RENDERING (THREE.JS) ---
+
+        // Initializes the combined 3D viewer scene, camera, renderer, and controls.
+        function initCombined3DViewer() {
+            const container = document.getElementById('view3d-combined');
+            if (!container) return;
+            container.innerHTML = ''; // Clear previous content.
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x101010);
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 2000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Add lighting to the scene.
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(50, 50, 50);
+            scene.add(dirLight);
+
+            // Add orbit controls for user interaction.
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            // Animation loop to render the scene continuously.
+            const animate = () => {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            };
+            animate();
+
+            // Handle window resizing to keep the viewer proportional.
+            window.addEventListener('resize', () => {
+                if (!container.clientWidth || !container.clientHeight) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }, false);
+        }
+
+        // Fetches 3D mesh data (vertices, faces) from the server and renders it.
+        async function fetchAndRender3DMeshes(modality) {
+            if (!scene) initCombined3DViewer(); // Initialize if not already done.
+            loadingStatus.innerHTML = `<div class="loader"></div> Generating 3D meshes for ${modality.toUpperCase()}...`;
+
+            try {
+                const response = await fetch(`/get_3d_mesh_data?modality=${modality}&session_id=${sessionId}`);
+                if (!response.ok) throw new Error(`Server failed to generate mesh: ${response.statusText}`);
+
+                const meshData = await response.json();
+                const boundingBox = new THREE.Box3();
+
+                // Clear previous prediction meshes if a new prediction is made.
+                if (modality === 'pred') {
+                    ['WT', 'TC', 'ET'].forEach(label => {
+                        if (meshes[label]) scene.remove(meshes[label]);
+                    });
+                }
+                
+                // Define the rendering order to prevent visual artifacts.
+                const renderOrderMap = { 'ET': 3, 'TC': 2, 'WT': 1, 'Brain': 0 };
+
+                for (const label in meshData) {
+                    const data = meshData[label];
+                    const geometry = new THREE.BufferGeometry();
+                    
+                    // Set geometry attributes from fetched data.
+                    geometry.setAttribute('position', new THREE.Float32BufferAttribute(data.vertices, 3));
+                    geometry.setIndex(data.faces);
+                    geometry.computeVertexNormals();
+
+                    let material;
+                    // Create a special, transparent material for the brain to see tumors inside.
+                    if (label === 'Brain') {
+                        material = new THREE.MeshStandardMaterial({
+                            color: data.color,
+                            transparent: true,
+                            opacity: data.opacity,
+                            depthWrite: false, // Prevents brain from hiding internal objects.
+                            side: THREE.DoubleSide
+                        });
+                    } else {
+                        // Create standard materials for tumor components.
+                        material = new THREE.MeshStandardMaterial({
+                            color: data.color,
+                            transparent: true,
+                            opacity: data.opacity,
+                            side: THREE.DoubleSide
+                        });
+                    }
+
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.name = label;
+                    mesh.renderOrder = renderOrderMap[label] || 0; // Apply render order.
+
+                    scene.add(mesh);
+                    meshes[label] = mesh; // Store reference to the mesh.
+                    boundingBox.expandByObject(mesh); // Expand bounding box to include new mesh.
+                }
+
+                // Adjust camera to fit all visible meshes in the view.
+                const center = new THREE.Vector3();
+                boundingBox.getCenter(center);
+                controls.target.copy(center);
+                const size = new THREE.Vector3();
+                boundingBox.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z);
+                camera.position.z = center.z + maxDim * 1.5; // Position camera based on object size.
+                controls.update();
+
+                loadingStatus.textContent = `3D meshes for ${modality.toUpperCase()} loaded.`;
+            } catch (error) {
+                console.error(`Failed to render 3D mesh for ${modality}:`, error);
+                loadingStatus.textContent = `Error loading 3D mesh for ${modality}.`;
+            }
+        }
+
+        // --- UTILITY AND EVENT LISTENERS ---
+
+        // Updates the text indicating the current slice number.
+        function updateSliceInfo() {
+            if (slider.disabled) return;
+            sliceInfo.textContent = `Slice: ${slider.value} / ${slider.max}`;
+        }
+        
+        // Checks if all required files are uploaded to enable the prediction button.
+        function checkPredictButtonState() {
+            const required = ['flair', 't1', 't1ce', 't2'];
+            const allUploaded = required.every(m => viewerState.uploaded_modalities.has(m));
+            predictButton.disabled = !allUploaded;
+        }
+        
+        // Attaches the file upload handler to all file input elements.
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', handleFileUpload);
+        });
+
+        slider.addEventListener('input', updateAllSlices); // Update slices on slider move.
+        predictButton.addEventListener('click', runPrediction); // Run prediction on button click.
+
+        // Handles switching between the main 2D viewer tabs (Modalities, Prediction, etc.).
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none");
+            document.querySelectorAll(".tabs .tab-button:not([onclick*='openInputTab'])").forEach(tb => tb.classList.remove("active"));
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Attaches event listeners to the 3D layer toggle checkboxes.
+        ['Brain', 'WT', 'TC', 'ET'].forEach(label => {
+            const toggle = document.getElementById(`${label}_toggle`);
+            if (toggle) {
+                toggle.addEventListener('change', (e) => {
+                    if (meshes[label]) {
+                        meshes[label].visible = e.target.checked; // Toggle mesh visibility.
+                    }
+                });
+            }
+        });
+
+        // This function runs when the page has finished loading.
+        document.addEventListener('DOMContentLoaded', () => {
+            sessionId = uuidv4(); // Generate a session ID for this visit.
+            initCombined3DViewer(); // Set up the 3D viewer.
+            loadExamplesList(); // Fetch and display the available examples.
+        });
+
+    </script>
+</body>
+
+</html>
