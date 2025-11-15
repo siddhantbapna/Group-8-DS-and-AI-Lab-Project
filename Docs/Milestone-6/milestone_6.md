@@ -10,14 +10,12 @@ This section describes the exact environment needed to reproduce the preprocessi
 ## **2. Core Dependencies**
 
 ### **Deep Learning & Medical Imaging**
-
 * **PyTorch**
 * **MONAI** (medical image preprocessing + transforms)
 * **Nibabel** (MRI file handling `.nii`, `.nii.gz`)
 * **SimpleITK** (image I/O, resampling)
 
 ### **Model Training & Utilities**
-
 * **scikit-learn**
 * **numpy**
 * **pandas**
@@ -26,22 +24,18 @@ This section describes the exact environment needed to reproduce the preprocessi
 * **tensorboard**
 
 ### **Deployment / API**
-
-* **Flask** — the core backend framework providing all REST API endpoints (`/upload`, `/predict`, `/get_all_slices`, `/get_3d_mesh_data`).
-* **Docker** — used to containerize the entire application (backend + frontend) for consistent deployment.
-* **Hugging Face Spaces (Docker Runtime)** — hosts the containerized application and exposes it publicly.
-* **HTML / CSS / JavaScript Frontend** — a lightweight single-page UI that communicates with the Flask backend via asynchronous API calls.
+* **Flask** - the core backend framework providing all REST API endpoints (`/upload`, `/predict`, `/get_all_slices`, `/get_3d_mesh_data`).
+* **Docker** - used to containerize the entire application (backend + frontend) for consistent deployment.
+* **Hugging Face Spaces (Docker Runtime)** - hosts the containerized application and exposes it publicly.
+* **HTML / CSS / JavaScript Frontend** - a lightweight single-page UI that communicates with the Flask backend via asynchronous API calls.
 
 ### **Optional Tools**
-
 * **wandb** (experiment tracking)
-* **torchsummary** or **fvcore** (model stats)
-* **albumentations** (if additional augmentations used)
+* **torchsummary** (model stats)
 
 ## **3. Hardware Requirements**
 
 ### **Training**
-
 * **GPU:** NVIDIA GPU with at least **16 GB VRAM**
 
   * Recommended: **RTX 3090 / A5000 / A100**
@@ -53,20 +47,16 @@ This section describes the exact environment needed to reproduce the preprocessi
   * Checkpoints + logs: ~5–10 GB
 
 ### **Inference**
-
 * Can run on:
-
   * **GPU** (fast, real-time results)
   * **CPU** (slower but functional)
 * Recommended:
-
   * **8+ GB RAM**
   * **8+ GB disk**
 
 ## **4. Installation Instructions**
 
 ### Using `requirements.txt`
-
 Create a file:
 
 ```
@@ -313,7 +303,105 @@ These results are consistent with mid-tier performance for 3D U-Net variants on 
 * **Larger patches** (e.g., 160³) could likely improve ET segmentation but were not feasible on the provided GPU
 * **Mixed precision** significantly reduced VRAM usage (~35–40%) and shortened training time (~20–25%)
 
-## **4.7 Summary**
+## **4.7 Volumetric Analysis & Validation Visualizations**
+
+# **Common Terminology (Used in the Following Results)**
+
+Before presenting the test-set results, the following definitions summarize the visual and volumetric components shown for each sample:
+
+1. **Ground Truth Visuals**
+   These include the MRI modalities and the corresponding tumor segmentation provided in the BraTS dataset.
+
+2. **Raw Ground Truth Labels**
+   These represent the original BraTS annotations for:
+
+   * **Non-Enhancing Tumor (NET)**
+   * **Edema**
+   * **Enhancing Tumor (ET)**
+
+3. **Derived BraTS Sub-Region Masks**
+   Derived masks visualize the three standard evaluation regions:
+
+   * **Whole Tumor (WT)** = Edema + NET + ET
+   * **Tumor Core (TC)** = NET + ET
+   * **Enhancing Tumor (ET)**
+
+4. **Prediction Plots**
+   These are the segmentation outputs produced by the trained **3D Attention U-Net** model.
+
+5. **Lesion Noise in Predictions**
+   The raw predictions may contain small disconnected components (“lesions”), which represent segmentation noise.
+   Therefore, each result includes:
+
+   * **Prediction (with lesions)** – raw output
+   * **Prediction (without lesions)** – after post-processing to remove isolated false positives
+     The post-processed masks are smoother and better aligned with the true tumor structure.
+
+# **6.1 Validation Sample 01**
+
+### **Volumetric and Accuracy Analysis**
+
+| Tumor Component          | Ground Truth Volume | Predicted Volume | Dice Score |
+| ------------------------ | ------------------: | ---------------: | ---------: |
+| **Tumor Core (TC)**      |           27,245.00 |        25,853.00 |     0.9361 |
+| **Whole Tumor (WT)**     |           60,003.00 |        59,416.00 |     0.9195 |
+| **Enhancing Tumor (ET)** |           23,151.00 |        20,034.00 |     0.8751 |
+
+### **Visualizations**
+
+<details open>
+  <summary><strong>Ground Truth (Raw Labels + Derived Masks)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Ground Truth Plot</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth.png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Prediction (With Lesions)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Prediction (Without Lesions)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Pred_(without_lesions).png" width="500">
+</details>
+
+# **6.2 Validation Sample 02**
+
+### **Volumetric and Accuracy Analysis**
+
+| Tumor Component          | Ground Truth Volume | Predicted Volume | Dice Score |
+| ------------------------ | ------------------: | ---------------: | ---------: |
+| **Tumor Core (TC)**      |           19,249.00 |        20,049.00 |     0.9486 |
+| **Whole Tumor (WT)**     |           67,520.00 |        68,919.00 |     0.9426 |
+| **Enhancing Tumor (ET)** |           16,546.00 |        16,735.00 |     0.9081 |
+
+### **Visualizations**
+
+<details open>
+  <summary><strong>Ground Truth (Raw Labels + Derived Masks)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Raw_Labels_&_Derived_Masks.png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Ground Truth Plot</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth.png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Prediction (With Lesions)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
+</details>
+
+<details open>
+  <summary><strong>Prediction (Without Lesions)</strong></summary>
+  <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Pred_(without_lesions).png" width="500">
+</details>
+
+## **4.8 Summary**
 
 Milestone 4 established a strong baseline model configuration by:
 
@@ -339,6 +427,15 @@ This section summarizes the model’s performance on unseen data using standardi
 
 **Key insight:**
 WT performs the strongest and most consistently; ET remains the most challenging region with high variance and several complete misses.
+
+<div align="center">
+
+<img src="./visuals/errorAnalysis/dice_boxplot.png" alt="GT vs Pred TC"/>   
+
+<br>
+<em>Figure: Dice score distribution per label</em>
+
+</div>
 
 ## **5.2 Correlation with Ground Truth Volumes**
 
@@ -389,6 +486,15 @@ Despite the bias, R² remains high across labels, indicating stable scaling beha
 **Insight:**
 ET has the highest full-miss ratio, reflecting difficulty detecting small/enhancing regions.
 
+<div align="center">
+
+<img src="./visuals/errorAnalysis/missed_counts.png" alt="GT vs Pred TC"/>   
+
+<br>
+<em>Figure: Count of missed labels</em>
+
+</div>
+
 ## **5.5 Relative Absolute Volume Error**
 
 * **Mean:** 0.2964
@@ -421,6 +527,65 @@ High-Dice samples show excellent spatial alignment; low-Dice ones typically suff
 * fragmented ET predictions
 * under-segmentation of diffuse WT regions
 * failure on very small ET clusters
+
+#### 5.1 Test Sample "BraTS-GLI-02506-101"
+
+
+##### Volumetric and Accuracy Analysis
+-------------------------------------------------------------------------------------
+Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
+|-----------------|--------------------:|-----------------:|----------------------:|
+Tumor Core (TC)           | 26805.00             | 27970.00             | 0.9317              
+Whole Tumor (WT)          | 49522.00             | 51834.00             | 0.9465              
+Enhancing Tumor (ET)      | 22927.00             | 22288.00             | 0.8947              
+-------------------------------------------------------------------------------------
+Slice index where ET mask is biggest: 78
+Number of ET voxels in that slice: 888
+
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02506-101/GroundTruth.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (With Lesions)</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02506-101/PredWithLegions.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02506-101/PredWithoutLegions.png" width="500">
+</details>
+
+#### 5.2 Test Sample "BraTS-GLI-02405-100
+
+
+##### Volumetric and Accuracy Analysis
+-------------------------------------------------------------------------------------
+Tumor Component           | Ground Truth Volume  | Predicted Volume     | Dice Score (Accuracy)
+|-----------------|--------------------:|-----------------:|----------------------:|
+Tumor Core (TC)           | 8419.00              | 8817.00              | 0.9117              
+Whole Tumor (WT)          | 12529.00             | 14535.00             | 0.8841              
+Enhancing Tumor (ET)      | 6093.00              | 6636.00              | 0.8060              
+-------------------------------------------------------------------------------------
+Slice index where ET mask is biggest: 54
+Number of ET voxels in that slice: 338
+
+
+<details open>
+  <summary>GROUND TRUTH PLOT</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02405-100/GroundTruth.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (With Lesions)</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02405-100/PredWithLegions.png" width="500">
+</details>
+
+<details open>
+  <summary>Pred PLOT (Without Lesions)</summary>
+  <img src="./visuals/testPerformance/BraTS-GLI-02405-100/PredWithoutLegions.png" width="500">
+</details>
 
 ## **5.7 Comparison with BraTS 2023 Leaderboard**
 
@@ -456,57 +621,152 @@ The model is competitive on WT and TC but significantly behind on ET—a known w
 * Architecture depth and channels reduced for Kaggle GPU constraints.
 * ET segmentation limited by class imbalance and low-contrast features.
 
-## **B6. Inference Pipeline**
+# **B6. Inference Pipeline**
 
-This section describes the complete inference flow: preprocessing, model execution, and post-processing. All preprocessing steps exactly mirror the training pipeline to ensure consistency and reproducibility.
+This section describes the complete end-to-end inference workflow implemented in the Flask server. The pipeline covers preprocessing, model inference, post-processing, volumetric analysis, and output generation.
 
-### **6.1 Pipeline Overview**
+## **6.1 Overview of the Inference Flow**
+
+The steps below summarize how input MRI modalities are transformed into a final BraTS-compliant tumor segmentation mask:
 
 ```
-Input MRI (NIfTI)
+User Upload / Example Case
         ↓
-Preprocessing
-    • Load modalities (T1, T1ce, T2, FLAIR)
-    • Load segmentation mask (if evaluating)
-    • Intensity normalization → [0, 1]
+Secure Session Folder Creation
+        ↓
+Preprocessing (MONAI)
+    • Load NIfTI modalities (T1, T1ce, T2, FLAIR)
+    • Reorient → RAS
+    • Standardize voxel spacing (1 mm isotropic)
+    • Intensity normalization [0, 1]
     • Foreground cropping
-    • Resample → 128 × 128 × 128
-    • Convert mask to multi-channel format
-    • Package: (4, 128, 128, 128)
+    • Resize → 128 × 128 × 128
+    • Tensor conversion
         ↓
 Tensor Preparation
-    • Convert to float32
-    • Add batch dimension
+    • Stack modalities → shape: (1, 4, 128, 128, 128)
         ↓
 Model Inference
-    • model.eval(), no_grad()
+    • model.eval(), torch.no_grad()
+    • Forward pass → probability maps
         ↓
 Post-Processing
-    • Remove small lesions
-    • Optional smoothing or thresholding
+    • Sigmoid + thresholding
+    • Remove small isolated lesions
+    • Convert channels → BraTS labels (1, 2, 4)
         ↓
-Output
-    • Multi-class mask (ET, TC, WT)
-    • Optional overlay for visualization
+Volumetric Analysis
+    • Compute voxel counts for WT, TC, ET
+        ↓
+Output Generation
+    • Save mask as NIfTI (`pred.nii`)
+    • Slice PNGs for UI visualization
+    • Optional 3D mesh extraction
 ```
 
-## **6.2 Output**
+## **6.2 Inference Code (Flask API Endpoint)**
 
-The model returns:
+Below is the core inference endpoint used in the deployed system:
 
-* **Three binary masks**:
+```python
+@app.route('/predict', methods=['POST'])
+def predict():
+    session_id = request.json.get('session_id')
+    session_folder = get_safe_session_path(session_id)
 
-  * `ET`, `TC`, `WT`
-* Optional overlays for visualization:
+    # 1. Preprocessing (MONAI)
+    input_data = {
+        "t1c": os.path.join(session_folder, 't1ce.nii'),
+        "t1n": os.path.join(session_folder, 't1.nii'),
+        "t2f": os.path.join(session_folder, 'flair.nii'),
+        "t2w": os.path.join(session_folder, 't2.nii'),
+    }
+    processed = monai_preprocess_pipeline(input_data)
 
-  * `MRI + predicted mask`
-  * Per-class color-coded maps
-* Output formats supported:
+    # 2. Prepare tensor
+    tensor = torch.cat([processed[k] for k in MODALITY_KEYS], dim=0)
+    tensor = tensor.unsqueeze(0).to(DEVICE)
 
-  * `.nii.gz`
-  * `.npy`
-  * `.png` slices (for frontend display)
+    # 3. Model inference
+    with torch.no_grad():
+        logits = model(tensor)
 
+    # 4. Post-processing
+    raw = (torch.sigmoid(logits).cpu().squeeze(0) > 0.5).numpy()
+    cleaned = remove_small_lesions(raw, {0:100, 1:75, 2:50})
+
+    # Convert to BraTS labels
+    label_map = np.zeros(cleaned[0].shape, dtype=np.uint8)
+    label_map[cleaned[1] > 0] = 2   # WT
+    label_map[cleaned[0] > 0] = 1   # TC
+    label_map[cleaned[2] > 0] = 4   # ET
+
+    # 5. Volume computation
+    calculate_and_log_volumes(label_map)
+
+    # 6. Save NIfTI output
+    affine = processed['t1c_meta_dict']['affine']
+    out_nifti = nib.Nifti1Image(label_map, affine)
+    nib.save(out_nifti, os.path.join(session_folder, 'pred.nii'))
+
+    return jsonify({
+        "message": "Prediction successful",
+        "num_slices": label_map.shape[2],
+        "modality": "pred"
+    })
+```
+
+## **6.3 Output Components**
+
+### **1. Predicted Segmentation Mask (NIfTI)**
+
+A multi-class tumor mask (`pred.nii`) saved in BraTS-compliant labels:
+
+| Class | Description          | Label |
+| ----: | -------------------- | ----: |
+|     0 | Background           |     0 |
+|     1 | Tumor Core (TC)      |     1 |
+|     2 | Whole Tumor (WT)     |     2 |
+|     4 | Enhancing Tumor (ET) |     4 |
+
+### **2. Slice-wise PNG Outputs (Frontend Visualizations)**
+
+Accessible via:
+
+```
+/get_all_slices?modality=pred&session_id=...
+```
+
+Generated layers include:
+
+* Predicted WT
+* Predicted TC
+* Predicted ET
+* Combined mask
+* Ground truth (if provided)
+
+All images are returned as **base64 PNGs**.
+
+### **3. 3D Mesh Reconstruction (Optional)**
+
+When requested:
+
+```
+/get_3d_mesh_data?modality=pred
+```
+
+The endpoint returns a JSON structure containing:
+
+* vertices
+* faces
+* colors
+* opacity
+
+This enables real-time rendering using Three.js or other WebGL frameworks.
+
+## **6.4 Summary**
+
+The inference pipeline transforms raw MRI modalities into a refined multi-class volumetric tumor segmentation. By combining MONAI-based preprocessing, a 3D Attention U-Net backbone, lesion-cleaning post-processing, and volumetric analysis, the system produces clinically interpretable outputs suitable for visualization, reporting, and downstream evaluation.
 
 # **7. Deployment & Documentation**
 
@@ -517,7 +777,6 @@ The final trained model is integrated into a complete, end-to-end web applicatio
 ### **Backend (Flask + Python)**
 
 The backend is built using a **Flask server** that handles all core computation and data processing, including:
-
 * File uploads
 * Execution of the **MONAI preprocessing pipeline**
 * Running inference using the trained **PyTorch Attention U-Net model**
@@ -531,7 +790,6 @@ The backend is built using a **Flask server** that handles all core computation 
 ### **Frontend (HTML + CSS + JavaScript)**
 
 A lightweight **single-page application (SPA)** handles the user interface. It communicates with the backend using asynchronous API calls (AJAX / Fetch API) and provides:
-
 * File selection interface
 * Buttons to run predictions
 * Embedded 2D and 3D visualization components
@@ -539,7 +797,6 @@ A lightweight **single-page application (SPA)** handles the user interface. It c
 ### **Deployment**
 
 The complete system is **containerized using Docker** and deployed on **Hugging Face Spaces**, making it publicly accessible for testing and demonstrations.
-
 The application can also be run **locally** with minimal setup using Docker or Python.
 
 ## **7.2 User Workflow**
@@ -549,9 +806,7 @@ The application provides a smooth, guided workflow for running brain tumor segme
 ### **1. Load Data**
 
 Users can either:
-
 * Upload their own four required NIfTI files:
-
   * FLAIR
   * T1
   * T1ce
@@ -567,13 +822,11 @@ With a single click, the user triggers the entire inference pipeline on the back
 After prediction, the application displays results in two interactive viewers:
 
 #### **A. 2D Slice Viewer**
-
 * View MRI modalities
 * View predicted segmentation masks
 * Navigate slice-by-slice through the volume
 
 #### **B. 3D Viewer (Three.js)**
-
 * Interactive rendering of the brain and segmented tumor
 * Displays tumor subregions as **3D meshes**
 * Supports rotation, zooming, and layer toggling
@@ -581,23 +834,66 @@ After prediction, the application displays results in two interactive viewers:
 ## **7.3 Documentation**
 
 Comprehensive documentation was developed to ensure clarity, reproducibility, and maintainability.
-
 This includes:
 
 * **Technical Document**
-
   * Environment setup
   * Data preprocessing pipeline
   * Model architecture
   * Inference and post-processing steps
 
 * **User Guide**
-
   * Step-by-step instructions for using the web application
   * Visual examples and interface descriptions
 
 * **Well-Commented Codebase**
-
   * Clean, modular training pipeline scripts
   * Clear inference code
   * Complete README files for both training and deployment.
+
+# **8. System Design Considerations**
+
+This section outlines the end-to-end system design used for training, evaluating, and deploying the 3D Attention U-Net model. Since the architecture itself is described earlier, the focus here is on **data flow, modular organization, pipeline design, and scalability.**
+
+## **8.1 Overall Workflow**
+
+The system follows a modular, pipeline-driven workflow:
+1. **Data Ingestion** → Load volumetric medical images and masks
+2. **Preprocessing & Augmentation** → Normalize, resize, crop/patch
+3. **Model Training** → Train the 3D Attention U-Net
+4. **Evaluation** → Compute metrics (Dice, IoU, etc.)
+5. **Inference Pipeline** → Patch-based or full-volume predictions
+
+This separation ensures clarity and reproducibility across experiments.
+
+## **8.2 Scalability & Performance Considerations**
+
+### **Training Scalability**
+* **Mixed Precision (AMP)** for faster training with lower memory use
+* **DistributedDataParallel (DDP)** for multi-GPU support
+* **Gradient Accumulation** for large 3D batches
+* **Patch-based training** improves speed and reduces GPU memory load
+* **Caching Strategies**: caching preprocessed metadata to speed up loading
+
+### **Inference Scalability**
+* **Sliding-window inference** for full volume reconstruction
+* **Batching patches** to optimize GPU throughput
+* Optional: ONNX/TensorRT export for deployment scenarios
+
+## **8.3 System Reliability**
+
+Even during training-only workflows, reliability matters:
+* Automatic checkpointing
+* Resume-training support
+* Validation hooks to catch overfitting early
+* Logging for losses, metrics, GPU utilization
+* Optional early stopping based on validation Dice score
+
+## **8.4 Deployment Considerations**
+
+If the model is later integrated into a service or a medical workflow:
+* **Input standardization** to match training preprocessing
+* **Model wrapper** for inference (pre → model → post)
+* **Runtime optimizations** (FP16 inference, patch fusion)
+* **Containerized deployment** using Docker for reproducibility
+* Optional database storage for predictions and logs
