@@ -305,7 +305,7 @@ These results are consistent with mid-tier performance for 3D U-Net variants on 
 
 ## **4.7 Volumetric Analysis & Validation Visualizations**
 
-# **Common Terminology (Used in the Following Results)**
+### **Common Terminology**
 
 Before presenting the test-set results, the following definitions summarize the visual and volumetric components shown for each sample:
 
@@ -337,9 +337,9 @@ Before presenting the test-set results, the following definitions summarize the 
    * **Prediction (without lesions)** – after post-processing to remove isolated false positives
      The post-processed masks are smoother and better aligned with the true tumor structure.
 
-# **6.1 Validation Sample 01**
+#### **4.7.1 Validation Sample 01**
 
-### **Volumetric and Accuracy Analysis**
+##### **Volumetric and Accuracy Analysis**
 
 | Tumor Component          | Ground Truth Volume | Predicted Volume | Dice Score |
 | ------------------------ | ------------------: | ---------------: | ---------: |
@@ -347,31 +347,31 @@ Before presenting the test-set results, the following definitions summarize the 
 | **Whole Tumor (WT)**     |           60,003.00 |        59,416.00 |     0.9195 |
 | **Enhancing Tumor (ET)** |           23,151.00 |        20,034.00 |     0.8751 |
 
-### **Visualizations**
+##### **Visualizations**
 
-<details open>
+<details align="center" open>
   <summary><strong>Ground Truth (Raw Labels + Derived Masks)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Raw_Labels_&_Derived_Masks.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Ground Truth Plot</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Prediction (With Lesions)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Prediction (Without Lesions)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00132-000/BraTS-GLI-00132-000-Pred_(without_lesions).png" width="500">
 </details>
 
-# **6.2 Validation Sample 02**
+### **4.7.2 Validation Sample 02**
 
-### **Volumetric and Accuracy Analysis**
+##### **Volumetric and Accuracy Analysis**
 
 | Tumor Component          | Ground Truth Volume | Predicted Volume | Dice Score |
 | ------------------------ | ------------------: | ---------------: | ---------: |
@@ -379,24 +379,24 @@ Before presenting the test-set results, the following definitions summarize the 
 | **Whole Tumor (WT)**     |           67,520.00 |        68,919.00 |     0.9426 |
 | **Enhancing Tumor (ET)** |           16,546.00 |        16,735.00 |     0.9081 |
 
-### **Visualizations**
+##### **Visualizations**
 
-<details open>
+<details align="center" open>
   <summary><strong>Ground Truth (Raw Labels + Derived Masks)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Raw_Labels_&_Derived_Masks.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Ground Truth Plot</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Prediction (With Lesions)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Ground_Truth_(with_lesions).png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary><strong>Prediction (Without Lesions)</strong></summary>
   <img src="./visuals/validationPerformance/BraTS-GLI-00426-000/BraTS-GLI-00426-000-Pred_(without_lesions).png" width="500">
 </details>
@@ -542,17 +542,17 @@ Enhancing Tumor (ET)      | 22927.00             | 22288.00             | 0.8947
 Slice index where ET mask is biggest: 78
 Number of ET voxels in that slice: 888
 
-<details open>
+<details align="center" open>
   <summary>GROUND TRUTH PLOT</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02506-101/GroundTruth.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary>Pred PLOT (With Lesions)</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02506-101/PredWithLegions.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary>Pred PLOT (Without Lesions)</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02506-101/PredWithoutLegions.png" width="500">
 </details>
@@ -572,17 +572,17 @@ Slice index where ET mask is biggest: 54
 Number of ET voxels in that slice: 338
 
 
-<details open>
+<details align="center" open>
   <summary>GROUND TRUTH PLOT</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02405-100/GroundTruth.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary>Pred PLOT (With Lesions)</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02405-100/PredWithLegions.png" width="500">
 </details>
 
-<details open>
+<details align="center" open>
   <summary>Pred PLOT (Without Lesions)</summary>
   <img src="./visuals/testPerformance/BraTS-GLI-02405-100/PredWithoutLegions.png" width="500">
 </details>

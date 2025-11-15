@@ -48,32 +48,58 @@ Brain tumor segmentation from MRI scans is crucial for diagnosis and treatment p
 ## 4. Repository Structure
 
 ```bash
-│   README.md
+├── app
+│   ├── data
+│   │   └── uploads
+│   ├── examples
+│   │   └── 1
+│   ├── model
+│   └── templates
 │
-├───Milestone-1
-│       milestone_1.md
-│       mriModalities.jpg
+├── Code
+│   ├── BRATS
+│   │   └── processed
+│   └── models
 │
-├───Milestone-2
-│       eda-brats2023.ipynb
-│       eda-brats2023_3D-patches.ipynb
-│       eda-brats2023_with_3d.ipynb
-│       milestone_2.md
+├── Docs
+│   ├── Milestone-1
+│   ├── Milestone-2
+│   ├── Milestone-3
+│   │   └── images
+│   │       ├── 0foldsb
+│   │       └── kfoldsb
+│   ├── Milestone-4
+│   │   └── images
+│   │       ├── epochPerformace
+│   │       ├── hyperparameterTuning
+│   │       └── ValidationPerformance
+│   │           ├── BraTS-GLI-00132-000
+│   │           ├── BraTS-GLI-00426-000
+│   │           └── BraTS-GLI-01265-000
+│   ├── Milestone-5
+│   │   ├── checkpointResults
+│   │   │   ├── 55
+│   │   │   ├── 67
+│   │   │   └── 93_latest
+│   │   └── images
+│   │       ├── errorAnalysis
+│   │       └── testPerformance
+│   │           ├── BraTS-GLI-02405-100
+│   │           ├── BraTS-GLI-02426-100
+│   │           └── BraTS-GLI-02506-101
+│   └── Milestone-6
+│       └── visuals
+│           ├── errorAnalysis
+│           ├── testPerformance
+│           │   ├── BraTS-GLI-02405-100
+│           │   ├── BraTS-GLI-02426-100
+│           │   └── BraTS-GLI-02506-101
+│           └── validationPerformance
+│               ├── BraTS-GLI-00132-000
+│               ├── BraTS-GLI-00426-000
+│               └── BraTS-GLI-01265-000
 │
-├───Milestone-3
-│   │   attention-btsb.ipynb
-│   │   milestone_3.md
-│   │
-│   └───images/
-│       ├── model.png
-│       ├── 0foldsb/
-│       └── kfoldsb/
-│
-└───Milestone-4
-    │   milestone_4.md
-    └───images/
-            torchSummary.png
-            trainingGraph.png
+└── Worklog
 ```
 
 ## 5. Reproducibility Setup
