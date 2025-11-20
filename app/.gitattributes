@@ -1,5 +1,0 @@
-model/best_model.pth filter=lfs diff=lfs merge=lfs -text
-examples/**/*.nii filter=lfs diff=lfs merge=lfs -text
-examples/**/*.nii.gz filter=lfs diff=lfs merge=lfs -text
-*.nii filter=lfs diff=lfs merge=lfs -text
-*.nii.gz filter=lfs diff=lfs merge=lfs -text

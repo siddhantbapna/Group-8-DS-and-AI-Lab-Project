@@ -4,6 +4,8 @@
 
 **Group-8 – DS and AI Lab Project**
 
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/siddhantbapna/orca)
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## 1. Project Overview
@@ -126,7 +128,7 @@ All source code is available in the [**Code Folder**](./Code).
 
 
 
-### Setup Instructions
+### Setup Instructions for Training
 
 
 
@@ -188,16 +190,34 @@ If resuming, simply update the model checkpoint path. The script will handle the
 
 
 
-### Visualization and Inference
+### Visualization and Testing
 
-To visualize model performance or run inference on saved checkpoints, run:
+To visualize model performance or run testing on saved checkpoints, run:
 
 ```bash
 python visual.py
 ```
 
+and for testing you can run the `testing.ipunb` notebook
+
 Provide the model path and patient data as inputs.
 The script will generate volumetric analysis results and relevant visualizations.
+
+```bash
+python visual.py
+```
+
+and for testing you can run the `testing.ipunb` notebook
+
+Provide the model path and patient data as inputs.
+The script will generate volumetric analysis results and relevant visualizations.
+
+### Inference
+
+You can run the inference of the model locally or on the deplyed hugging face space.
+
+- For Local : [Application Guide](./app/userguide.md)
+- For Remote : [Hugging Face Spcae](https://huggingface.co/spaces/siddhantbapna/orca)
 
 
 ## 7. Team Members
